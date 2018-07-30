@@ -50,7 +50,7 @@ class ConfigProvider
             'configuration' => [
                 'orm_default' => [
                     'numeric_functions' => [
-//                        'Rand' => Database\Functions\RandFunction::class,
+                        'Rand' => Functions\RandFunction::class,
                     ],
                 ],
             ],
