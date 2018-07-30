@@ -1,0 +1,8 @@
+version: "3"
+services:
+  php:
+    build: ./docker/php
+    container_name: fib-ad-php
+    image: fib-ad-php
+    volumes:
+      - ".:/project"

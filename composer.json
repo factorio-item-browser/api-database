@@ -1,0 +1,51 @@
+{
+  "name": "factorio-item-browser/api-client",
+  "description": "The doctrine classes connecting the API database of the Factorio Item Browser.",
+  "homepage": "https://github.com/factorio-item-browser/api-database",
+  "type": "library",
+  "keywords": ["Factorio Item Browser", "FIB", "api", "database", "BluePsyduck"],
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "BluePsyduck",
+      "email": "bluepsyduck@gmx.com"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "ext-pdo": "*",
+    "dasprid/container-interop-doctrine": "^1.1",
+    "doctrine/orm": "^2.6"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^0.10",
+    "phpstan/phpstan-phpunit": "^0.10",
+    "phpunit/phpunit": "^7.0",
+    "rregeer/phpunit-coverage-check": "^0.1",
+    "squizlabs/php_codesniffer": "^3.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "FactorioItemBrowser\\Api\\Database\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FactorioItemBrowserTest\\Api\\Database\\": "test/src/",
+      "FactorioItemBrowserTestAsset\\Api\\Database\\": "test/asset/"
+    }
+  },
+  "scripts": {
+    "coverage-check": "coverage-check test/log/clover.xml 100",
+    "phpcbf": "phpcbf -p --colors",
+    "phpcs": "phpcs -p --colors",
+    "phpstan": "phpstan analyse --no-interaction --ansi",
+    "phpunit": "phpunit --colors=always --coverage-html=test/log --coverage-clover=test/log/clover.xml",
+    "test": [
+      "@phpunit",
+      "@coverage-check",
+      "@phpcs",
+      "@phpstan"
+    ]
+  }
+}
