@@ -14,11 +14,13 @@
   "require": {
     "php": "^7.2",
     "ext-pdo": "*",
+    "bluepsyduck/common": "^1.0",
     "dasprid/container-interop-doctrine": "^1.1",
     "doctrine/orm": "^2.6"
   },
   "require-dev": {
     "phpstan/phpstan": "^0.10",
+    "phpstan/phpstan-doctrine": "^0.10",
     "phpstan/phpstan-phpunit": "^0.10",
     "phpunit/phpunit": "^7.0",
     "rregeer/phpunit-coverage-check": "^0.1",
