@@ -21,6 +21,7 @@ class CraftingCategoryTest extends TestCase
      * Tests the constructing.
      * @covers ::__construct
      * @covers ::getMachines
+     * @covers ::getRecipes
      */
     public function testConstruct()
     {
@@ -29,6 +30,7 @@ class CraftingCategoryTest extends TestCase
         $this->assertSame(0, $craftingCategory->getId());
         $this->assertSame('abc', $craftingCategory->getName());
         $this->assertInstanceOf(ArrayCollection::class, $craftingCategory->getMachines());
+        $this->assertInstanceOf(ArrayCollection::class, $craftingCategory->getRecipes());
     }
 
     /**

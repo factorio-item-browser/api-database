@@ -46,6 +46,14 @@ class CraftingCategory
     protected $machines;
 
     /**
+     * @ORM\OneToMany(targetEntity="RecipeIngredient", mappedBy="craftingCategory")
+     *
+     * The recipes using the crafting category.
+     * @var Collection|Recipe[]
+     */
+    protected $recipes;
+
+    /**
      * Initializes the entity.
      * @param string $name
      */
@@ -53,6 +61,7 @@ class CraftingCategory
     {
         $this->name = $name;
         $this->machines = new ArrayCollection();
+        $this->recipes = new ArrayCollection();
     }
 
     /**
@@ -102,5 +111,14 @@ class CraftingCategory
     public function getMachines(): Collection
     {
         return $this->machines;
+    }
+
+    /**
+     * Returns the recipes using the crafting category.
+     * @return Collection|Recipe[]
+     */
+    public function getRecipes(): Collection
+    {
+        return $this->recipes;
     }
 }

@@ -29,7 +29,7 @@ class CachedSearchResultRepository extends EntityRepository
             $queryBuilder = $this->createQueryBuilder('r');
             $queryBuilder->andWhere('r.hash IN (:hashes)')
                          ->andWhere('r.lastSearchTime > :maxAge')
-                         ->setParameter('hashes', array_map('hex2bin', $hashes))
+                         ->setParameter('hashes', array_values(array_map('hex2bin', $hashes)))
                          ->setParameter('maxAge', $maxAge);
 
             $result = $queryBuilder->getQuery()->getResult();
