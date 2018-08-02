@@ -6,7 +6,6 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use DateTime;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 
 /**
@@ -18,42 +17,37 @@ use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 class CachedSearchResultRepository extends EntityRepository
 {
     /**
-     * The timeout to use for the cache, in seconds.
+     * Finds the search results with the specified hashes.
+     * @param array|string[] $hashes
+     * @param DateTime $maxAge
+     * @return array|CachedSearchResult[]
      */
-    const CACHE_TIMEOUT = 3600;
-
-    /**
-     * Finds the search results with the specified hash.
-     * @param string $hash
-     * @return CachedSearchResult|null
-     */
-    public function findByHash(string $hash): ?CachedSearchResult
+    public function findByHashes(array $hashes, DateTime $maxAge): array
     {
-        $queryBuilder = $this->createQueryBuilder('r');
-        $queryBuilder->andWhere('r.hash = :hash')
-                     ->andWhere('r.lastSearchTime > :timeCut')
-                     ->setParameter('hash', hex2bin($hash))
-                     ->setParameter('timeCut', $this->getTimeCut())
-                     ->setMaxResults(1);
+        $result = [];
+        if (count($hashes) > 0) {
+            $queryBuilder = $this->createQueryBuilder('r');
+            $queryBuilder->andWhere('r.hash IN (:hashes)')
+                         ->andWhere('r.lastSearchTime > :maxAge')
+                         ->setParameter('hashes', array_map('hex2bin', $hashes))
+                         ->setParameter('maxAge', $maxAge);
 
-        try {
-            $result = $queryBuilder->getQuery()->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
-            $result = null;
+            $result = $queryBuilder->getQuery()->getResult();
         }
         return $result;
     }
 
     /**
      * Cleans up no longer needed data.
+     * @param DateTime $maxAge
      * @return $this
      */
-    public function cleanup()
+    public function cleanup(DateTime $maxAge)
     {
         $queryBuilder = $this->createQueryBuilder('r');
         $queryBuilder->delete($this->getEntityName(), 'r')
-                     ->andWhere('r.lastSearchTime < :timeCut')
-                     ->setParameter('timeCut', $this->getTimeCut());
+                     ->andWhere('r.lastSearchTime < :maxAge')
+                     ->setParameter('maxAge', $maxAge);
 
         $queryBuilder->getQuery()->execute();
         return $this;
@@ -70,14 +64,5 @@ class CachedSearchResultRepository extends EntityRepository
 
         $queryBuilder->getQuery()->execute();
         return $this;
-    }
-
-    /**
-     * Returns the time cut timestamp.
-     * @return DateTime
-     */
-    protected function getTimeCut(): DateTime
-    {
-        return new DateTime('-' . self::CACHE_TIMEOUT . 'seconds');
     }
 }

@@ -6,7 +6,6 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use DateTime;
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 use FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository;
@@ -23,71 +22,59 @@ use PHPUnit\Framework\TestCase;
 class CachedSearchResultRepositoryTest extends TestCase
 {
     /**
-     * Provides the data for the findByHash test.
+     * Provides the data for the findByHashes test.
      * @return array
      */
-    public function provideFindByHash(): array
+    public function provideFindByHashes(): array
     {
-        /* @var CachedSearchResult $cachedSearchResult */
-        $cachedSearchResult = $this->createMock(CachedSearchResult::class);
-
         return [
-            [false, $cachedSearchResult, $cachedSearchResult],
-            [true, $cachedSearchResult, null],
+            [true],
+            [false],
         ];
     }
+
     /**
-     * Tests the findByHash method.
-     * @param bool $withException
-     * @param mixed $queryResult
-     * @param mixed $expectedResult
-     * @covers ::findByHash
-     * @covers ::getTimeCut
-     * @dataProvider provideFindByHash
+     * Tests the findByHashes method.
+     * @covers ::findByHashes
+     * @dataProvider provideFindByHashes
      */
-    public function testFindByHash(bool $withException, $queryResult, $expectedResult)
+    public function testFindByHashes(bool $withHashes)
     {
-        $hash = '12ab34cd';
+        $hashes = $withHashes ? ['ab12cd34', '12ab34cd'] : [];
+        $expectedHashes = $withHashes ? [hex2bin('ab12cd34'), hex2bin('12ab34cd')] : [];
+        $queryResult = $withHashes ? [$this->createMock(CachedSearchResult::class)] : [];
+        $maxAge = new DateTime('2038-01-19 03:14:07');
 
         /* @var AbstractQuery|MockObject $query */
         $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getOneOrNullResult'])
+                      ->setMethods(['getResult'])
                       ->disableOriginalConstructor()
                       ->getMockForAbstractClass();
-        if ($withException) {
-            $query->expects($this->once())
-                  ->method('getOneOrNullResult')
-                  ->willThrowException(new NonUniqueResultException());
-        } else {
-            $query->expects($this->once())
-                  ->method('getOneOrNullResult')
-                  ->willReturn($queryResult);
-        }
+        $query->expects($withHashes ? $this->once() : $this->never())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['andWhere', 'setParameter', 'setMaxResults', 'getQuery'])
+                             ->setMethods(['andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
-        $queryBuilder->expects($this->exactly(2))
+        $queryBuilder->expects($withHashes ? $this->exactly(2) : $this->never())
                      ->method('andWhere')
                      ->withConsecutive(
-                         ['r.hash = :hash'],
-                         ['r.lastSearchTime > :timeCut']
+                         ['r.hash IN (:hashes)'],
+                         ['r.lastSearchTime > :maxAge']
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly(2))
+        $queryBuilder->expects($withHashes ? $this->exactly(2) : $this->never())
                      ->method('setParameter')
                      ->withConsecutive(
-                         ['hash', hex2bin($hash)],
-                         ['timeCut', $this->isInstanceOf(DateTime::class)]
+                         ['hashes', $expectedHashes],
+                         ['maxAge', $maxAge]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('setMaxResults')
-                     ->with(1)
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
+        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
                      ->method('getQuery')
                      ->willReturn($query);
 
@@ -96,13 +83,13 @@ class CachedSearchResultRepositoryTest extends TestCase
                            ->setMethods(['createQueryBuilder'])
                            ->disableOriginalConstructor()
                            ->getMock();
-        $repository->expects($this->once())
+        $repository->expects($withHashes ? $this->once() : $this->never())
                    ->method('createQueryBuilder')
                    ->with('r')
                    ->willReturn($queryBuilder);
 
-        $result = $repository->findByHash($hash);
-        $this->assertSame($expectedResult, $result);
+        $result = $repository->findByHashes($hashes, $maxAge);
+        $this->assertSame($queryResult, $result);
     }
 
     /**
@@ -112,6 +99,7 @@ class CachedSearchResultRepositoryTest extends TestCase
     public function testCleanup()
     {
         $entityName = 'abc';
+        $maxAge = new DateTime('2038-01-19 03:14:07');
 
         /* @var AbstractQuery|MockObject $query */
         $query = $this->getMockBuilder(AbstractQuery::class)
@@ -132,11 +120,11 @@ class CachedSearchResultRepositoryTest extends TestCase
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('andWhere')
-                     ->with('r.lastSearchTime < :timeCut')
+                     ->with('r.lastSearchTime < :maxAge')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('setParameter')
-                     ->with('timeCut', $this->isInstanceOf(DateTime::class))
+                     ->with('maxAge', $maxAge)
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('getQuery')
@@ -155,7 +143,7 @@ class CachedSearchResultRepositoryTest extends TestCase
                    ->method('getEntityName')
                    ->willReturn($entityName);
 
-        $result = $repository->cleanup();
+        $result = $repository->cleanup($maxAge);
         $this->assertSame($repository, $result);
     }
 
