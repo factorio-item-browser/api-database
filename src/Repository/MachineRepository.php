@@ -155,6 +155,7 @@ class MachineRepository extends EntityRepository
         $queryBuilder->delete($this->getEntityName(), 'm')
                      ->andWhere('m.id IN (:machineIds)')
                      ->setParameter('machineIds', array_values($machineIds));
+
         $queryBuilder->getQuery()->execute();
         return $this;
     }

@@ -77,6 +77,7 @@ class CraftingCategoryRepository extends EntityRepository
         $queryBuilder->delete($this->getEntityName(), 'cc')
                      ->andWhere('cc.id IN (:craftingCategoryIds)')
                      ->setParameter('craftingCategoryIds', array_values($craftingCategoryIds));
+
         $queryBuilder->getQuery()->execute();
         return $this;
     }
