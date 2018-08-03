@@ -34,10 +34,23 @@ class CraftingCategoryRepository extends EntityRepository
     }
 
     /**
-     * Removes any orphaned crafting categories, i.e. crafting categories no longer used by any recipe or machine.
+     * Removes any orphaned crafting categories, i.e. those no longer used by any recipe or machine.
      * @return $this
      */
     public function removeOrphans()
+    {
+        $machineIds = $this->findOrphanedIds();
+        if (count($machineIds) > 0) {
+            $this->removeIds($machineIds);
+        }
+        return $this;
+    }
+
+    /**
+     * Returns the ids of orphaned crafting categories, which are no longer used by any recipe or machine.
+     * @return array|int[]
+     */
+    protected function findOrphanedIds(): array
     {
         $queryBuilder = $this->createQueryBuilder('cc');
         $queryBuilder->select('cc.id AS id')
@@ -46,19 +59,25 @@ class CraftingCategoryRepository extends EntityRepository
                      ->andWhere('m.id IS NULL')
                      ->andWhere('r.id IS NULL');
 
-        $craftingCategoryIds = [];
+        $result = [];
         foreach ($queryBuilder->getQuery()->getResult() as $data) {
-            $craftingCategoryIds[] = (int) $data['id'];
+            $result[] = (int) $data['id'];
         }
+        return $result;
+    }
 
-        if (count($craftingCategoryIds) > 0) {
-            $queryBuilder = $this->createQueryBuilder('cc');
-            $queryBuilder->delete($this->getEntityName(), 'cc')
-                         ->andWhere('cc.id IN (:craftingCategoryIds)')
-                         ->setParameter('craftingCategoryIds', array_values($craftingCategoryIds));
-
-            $queryBuilder->getQuery()->execute();
-        }
+    /**
+     * Removes the crafting categories with the specified ids from the database.
+     * @param array|int[] $craftingCategoryIds
+     * @return $this
+     */
+    protected function removeIds(array $craftingCategoryIds)
+    {
+        $queryBuilder = $this->createQueryBuilder('cc');
+        $queryBuilder->delete($this->getEntityName(), 'cc')
+                     ->andWhere('cc.id IN (:craftingCategoryIds)')
+                     ->setParameter('craftingCategoryIds', array_values($craftingCategoryIds));
+        $queryBuilder->getQuery()->execute();
         return $this;
     }
 }
