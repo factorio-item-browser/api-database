@@ -101,7 +101,7 @@ class RecipeDataTest extends TestCase
         $this->assertSame($order, $data->getOrder());
     }
 
-        /**
+    /**
      * Tests the getKeys method.
      * @covers ::getKeys
      */
