@@ -1,5 +1,5 @@
 {
-  "name": "factorio-item-browser/api-client",
+  "name": "factorio-item-browser/api-database",
   "description": "The doctrine classes connecting the API database of the Factorio Item Browser.",
   "homepage": "https://github.com/factorio-item-browser/api-database",
   "type": "library",
