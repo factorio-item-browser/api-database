@@ -41,6 +41,8 @@ class IconRepositoryTest extends TestCase
 
     /**
      * Tests the findDataByTypesAndNames method.
+     * @param bool $withNamesByTypes
+     * @param bool $withModCombinationIds
      * @covers ::findDataByTypesAndNames
      * @dataProvider provideFindDataByTypesAndNames
      */
