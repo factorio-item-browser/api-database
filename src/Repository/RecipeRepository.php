@@ -22,7 +22,7 @@ class RecipeRepository extends EntityRepository
      * Finds the data of the recipes with the specified names.
      * @param array|string[] $names
      * @param array|int[] $modCombinationIds
-     * @return array
+     * @return array|RecipeData[]
      */
     public function findDataByNames(array $names, array $modCombinationIds = []): array
     {

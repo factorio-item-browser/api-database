@@ -36,7 +36,9 @@ class ConfigProvider
     public function getDependencyConfig(): array
     {
         return [
-            EntityManager::class => EntityManagerFactory::class,
+            'factories' => [
+                EntityManager::class => EntityManagerFactory::class,
+            ],
         ];
     }
 
@@ -64,6 +66,7 @@ class ConfigProvider
 
                 'fib-api-database' => [
                     'class' => AnnotationDriver::class,
+                    'cache' => 'array',
                     'paths' => [
                         __DIR__ . '/../../src/Entity',
                     ],

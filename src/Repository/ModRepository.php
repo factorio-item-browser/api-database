@@ -55,7 +55,7 @@ class ModRepository extends EntityRepository
         }
 
         try {
-            $result = $queryBuilder->getQuery()->getSingleScalarResult();
+            $result = (int) $queryBuilder->getQuery()->getSingleScalarResult();
         } catch (NonUniqueResultException $e) {
             $result = 0;
         }

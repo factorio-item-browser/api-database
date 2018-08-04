@@ -20,7 +20,7 @@ class IconRepository extends EntityRepository
      * Finds the data of the specified entities.
      * @param array|string[][] $namesByTypes
      * @param array|int[] $modCombinationIds
-     * @return array
+     * @return array|IconData[]
      */
     public function findDataByTypesAndNames(array $namesByTypes, array $modCombinationIds = []): array
     {
