@@ -27,7 +27,7 @@ class ModCombinationTest extends TestCase
      * @covers ::getRecipes
      * @covers ::getTranslations
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $mod = new Mod('abc');
         $modCombination = new ModCombination($mod);
@@ -49,7 +49,7 @@ class ModCombinationTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $modCombination = new ModCombination(new Mod('foo'));
 
@@ -63,7 +63,7 @@ class ModCombinationTest extends TestCase
      * @covers ::getMod
      * @covers ::setMod
      */
-    public function testSetAndGetMod()
+    public function testSetAndGetMod(): void
     {
         $modCombination = new ModCombination(new Mod('foo'));
 
@@ -77,7 +77,7 @@ class ModCombinationTest extends TestCase
      * @covers ::getOptionalModIds
      * @covers ::setOptionalModIds
      */
-    public function testSetAndGetOptionalModIds()
+    public function testSetAndGetOptionalModIds(): void
     {
         $modCombination = new ModCombination(new Mod('foo'));
 
@@ -91,7 +91,7 @@ class ModCombinationTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $modCombination = new ModCombination(new Mod('foo'));
 
@@ -105,7 +105,7 @@ class ModCombinationTest extends TestCase
      * @covers ::getOrder
      * @covers ::setOrder
      */
-    public function testSetAndGetOrder()
+    public function testSetAndGetOrder(): void
     {
         $modCombination = new ModCombination(new Mod('foo'));
 

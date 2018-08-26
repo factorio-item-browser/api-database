@@ -20,17 +20,17 @@ class RecipeProduct
     /**
      * The factor of the minimal amount.
      */
-    private const FACTOR_AMOUNT_MIN = 1000;
+    protected const FACTOR_AMOUNT_MIN = 1000;
 
     /**
      * The factor of the maximal amount.
      */
-    private const FACTOR_AMOUNT_MAX = 1000;
+    protected const FACTOR_AMOUNT_MAX = 1000;
 
     /**
      * The factor of the probability.
      */
-    private const FACTOR_AMOUNT_PROBABILITY = 1000;
+    protected const FACTOR_AMOUNT_PROBABILITY = 1000;
 
     /**
      * @ORM\Id

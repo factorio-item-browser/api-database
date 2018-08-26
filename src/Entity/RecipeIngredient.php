@@ -20,7 +20,7 @@ class RecipeIngredient
     /**
      * The factor used for the amount.
      */
-    private const FACTOR_AMOUNT = 1000;
+    protected const FACTOR_AMOUNT = 1000;
 
     /**
      * @ORM\Id

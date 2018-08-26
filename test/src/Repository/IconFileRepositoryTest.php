@@ -42,7 +42,7 @@ class IconFileRepositoryTest extends TestCase
      * @covers ::findByHashes
      * @dataProvider provideFindByHashes
      */
-    public function testFindByHashes(bool $withHashes)
+    public function testFindByHashes(bool $withHashes): void
     {
         $hashes = $withHashes ? ['ab12cd34', '12ab34cd'] : [];
         $expectedHashes = $withHashes ? [hex2bin('ab12cd34'), hex2bin('12ab34cd')] : [];
@@ -107,7 +107,7 @@ class IconFileRepositoryTest extends TestCase
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */
-    public function testRemoveOrphans(array $orphanedHashes, bool $expectRemove)
+    public function testRemoveOrphans(array $orphanedHashes, bool $expectRemove): void
     {
         /* @var IconFileRepository|MockObject $repository */
         $repository = $this->getMockBuilder(IconFileRepository::class)
@@ -130,7 +130,7 @@ class IconFileRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::findOrphanedHashes
      */
-    public function testFindOrphanedHashes()
+    public function testFindOrphanedHashes(): void
     {
         $queryResult = [
             ['hash' => 'ab12cd34'],
@@ -187,7 +187,7 @@ class IconFileRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::removeHashes
      */
-    public function testRemoveHashes()
+    public function testRemoveHashes(): void
     {
         $entityName = 'abc';
         $hashes = ['ab12cd34', '12ab34cd'];

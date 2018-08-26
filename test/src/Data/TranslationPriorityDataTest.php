@@ -21,7 +21,7 @@ class TranslationPriorityDataTest extends TestCase
      * Tests the constructing.
      * @coversNothing
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $data = new TranslationPriorityData();
 
@@ -35,7 +35,7 @@ class TranslationPriorityDataTest extends TestCase
      * @covers ::getType
      * @covers ::setType
      */
-    public function testSetAndGetType()
+    public function testSetAndGetType(): void
     {
         $data = new TranslationPriorityData();
 
@@ -49,7 +49,7 @@ class TranslationPriorityDataTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $data = new TranslationPriorityData();
 
@@ -63,7 +63,7 @@ class TranslationPriorityDataTest extends TestCase
      * @covers ::getPriority
      * @covers ::setPriority
      */
-    public function testSetAndGetPriority()
+    public function testSetAndGetPriority(): void
     {
         $data = new TranslationPriorityData();
 
@@ -104,7 +104,7 @@ class TranslationPriorityDataTest extends TestCase
      * @covers ::getOrder
      * @dataProvider provideGetOrder
      */
-    public function testGetOrder(int $priority, int $expectedOrder)
+    public function testGetOrder(int $priority, int $expectedOrder): void
     {
         $data = new TranslationPriorityData();
         $data->setPriority($priority);
@@ -117,7 +117,7 @@ class TranslationPriorityDataTest extends TestCase
      * Tests the getKeys method.
      * @covers ::getKeys
      */
-    public function testGetKeys()
+    public function testGetKeys(): void
     {
         $data = new TranslationPriorityData();
         $data->setType('abc')
@@ -132,7 +132,7 @@ class TranslationPriorityDataTest extends TestCase
      * Tests the createFromArray method.
      * @covers ::createFromArray
      */
-    public function testCreateFromArray()
+    public function testCreateFromArray(): void
     {
         $array = [
             'type' => 'abc',

@@ -21,7 +21,7 @@ class ConfigProviderTest extends TestCase
      * Tests the invoking.
      * @covers ::__invoke
      */
-    public function testInvoke()
+    public function testInvoke(): void
     {
         $dependencyConfig = ['abc' => 'def'];
         $doctrineConfig = ['ghi' => 'jkl'];
@@ -50,21 +50,34 @@ class ConfigProviderTest extends TestCase
      * Tests the getDependencyConfig method.
      * @covers ::getDependencyConfig
      */
-    public function testGetDependencyConfig()
+    public function testGetDependencyConfig(): void
     {
+        $expectedKeys = [
+            'factories',
+        ];
+
         $configProvider = new ConfigProvider();
         $result = $configProvider->getDependencyConfig();
-        $this->assertInternalType('array', $result);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertArrayHasKey($expectedKey, $result);
+        }
     }
 
     /**
      * Tests the getDoctrineConfig method.
      * @covers ::getDoctrineConfig
      */
-    public function testGetDoctrineConfig()
+    public function testGetDoctrineConfig(): void
     {
+        $expectedKeys = [
+            'configuration',
+            'driver'
+        ];
+
         $configProvider = new ConfigProvider();
         $result = $configProvider->getDoctrineConfig();
-        $this->assertInternalType('array', $result);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertArrayHasKey($expectedKey, $result);
+        }
     }
 }

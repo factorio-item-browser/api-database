@@ -20,7 +20,7 @@ class IconDataTest extends TestCase
      * Tests the constructing.
      * @coversNothing
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $data = new IconData();
 
@@ -36,7 +36,7 @@ class IconDataTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $data = new IconData();
 
@@ -50,7 +50,7 @@ class IconDataTest extends TestCase
      * @covers ::getHash
      * @covers ::setHash
      */
-    public function testSetAndGetHash()
+    public function testSetAndGetHash(): void
     {
         $data = new IconData();
 
@@ -64,7 +64,7 @@ class IconDataTest extends TestCase
      * @covers ::getType
      * @covers ::setType
      */
-    public function testSetAndGetType()
+    public function testSetAndGetType(): void
     {
         $data = new IconData();
 
@@ -78,7 +78,7 @@ class IconDataTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $data = new IconData();
 
@@ -92,7 +92,7 @@ class IconDataTest extends TestCase
      * @covers ::getOrder
      * @covers ::setOrder
      */
-    public function testSetAndGetOrder()
+    public function testSetAndGetOrder(): void
     {
         $data = new IconData();
 
@@ -105,7 +105,7 @@ class IconDataTest extends TestCase
      * Tests the getKeys method.
      * @covers ::getKeys
      */
-    public function testGetKeys()
+    public function testGetKeys(): void
     {
         $data = new IconData();
         $data->setType('abc')
@@ -120,7 +120,7 @@ class IconDataTest extends TestCase
      * Tests the createFromArray method.
      * @covers ::createFromArray
      */
-    public function testCreateFromArray()
+    public function testCreateFromArray(): void
     {
         $array = [
             'id' => 42,

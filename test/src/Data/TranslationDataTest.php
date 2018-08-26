@@ -20,7 +20,7 @@ class TranslationDataTest extends TestCase
      * Tests the constructing.
      * @coversNothing
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $data = new TranslationData();
 
@@ -39,7 +39,7 @@ class TranslationDataTest extends TestCase
      * @covers ::getLocale
      * @covers ::setLocale
      */
-    public function testSetAndGetLocale()
+    public function testSetAndGetLocale(): void
     {
         $data = new TranslationData();
 
@@ -53,7 +53,7 @@ class TranslationDataTest extends TestCase
      * @covers ::getType
      * @covers ::setType
      */
-    public function testSetAndGetType()
+    public function testSetAndGetType(): void
     {
         $data = new TranslationData();
 
@@ -67,7 +67,7 @@ class TranslationDataTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $data = new TranslationData();
 
@@ -81,7 +81,7 @@ class TranslationDataTest extends TestCase
      * @covers ::getValue
      * @covers ::setValue
      */
-    public function testSetAndGetValue()
+    public function testSetAndGetValue(): void
     {
         $data = new TranslationData();
 
@@ -95,7 +95,7 @@ class TranslationDataTest extends TestCase
      * @covers ::getDescription
      * @covers ::setDescription
      */
-    public function testSetAndGetDescription()
+    public function testSetAndGetDescription(): void
     {
         $data = new TranslationData();
 
@@ -109,7 +109,7 @@ class TranslationDataTest extends TestCase
      * @covers ::getIsDuplicatedByRecipe
      * @covers ::setIsDuplicatedByRecipe
      */
-    public function testSetAndGetIsDuplicatedByRecipe()
+    public function testSetAndGetIsDuplicatedByRecipe(): void
     {
         $data = new TranslationData();
 
@@ -122,7 +122,7 @@ class TranslationDataTest extends TestCase
      * @covers ::getIsDuplicatedByMachine
      * @covers ::setIsDuplicatedByMachine
      */
-    public function testSetAndGetIsDuplicatedByMachine()
+    public function testSetAndGetIsDuplicatedByMachine(): void
     {
         $data = new TranslationData();
 
@@ -135,7 +135,7 @@ class TranslationDataTest extends TestCase
      * @covers ::getOrder
      * @covers ::setOrder
      */
-    public function testSetAndGetOrder()
+    public function testSetAndGetOrder(): void
     {
         $data = new TranslationData();
 
@@ -148,7 +148,7 @@ class TranslationDataTest extends TestCase
      * Tests the getKeys method.
      * @covers ::getKeys
      */
-    public function testGetKeys()
+    public function testGetKeys(): void
     {
         $data = new TranslationData();
         $data->setLocale('abc')
@@ -164,7 +164,7 @@ class TranslationDataTest extends TestCase
      * Tests the createFromArray method.
      * @covers ::createFromArray
      */
-    public function testCreateFromArray()
+    public function testCreateFromArray(): void
     {
         $array = [
             'locale' => 'abc',

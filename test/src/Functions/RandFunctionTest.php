@@ -26,7 +26,7 @@ class RandFunctionTest extends TestCase
      * @covers ::parse
      * @throws QueryException
      */
-    public function testParse()
+    public function testParse(): void
     {
         /* @var Parser|MockObject $parser */
         $parser = $this->getMockBuilder(Parser::class)
@@ -50,7 +50,7 @@ class RandFunctionTest extends TestCase
      * Tests the getSql method.
      * @covers ::getSql
      */
-    public function testGetSql()
+    public function testGetSql(): void
     {
         /* @var SqlWalker $sqlWalker */
         $sqlWalker = $this->createMock(SqlWalker::class);

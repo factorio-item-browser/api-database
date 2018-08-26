@@ -42,7 +42,7 @@ class CraftingCategoryRepositoryTest extends TestCase
      * @covers ::findByNames
      * @dataProvider provideFindByNames
      */
-    public function testFindByNames(bool $withNames)
+    public function testFindByNames(bool $withNames): void
     {
         $names = $withNames ? ['abc', 'def'] : [];
         $queryResult = $withNames ? [$this->createMock(CraftingCategory::class)] : [];
@@ -106,7 +106,7 @@ class CraftingCategoryRepositoryTest extends TestCase
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */
-    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove)
+    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove): void
     {
         /* @var CraftingCategoryRepository|MockObject $repository */
         $repository = $this->getMockBuilder(CraftingCategoryRepository::class)
@@ -129,7 +129,7 @@ class CraftingCategoryRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::findOrphanedIds
      */
-    public function testFindOrphanedIds()
+    public function testFindOrphanedIds(): void
     {
         $queryResult = [
             ['id' => '42'],
@@ -192,7 +192,7 @@ class CraftingCategoryRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::removeIds
      */
-    public function testRemoveIds()
+    public function testRemoveIds(): void
     {
         $entityName = 'abc';
         $craftingCategoryIds = [42, 1337];

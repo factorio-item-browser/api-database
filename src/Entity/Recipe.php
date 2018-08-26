@@ -23,7 +23,7 @@ class Recipe
     /**
      * The factor of the crafting time.
      */
-    private const FACTOR_CRAFTING_TIME = 1000;
+    protected const FACTOR_CRAFTING_TIME = 1000;
 
     /**
      * @ORM\Id

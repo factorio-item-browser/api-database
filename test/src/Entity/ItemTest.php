@@ -22,7 +22,7 @@ class ItemTest extends TestCase
      * @covers ::__construct
      * @covers ::getModCombinations
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $item = new Item('abc', 'def');
 
@@ -37,7 +37,7 @@ class ItemTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $item = new Item('foo', 'bar');
 
@@ -51,7 +51,7 @@ class ItemTest extends TestCase
      * @covers ::getType
      * @covers ::setType
      */
-    public function testSetAndGetType()
+    public function testSetAndGetType(): void
     {
         $item = new Item('foo', 'bar');
 
@@ -65,7 +65,7 @@ class ItemTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $item = new Item('foo', 'bar');
 

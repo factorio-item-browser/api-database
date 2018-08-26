@@ -46,7 +46,7 @@ class IconRepositoryTest extends TestCase
      * @covers ::findDataByTypesAndNames
      * @dataProvider provideFindDataByTypesAndNames
      */
-    public function testFindDataByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds)
+    public function testFindDataByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds): void
     {
         $namesByTypes = $withNamesByTypes ? ['foo' => ['abc', 'def'], 'bar' => ['ghi']] : [];
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
@@ -141,7 +141,7 @@ class IconRepositoryTest extends TestCase
      * @covers ::findDataByHashes
      * @dataProvider provideFindDataByHashes
      */
-    public function testFindDataByHashes(bool $withHashes, bool $withModCombinationIds)
+    public function testFindDataByHashes(bool $withHashes, bool $withModCombinationIds): void
     {
         $hashes = $withHashes ? ['ab12cd34', '12ab34cd'] : [];
         $expectedHashes = $withHashes ? [hex2bin('ab12cd34'), hex2bin('12ab34cd')] : [];
@@ -218,7 +218,7 @@ class IconRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::mapIconDataResult
      */
-    public function testMapIconDataResult()
+    public function testMapIconDataResult(): void
     {
         $iconData = [
             ['id' => 42],
@@ -254,7 +254,7 @@ class IconRepositoryTest extends TestCase
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
-    public function testFindByIds(bool $withIds)
+    public function testFindByIds(bool $withIds): void
     {
         $ids = $withIds ? [42, 1337] : [];
         $queryResult = $withIds ? [$this->createMock(Icon::class)] : [];

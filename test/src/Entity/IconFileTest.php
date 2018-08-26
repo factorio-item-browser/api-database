@@ -26,7 +26,7 @@ class IconFileTest extends TestCase
      * @covers ::__construct
      * @covers ::getIcons
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $iconFile = new IconFile('12ab34cd');
 
@@ -40,7 +40,7 @@ class IconFileTest extends TestCase
      * @covers ::getHash
      * @covers ::setHash
      */
-    public function testSetAndGetHash()
+    public function testSetAndGetHash(): void
     {
         $iconFile = new IconFile('ab12cd34');
 
@@ -82,7 +82,7 @@ class IconFileTest extends TestCase
         string $expectedProperty,
         $propertyToSet,
         string $expectedImage
-    ) {
+    ): void {
         $iconFile = new IconFile('ab12cd34');
 
         $this->assertSame($iconFile, $iconFile->setImage($imageToSet));

@@ -23,7 +23,7 @@ class CraftingCategoryTest extends TestCase
      * @covers ::getMachines
      * @covers ::getRecipes
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $craftingCategory = new CraftingCategory('abc');
 
@@ -38,7 +38,7 @@ class CraftingCategoryTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $craftingCategory = new CraftingCategory('foo');
 
@@ -52,7 +52,7 @@ class CraftingCategoryTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $craftingCategory = new CraftingCategory('foo');
 

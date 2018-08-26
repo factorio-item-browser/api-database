@@ -46,7 +46,7 @@ class MachineRepositoryTest extends TestCase
      * @covers ::findDataByNames
      * @dataProvider provideFindDataByNames
      */
-    public function testFindDataByNames(bool $withNames, bool $withModCombinationIds)
+    public function testFindDataByNames(bool $withNames, bool $withModCombinationIds): void
     {
         $names = $withNames ? ['abc', 'def'] : [];
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
@@ -136,7 +136,7 @@ class MachineRepositoryTest extends TestCase
      * @covers ::findDataByCraftingCategories
      * @dataProvider provideFindDataByCraftingCategories
      */
-    public function testFindDataByCraftingCategories(bool $withCraftingCategories, bool $withModCombinationIds)
+    public function testFindDataByCraftingCategories(bool $withCraftingCategories, bool $withModCombinationIds): void
     {
         $craftingCategories = $withCraftingCategories ? ['abc', 'def'] : [];
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
@@ -213,7 +213,7 @@ class MachineRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::mapMachineDataResult
      */
-    public function testMapMachineDataResult()
+    public function testMapMachineDataResult(): void
     {
         $machineData = [
             ['id' => 42],
@@ -249,7 +249,7 @@ class MachineRepositoryTest extends TestCase
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
-    public function testFindByIds(bool $withIds)
+    public function testFindByIds(bool $withIds): void
     {
         $ids = $withIds ? [42, 1337] : [];
         $queryResult = $withIds ? [$this->createMock(Machine::class)] : [];
@@ -317,7 +317,7 @@ class MachineRepositoryTest extends TestCase
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */
-    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove)
+    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove): void
     {
         /* @var MachineRepository|MockObject $repository */
         $repository = $this->getMockBuilder(MachineRepository::class)
@@ -340,7 +340,7 @@ class MachineRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::findOrphanedIds
      */
-    public function testFindOrphanedIds()
+    public function testFindOrphanedIds(): void
     {
         $queryResult = [
             ['id' => '42'],
@@ -397,7 +397,7 @@ class MachineRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::removeIds
      */
-    public function testRemoveIds()
+    public function testRemoveIds(): void
     {
         $entityName = 'abc';
         $machineIds = [42, 1337];

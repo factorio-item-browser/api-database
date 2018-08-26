@@ -22,7 +22,7 @@ class TranslationTest extends TestCase
      * Tests the constructing.
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $modCombination = new ModCombination(new Mod('abc'));
         $translation = new Translation($modCombination, 'def', 'ghi', 'jkl');
@@ -43,7 +43,7 @@ class TranslationTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 
@@ -57,7 +57,7 @@ class TranslationTest extends TestCase
      * @covers ::getModCombination
      * @covers ::setModCombination
      */
-    public function testSetAndGetModCombination()
+    public function testSetAndGetModCombination(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 
@@ -71,7 +71,7 @@ class TranslationTest extends TestCase
      * @covers ::getLocale
      * @covers ::setLocale
      */
-    public function testSetAndGetLocale()
+    public function testSetAndGetLocale(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 
@@ -85,7 +85,7 @@ class TranslationTest extends TestCase
      * @covers ::getType
      * @covers ::setType
      */
-    public function testSetAndGetType()
+    public function testSetAndGetType(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 
@@ -99,7 +99,7 @@ class TranslationTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 
@@ -113,7 +113,7 @@ class TranslationTest extends TestCase
      * @covers ::getValue
      * @covers ::setValue
      */
-    public function testSetAndGetValue()
+    public function testSetAndGetValue(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 
@@ -127,7 +127,7 @@ class TranslationTest extends TestCase
      * @covers ::getDescription
      * @covers ::setDescription
      */
-    public function testSetAndGetDescription()
+    public function testSetAndGetDescription(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 
@@ -141,7 +141,7 @@ class TranslationTest extends TestCase
      * @covers ::getIsDuplicatedByRecipe
      * @covers ::setIsDuplicatedByRecipe
      */
-    public function testSetAndGetIsDuplicatedByRecipe()
+    public function testSetAndGetIsDuplicatedByRecipe(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 
@@ -155,7 +155,7 @@ class TranslationTest extends TestCase
      * @covers ::getIsDuplicatedByMachine
      * @covers ::setIsDuplicatedByMachine
      */
-    public function testSetAndGetIsDuplicatedByMachine()
+    public function testSetAndGetIsDuplicatedByMachine(): void
     {
         $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
 

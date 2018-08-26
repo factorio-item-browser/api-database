@@ -23,7 +23,7 @@ class ModTest extends TestCase
      * @covers ::getDependencies
      * @covers ::getCombinations
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $name = 'abc';
         $mod = new Mod($name);
@@ -42,7 +42,7 @@ class ModTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $mod = new Mod('foo');
 
@@ -56,7 +56,7 @@ class ModTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $mod = new Mod('foo');
 
@@ -70,7 +70,7 @@ class ModTest extends TestCase
      * @covers ::getAuthor
      * @covers ::setAuthor
      */
-    public function testSetAndGetAuthor()
+    public function testSetAndGetAuthor(): void
     {
         $mod = new Mod('foo');
 
@@ -84,7 +84,7 @@ class ModTest extends TestCase
      * @covers ::getCurrentVersion
      * @covers ::setCurrentVersion
      */
-    public function testSetAndGetCurrentVersion()
+    public function testSetAndGetCurrentVersion(): void
     {
         $mod = new Mod('foo');
 
@@ -98,7 +98,7 @@ class ModTest extends TestCase
      * @covers ::getOrder
      * @covers ::setOrder
      */
-    public function testSetAndGetOrder()
+    public function testSetAndGetOrder(): void
     {
         $mod = new Mod('foo');
 

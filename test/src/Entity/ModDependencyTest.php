@@ -21,7 +21,7 @@ class ModDependencyTest extends TestCase
      * Tests the constructing.
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $mod = new Mod('abc');
         $requiredMod = new Mod('def');
@@ -38,7 +38,7 @@ class ModDependencyTest extends TestCase
      * @covers ::getMod
      * @covers ::setMod
      */
-    public function testSetAndGetMod()
+    public function testSetAndGetMod(): void
     {
         $modDependency = new ModDependency(new Mod('foo'), new Mod('bar'));
     
@@ -52,7 +52,7 @@ class ModDependencyTest extends TestCase
      * @covers ::getRequiredMod
      * @covers ::setRequiredMod
      */
-    public function testSetAndGetRequiredMod()
+    public function testSetAndGetRequiredMod(): void
     {
         $modDependency = new ModDependency(new Mod('foo'), new Mod('bar'));
     
@@ -66,7 +66,7 @@ class ModDependencyTest extends TestCase
      * @covers ::getRequiredVersion
      * @covers ::setRequiredVersion
      */
-    public function testSetAndGetRequiredVersion()
+    public function testSetAndGetRequiredVersion(): void
     {
         $modDependency = new ModDependency(new Mod('foo'), new Mod('bar'));
     
@@ -80,7 +80,7 @@ class ModDependencyTest extends TestCase
      * @covers ::getType
      * @covers ::setType
      */
-    public function testSetAndGetType()
+    public function testSetAndGetType(): void
     {
         $modDependency = new ModDependency(new Mod('foo'), new Mod('bar'));
     
