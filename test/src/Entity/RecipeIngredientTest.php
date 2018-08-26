@@ -23,7 +23,7 @@ class RecipeIngredientTest extends TestCase
      * Tests the constructing.
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $recipe = new Recipe('abc', 'def', new CraftingCategory('ghi'));
         $item = new Item('jkl', 'mno');
@@ -40,7 +40,7 @@ class RecipeIngredientTest extends TestCase
      * @covers ::getRecipe
      * @covers ::setRecipe
      */
-    public function testSetAndGetRecipe()
+    public function testSetAndGetRecipe(): void
     {
         $recipeIngredient = new RecipeIngredient(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -57,7 +57,7 @@ class RecipeIngredientTest extends TestCase
      * @covers ::getItem
      * @covers ::setItem
      */
-    public function testSetAndGetItem()
+    public function testSetAndGetItem(): void
     {
         $recipeIngredient = new RecipeIngredient(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -74,7 +74,7 @@ class RecipeIngredientTest extends TestCase
      * @covers ::getAmount
      * @covers ::setAmount
      */
-    public function testSetAndGetAmount()
+    public function testSetAndGetAmount(): void
     {
         $recipeIngredient = new RecipeIngredient(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -91,7 +91,7 @@ class RecipeIngredientTest extends TestCase
      * @covers ::getOrder
      * @covers ::setOrder
      */
-    public function testSetAndGetOrder()
+    public function testSetAndGetOrder(): void
     {
         $recipeIngredient = new RecipeIngredient(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),

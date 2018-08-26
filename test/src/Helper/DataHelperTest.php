@@ -21,7 +21,7 @@ class DataHelperTest extends TestCase
      * Tests the filter method.
      * @covers ::filter
      */
-    public function testFilter()
+    public function testFilter(): void
     {
         $data1 = new TestData(42, ['abc']);
         $data2 = new TestData(21, ['abc']);

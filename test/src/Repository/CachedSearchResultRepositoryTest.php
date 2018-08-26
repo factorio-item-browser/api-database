@@ -35,10 +35,11 @@ class CachedSearchResultRepositoryTest extends TestCase
 
     /**
      * Tests the findByHashes method.
+     * @param bool $withHashes
      * @covers ::findByHashes
      * @dataProvider provideFindByHashes
      */
-    public function testFindByHashes(bool $withHashes)
+    public function testFindByHashes(bool $withHashes): void
     {
         $hashes = $withHashes ? ['ab12cd34', '12ab34cd'] : [];
         $expectedHashes = $withHashes ? [hex2bin('ab12cd34'), hex2bin('12ab34cd')] : [];
@@ -96,7 +97,7 @@ class CachedSearchResultRepositoryTest extends TestCase
      * Tests the cleanup method.
      * @covers ::cleanup
      */
-    public function testCleanup()
+    public function testCleanup(): void
     {
         $entityName = 'abc';
         $maxAge = new DateTime('2038-01-19 03:14:07');
@@ -151,7 +152,7 @@ class CachedSearchResultRepositoryTest extends TestCase
      * Tests the clear method.
      * @covers ::clear
      */
-    public function testClear()
+    public function testClear(): void
     {
         $entityName = 'abc';
 

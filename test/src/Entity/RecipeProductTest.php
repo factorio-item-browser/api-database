@@ -23,7 +23,7 @@ class RecipeProductTest extends TestCase
      * Tests the constructing.
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $recipe = new Recipe('abc', 'def', new CraftingCategory('ghi'));
         $item = new Item('jkl', 'mno');
@@ -42,7 +42,7 @@ class RecipeProductTest extends TestCase
      * @covers ::getRecipe
      * @covers ::setRecipe
      */
-    public function testSetAndGetRecipe()
+    public function testSetAndGetRecipe(): void
     {
         $recipeProduct = new RecipeProduct(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -59,7 +59,7 @@ class RecipeProductTest extends TestCase
      * @covers ::getItem
      * @covers ::setItem
      */
-    public function testSetAndGetItem()
+    public function testSetAndGetItem(): void
     {
         $recipeProduct = new RecipeProduct(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -76,7 +76,7 @@ class RecipeProductTest extends TestCase
      * @covers ::getAmountMin
      * @covers ::setAmountMin
      */
-    public function testSetAndGetAmountMin()
+    public function testSetAndGetAmountMin(): void
     {
         $recipeProduct = new RecipeProduct(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -93,7 +93,7 @@ class RecipeProductTest extends TestCase
      * @covers ::getAmountMax
      * @covers ::setAmountMax
      */
-    public function testSetAndGetAmountMax()
+    public function testSetAndGetAmountMax(): void
     {
         $recipeProduct = new RecipeProduct(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -109,7 +109,7 @@ class RecipeProductTest extends TestCase
      * Tests the getAmount method.
      * @covers ::getAmount
      */
-    public function testGetAmount()
+    public function testGetAmount(): void
     {
         $recipeProduct = new RecipeProduct(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -127,7 +127,7 @@ class RecipeProductTest extends TestCase
      * @covers ::getProbability
      * @covers ::setProbability
      */
-    public function testSetAndGetProbability()
+    public function testSetAndGetProbability(): void
     {
         $recipeProduct = new RecipeProduct(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),
@@ -144,7 +144,7 @@ class RecipeProductTest extends TestCase
      * @covers ::getOrder
      * @covers ::setOrder
      */
-    public function testSetAndGetOrder()
+    public function testSetAndGetOrder(): void
     {
         $recipeProduct = new RecipeProduct(
             new Recipe('foo', 'bar', new CraftingCategory('baz')),

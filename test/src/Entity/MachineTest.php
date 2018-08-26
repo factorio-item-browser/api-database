@@ -23,7 +23,7 @@ class MachineTest extends TestCase
      * @covers ::getModCombinations
      * @covers ::getCraftingCategories
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $name = 'abc';
         $machine = new Machine($name);
@@ -46,7 +46,7 @@ class MachineTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $machine = new Machine('foo');
 
@@ -60,7 +60,7 @@ class MachineTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $machine = new Machine('foo');
 
@@ -74,7 +74,7 @@ class MachineTest extends TestCase
      * @covers ::getCraftingSpeed
      * @covers ::setCraftingSpeed
      */
-    public function testSetAndGetCraftingSpeed()
+    public function testSetAndGetCraftingSpeed(): void
     {
         $machine = new Machine('foo');
 
@@ -102,7 +102,7 @@ class MachineTest extends TestCase
      * @covers ::setNumberOfItemSlots
      * @dataProvider provideSetAndGetNumberOfItems
      */
-    public function testSetAndGetNumberOfItemSlots($numberOfItemSlots)
+    public function testSetAndGetNumberOfItemSlots($numberOfItemSlots): void
     {
         $machine = new Machine('foo');
 
@@ -115,7 +115,7 @@ class MachineTest extends TestCase
      * @covers ::getNumberOfFluidInputSlots
      * @covers ::setNumberOfFluidInputSlots
      */
-    public function testSetAndGetNumberOfFluidInputSlots()
+    public function testSetAndGetNumberOfFluidInputSlots(): void
     {
         $machine = new Machine('foo');
 
@@ -129,7 +129,7 @@ class MachineTest extends TestCase
      * @covers ::getNumberOfFluidOutputSlots
      * @covers ::setNumberOfFluidOutputSlots
      */
-    public function testSetAndGetNumberOfFluidOutputSlots()
+    public function testSetAndGetNumberOfFluidOutputSlots(): void
     {
         $machine = new Machine('foo');
 
@@ -143,7 +143,7 @@ class MachineTest extends TestCase
      * @covers ::getNumberOfModuleSlots
      * @covers ::setNumberOfModuleSlots
      */
-    public function testSetAndGetNumberOfModuleSlots()
+    public function testSetAndGetNumberOfModuleSlots(): void
     {
         $machine = new Machine('foo');
 
@@ -157,7 +157,7 @@ class MachineTest extends TestCase
      * @covers ::getEnergyUsage
      * @covers ::setEnergyUsage
      */
-    public function testSetAndGetEnergyUsage()
+    public function testSetAndGetEnergyUsage(): void
     {
         $machine = new Machine('foo');
 
@@ -171,7 +171,7 @@ class MachineTest extends TestCase
      * @covers ::getEnergyUsageUnit
      * @covers ::setEnergyUsageUnit
      */
-    public function testSetAndGetEnergyUsageUnit()
+    public function testSetAndGetEnergyUsageUnit(): void
     {
         $machine = new Machine('foo');
 

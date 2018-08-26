@@ -48,7 +48,7 @@ class RecipeRepositoryTest extends TestCase
      * @covers ::findDataByNames
      * @dataProvider provideFindDataByNames
      */
-    public function testFindDataByNames(bool $withNames, bool $withModCombinationIds)
+    public function testFindDataByNames(bool $withNames, bool $withModCombinationIds): void
     {
         $names = $withNames ? ['abc', 'def'] : [];
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
@@ -122,7 +122,7 @@ class RecipeRepositoryTest extends TestCase
      * Tests the findDataByIngredientItemIds method.
      * @covers ::findDataByIngredientItemIds
      */
-    public function testFindDataByIngredientItemIds()
+    public function testFindDataByIngredientItemIds(): void
     {
         $itemIds = [13, 37];
         $modCombinationIds = [42, 1337];
@@ -146,7 +146,7 @@ class RecipeRepositoryTest extends TestCase
      * Tests the findDataByProductItemIds method.
      * @covers ::findDataByProductItemIds
      */
-    public function testFindDataByProductItemIds()
+    public function testFindDataByProductItemIds(): void
     {
         $itemIds = [13, 37];
         $modCombinationIds = [42, 1337];
@@ -188,7 +188,7 @@ class RecipeRepositoryTest extends TestCase
      * @covers ::findDataByItemIds
      * @dataProvider provideFindDataByItemIds
      */
-    public function testFindDataByItemIds(bool $withItemIds, bool $withModCombinationIds)
+    public function testFindDataByItemIds(bool $withItemIds, bool $withModCombinationIds): void
     {
         $recipeProperty = 'abc';
         $itemIds = $withItemIds ? [13, 37] : [];
@@ -291,7 +291,7 @@ class RecipeRepositoryTest extends TestCase
      * @covers ::findDataByKeywords
      * @dataProvider provideFindDataByKeywords
      */
-    public function testFindDataByKeywords(bool $withKeywords, bool $withModCombinationIds)
+    public function testFindDataByKeywords(bool $withKeywords, bool $withModCombinationIds): void
     {
         $keywords = $withKeywords ? ['foo', 'b_a\\r%'] : [];
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
@@ -369,7 +369,7 @@ class RecipeRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::mapRecipeDataResult
      */
-    public function testMapRecipeDataResult()
+    public function testMapRecipeDataResult(): void
     {
         $recipeData = [
             ['id' => 42],
@@ -405,7 +405,7 @@ class RecipeRepositoryTest extends TestCase
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
-    public function testFindByIds(bool $withIds)
+    public function testFindByIds(bool $withIds): void
     {
         $ids = $withIds ? [42, 1337] : [];
         $queryResult = $withIds ? [$this->createMock(Recipe::class)] : [];
@@ -488,7 +488,7 @@ class RecipeRepositoryTest extends TestCase
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */
-    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove)
+    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove): void
     {
         /* @var RecipeRepository|MockObject $repository */
         $repository = $this->getMockBuilder(RecipeRepository::class)
@@ -511,7 +511,7 @@ class RecipeRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::findOrphanedIds
      */
-    public function testFindOrphanedIds()
+    public function testFindOrphanedIds(): void
     {
         $queryResult = [
             ['id' => '42'],
@@ -568,7 +568,7 @@ class RecipeRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::removeIds
      */
-    public function testRemoveIds()
+    public function testRemoveIds(): void
     {
         $entityName = 'abc';
         $recipeIds = [42, 1337];

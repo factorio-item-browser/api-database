@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
@@ -29,7 +28,7 @@ class RecipeTest extends TestCase
      * @covers ::getModCombinations
      * @covers ::getProducts()
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $name = 'abc';
         $mode = 'def';
@@ -51,7 +50,7 @@ class RecipeTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
 
@@ -65,7 +64,7 @@ class RecipeTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
 
@@ -79,7 +78,7 @@ class RecipeTest extends TestCase
      * @covers ::getMode
      * @covers ::setMode
      */
-    public function testSetAndGetMode()
+    public function testSetAndGetMode(): void
     {
         $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
 
@@ -93,7 +92,7 @@ class RecipeTest extends TestCase
      * @covers ::getCraftingTime
      * @covers ::setCraftingTime
      */
-    public function testSetAndGetCraftingTime()
+    public function testSetAndGetCraftingTime(): void
     {
         $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
 
@@ -107,7 +106,7 @@ class RecipeTest extends TestCase
      * @covers ::getCraftingCategory
      * @covers ::setCraftingCategory
      */
-    public function testSetAndGetCraftingCategory()
+    public function testSetAndGetCraftingCategory(): void
     {
         $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
 
@@ -120,7 +119,7 @@ class RecipeTest extends TestCase
      * Tests the getOrderedIngredients method.
      * @covers ::getOrderedIngredients
      */
-    public function testGetOrderedIngredients()
+    public function testGetOrderedIngredients(): void
     {
         $recipe = new Recipe('abc', 'def', new CraftingCategory('baz'));
 
@@ -133,7 +132,6 @@ class RecipeTest extends TestCase
         $recipe->getIngredients()->add($ingredient2);
 
         $result = $recipe->getOrderedIngredients();
-        $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame([1 => $ingredient2, 0 => $ingredient1], $result->toArray());
     }
 
@@ -141,7 +139,7 @@ class RecipeTest extends TestCase
      * Tests the getOrderedProducts method.
      * @covers ::getOrderedProducts
      */
-    public function testGetOrderedProducts()
+    public function testGetOrderedProducts(): void
     {
         $recipe = new Recipe('abc', 'def', new CraftingCategory('baz'));
 
@@ -154,7 +152,6 @@ class RecipeTest extends TestCase
         $recipe->getProducts()->add($product2);
 
         $result = $recipe->getOrderedProducts();
-        $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame([1 => $product2, 0 => $product1], $result->toArray());
     }
 }

@@ -23,7 +23,7 @@ class IconTest extends TestCase
      * Tests the constructing.
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $modCombination = new ModCombination(new Mod('abc'));
         $file = new IconFile('12ab34cd');
@@ -41,7 +41,7 @@ class IconTest extends TestCase
      * @covers ::getId
      * @covers ::setId
      */
-    public function testSetAndGetId()
+    public function testSetAndGetId(): void
     {
         $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
 
@@ -55,7 +55,7 @@ class IconTest extends TestCase
      * @covers ::getModCombination
      * @covers ::setModCombination
      */
-    public function testSetAndGetModCombination()
+    public function testSetAndGetModCombination(): void
     {
         $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
 
@@ -69,7 +69,7 @@ class IconTest extends TestCase
      * @covers ::getFile
      * @covers ::setFile
      */
-    public function testSetAndGetFile()
+    public function testSetAndGetFile(): void
     {
         $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
 
@@ -83,7 +83,7 @@ class IconTest extends TestCase
      * @covers ::getType
      * @covers ::setType
      */
-    public function testSetAndGetType()
+    public function testSetAndGetType(): void
     {
         $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
 
@@ -97,7 +97,7 @@ class IconTest extends TestCase
      * @covers ::getName
      * @covers ::setName
      */
-    public function testSetAndGetName()
+    public function testSetAndGetName(): void
     {
         $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
 

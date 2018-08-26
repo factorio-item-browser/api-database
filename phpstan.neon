@@ -4,8 +4,11 @@ parameters:
     - src
     - test/asset
     - test/src
+  ignoreErrors:
+    - '#Dynamic call to static method PHPUnit\\Framework\\.*#'
 
 includes:
   - vendor/phpstan/phpstan-doctrine/extension.neon
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/phpstan/phpstan-phpunit/rules.neon
+  - vendor/phpstan/phpstan-strict-rules/rules.neon

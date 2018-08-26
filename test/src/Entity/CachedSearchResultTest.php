@@ -21,13 +21,13 @@ class CachedSearchResultTest extends TestCase
      * Tests the constructing.
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $cachedSearchResult = new CachedSearchResult('12ab34cd');
 
         $this->assertSame('12ab34cd', $cachedSearchResult->getHash());
         $this->assertSame('', $cachedSearchResult->getResultData());
-        $this->assertInstanceOf(DateTime::class, $cachedSearchResult->getLastSearchTime());
+        $cachedSearchResult->getLastSearchTime(); // assertion through type hinting
     }
 
     /**
@@ -35,7 +35,7 @@ class CachedSearchResultTest extends TestCase
      * @covers ::getHash
      * @covers ::setHash
      */
-    public function testSetAndGetHash()
+    public function testSetAndGetHash(): void
     {
         $cachedSearchResult = new CachedSearchResult('ab12cd34');
 
@@ -49,7 +49,7 @@ class CachedSearchResultTest extends TestCase
      * @covers ::getResultData
      * @covers ::setResultData
      */
-    public function testSetAndGetResultData()
+    public function testSetAndGetResultData(): void
     {
         $cachedSearchResult = new CachedSearchResult('ab12cd34');
 
@@ -63,7 +63,7 @@ class CachedSearchResultTest extends TestCase
      * @covers ::getLastSearchTime
      * @covers ::setLastSearchTime
      */
-    public function testSetAndGetLastSearchTime()
+    public function testSetAndGetLastSearchTime(): void
     {
         $cachedSearchResult = new CachedSearchResult('ab12cd34');
 

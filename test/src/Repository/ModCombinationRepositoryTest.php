@@ -38,7 +38,7 @@ class ModCombinationRepositoryTest extends TestCase
      * @covers ::findByModNames
      * @dataProvider provideFindByModNames
      */
-    public function testFindByModNames(bool $withModNames)
+    public function testFindByModNames(bool $withModNames): void
     {
         $modNames = $withModNames ? ['abc', 'def'] : [];
         $queryResult = $withModNames ? [$this->createMock(ModCombination::class)] : [];
@@ -109,7 +109,7 @@ class ModCombinationRepositoryTest extends TestCase
      * @covers ::findModNamesByIds
      * @dataProvider provideFindModNamesByIds
      */
-    public function testFindModNamesByIds(bool $withModCombinationIds)
+    public function testFindModNamesByIds(bool $withModCombinationIds): void
     {
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
         $queryResult = $withModCombinationIds ? [['name' => 'abc'], ['name' => 'def']] : [];

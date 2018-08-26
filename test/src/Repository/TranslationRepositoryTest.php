@@ -43,10 +43,12 @@ class TranslationRepositoryTest extends TestCase
 
     /**
      * Tests the findDataByTypesAndNames method.
+     * @param bool $withNamesByTypes
+     * @param bool $withModCombinationIds
      * @covers ::findDataByTypesAndNames
      * @dataProvider provideFindDataByTypesAndNames
      */
-    public function testFindDataByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds)
+    public function testFindDataByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds): void
     {
         $locale = 'xyz';
         $namesByTypes = [];
@@ -147,7 +149,7 @@ class TranslationRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::mapTranslationDataResult
      */
-    public function testMapTranslationDataResult()
+    public function testMapTranslationDataResult(): void
     {
         $translationData = [
             ['locale' => 'abc'],
@@ -186,7 +188,7 @@ class TranslationRepositoryTest extends TestCase
      * @covers ::findDataByKeywords
      * @dataProvider provideFindDataByKeywords
      */
-    public function testFindDataByKeywords(bool $withKeywords, bool $withModCombinationIds)
+    public function testFindDataByKeywords(bool $withKeywords, bool $withModCombinationIds): void
     {
         $locale = 'xyz';
         $keywords = $withKeywords ? ['foo', 'b_a\\r%'] : [];
@@ -281,7 +283,7 @@ class TranslationRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::mapTranslationPriorityDataResult
      */
-    public function testMapTranslationPriorityDataResult()
+    public function testMapTranslationPriorityDataResult(): void
     {
         $translationPriorityData = [
             ['type' => 'abc'],

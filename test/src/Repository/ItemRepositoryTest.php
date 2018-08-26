@@ -47,7 +47,7 @@ class ItemRepositoryTest extends TestCase
      * @covers ::findByTypesAndNames
      * @dataProvider provideFindByTypesAndNames
      */
-    public function testFindByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds)
+    public function testFindByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds): void
     {
         $namesByTypes = $withNamesByTypes ? ['foo' => ['abc', 'def'], 'bar' => ['ghi']] : [];
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
@@ -125,7 +125,7 @@ class ItemRepositoryTest extends TestCase
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
-    public function testFindByIds(bool $withIds)
+    public function testFindByIds(bool $withIds): void
     {
         $ids = $withIds ? [42, 1337] : [];
         $queryResult = $withIds ? [$this->createMock(Item::class)] : [];
@@ -191,7 +191,7 @@ class ItemRepositoryTest extends TestCase
      * @covers ::findByKeywords
      * @dataProvider provideFindByKeywords
      */
-    public function testFindByKeywords(bool $withKeywords, bool $withModCombinationIds)
+    public function testFindByKeywords(bool $withKeywords, bool $withModCombinationIds): void
     {
         $keywords = $withKeywords ? ['foo', 'b_a\\r%'] : [];
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
@@ -268,7 +268,7 @@ class ItemRepositoryTest extends TestCase
      * @covers ::findRandom
      * @dataProvider provideFindRandom
      */
-    public function testFindRandom(bool $withModCombinationIds)
+    public function testFindRandom(bool $withModCombinationIds): void
     {
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
         $numberOfItems = 21;
@@ -357,7 +357,7 @@ class ItemRepositoryTest extends TestCase
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */
-    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove)
+    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove): void
     {
         /* @var ItemRepository|MockObject $repository */
         $repository = $this->getMockBuilder(ItemRepository::class)
@@ -380,7 +380,7 @@ class ItemRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::findOrphanedIds
      */
-    public function testFindOrphanedIds()
+    public function testFindOrphanedIds(): void
     {
         $queryResult = [
             ['id' => '42'],
@@ -445,7 +445,7 @@ class ItemRepositoryTest extends TestCase
      * @throws ReflectionException
      * @covers ::removeIds
      */
-    public function testRemoveIds()
+    public function testRemoveIds(): void
     {
         $entityName = 'abc';
         $itemIds = [42, 1337];

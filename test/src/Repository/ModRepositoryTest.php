@@ -39,7 +39,7 @@ class ModRepositoryTest extends TestCase
      * @covers ::findByNamesWithDependencies
      * @dataProvider provideFindByNamesWithDependencies
      */
-    public function testFindByNamesWithDependencies(bool $withModNames)
+    public function testFindByNamesWithDependencies(bool $withModNames): void
     {
         $modNames = $withModNames ? ['abc', 'def'] : [];
         $queryResult = $withModNames ? [$this->createMock(Mod::class)] : [];
@@ -119,7 +119,7 @@ class ModRepositoryTest extends TestCase
      * @covers ::count
      * @dataProvider provideCount
      */
-    public function testCount(bool $withModCombinationIds, bool $withException)
+    public function testCount(bool $withModCombinationIds, bool $withException): void
     {
         $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
         $queryResult = 21;
