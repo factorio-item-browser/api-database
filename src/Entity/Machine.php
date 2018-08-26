@@ -22,12 +22,12 @@ class Machine
     /**
      * The factor used for the crafting speed.
      */
-    private const FACTOR_CRAFTING_SPEED = 1000;
+    protected const FACTOR_CRAFTING_SPEED = 1000;
 
     /**
      * The factor used for the energy usage.
      */
-    private const FACTOR_ENERGY_USAGE = 1000;
+    protected const FACTOR_ENERGY_USAGE = 1000;
 
     /**
      * The value representing unlimited slots.
@@ -37,7 +37,7 @@ class Machine
     /**
      * The database value representing unlimited slots.
      */
-    private const VALUE_UNLIMITED_SLOTS_DATABASE = 255;
+    protected const VALUE_UNLIMITED_SLOTS_DATABASE = 255;
 
     /**
      * @ORM\Id
