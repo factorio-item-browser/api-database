@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use FactorioItemBrowser\Api\Database\Constant\EntityType;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
 use FactorioItemBrowser\Api\Database\Data\TranslationData;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
+use FactorioItemBrowser\Common\Constant\EntityType;
 
 /**
  * The repository of the translation database table.
