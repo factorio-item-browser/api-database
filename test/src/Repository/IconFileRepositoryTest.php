@@ -121,8 +121,7 @@ class IconFileRepositoryTest extends TestCase
                    ->method('removeHashes')
                    ->with($orphanedHashes);
 
-        $result = $repository->removeOrphans();
-        $this->assertSame($repository, $result);
+        $repository->removeOrphans();
     }
 
     /**
@@ -234,7 +233,6 @@ class IconFileRepositoryTest extends TestCase
                    ->method('getEntityName')
                    ->willReturn($entityName);
 
-        $result = $this->invokeMethod($repository, 'removeHashes', $hashes);
-        $this->assertSame($repository, $result);
+        $this->invokeMethod($repository, 'removeHashes', $hashes);
     }
 }

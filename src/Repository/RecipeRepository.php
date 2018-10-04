@@ -16,7 +16,7 @@ use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class RecipeRepository extends EntityRepository
+class RecipeRepository extends EntityRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the data of the recipes with the specified names.
@@ -191,15 +191,13 @@ class RecipeRepository extends EntityRepository
 
     /**
      * Removes any orphaned recipes, i.e. recipes no longer used by any combination.
-     * @return $this
      */
-    public function removeOrphans()
+    public function removeOrphans(): void
     {
         $recipeIds = $this->findOrphanedIds();
         if (count($recipeIds) > 0) {
             $this->removeIds($recipeIds);
         }
-        return $this;
     }
 
     /**
@@ -223,9 +221,8 @@ class RecipeRepository extends EntityRepository
     /**
      * Removes the recipes with the specified ids from the database.
      * @param array|int[] $recipeIds
-     * @return $this
      */
-    protected function removeIds(array $recipeIds)
+    protected function removeIds(array $recipeIds): void
     {
         // First delete the ingredients...
         $queryBuilder = $this->createQueryBuilder('r');
@@ -248,6 +245,5 @@ class RecipeRepository extends EntityRepository
                      ->setParameter('recipeIds', array_values($recipeIds));
 
         $queryBuilder->getQuery()->execute();
-        return $this;
     }
 }
