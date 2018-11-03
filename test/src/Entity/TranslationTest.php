@@ -24,14 +24,14 @@ class TranslationTest extends TestCase
      */
     public function testConstruct(): void
     {
-        $modCombination = new ModCombination(new Mod('abc'));
-        $translation = new Translation($modCombination, 'def', 'ghi', 'jkl');
+        $modCombination = new ModCombination(new Mod('abc'), 'def');
+        $translation = new Translation($modCombination, 'ghi', 'jkl', 'mno');
 
         $this->assertSame(0, $translation->getId());
         $this->assertSame($modCombination, $translation->getModCombination());
-        $this->assertSame('def', $translation->getLocale());
-        $this->assertSame('ghi', $translation->getType());
-        $this->assertSame('jkl', $translation->getName());
+        $this->assertSame('ghi', $translation->getLocale());
+        $this->assertSame('jkl', $translation->getType());
+        $this->assertSame('mno', $translation->getName());
         $this->assertSame('', $translation->getValue());
         $this->assertSame('', $translation->getDescription());
         $this->assertFalse($translation->getIsDuplicatedByRecipe());
@@ -45,7 +45,7 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetId(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
         $id = 42;
         $this->assertSame($translation, $translation->setId($id));
@@ -59,9 +59,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetModCombination(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
-        $modCombination = new ModCombination(new Mod('foo'));
+        $modCombination = new ModCombination(new Mod('foo'), 'bar');
         $this->assertSame($translation, $translation->setModCombination($modCombination));
         $this->assertSame($modCombination, $translation->getModCombination());
     }
@@ -73,9 +73,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetLocale(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
-        $locale = 'abc';
+        $locale = 'pqr';
         $this->assertSame($translation, $translation->setLocale($locale));
         $this->assertSame($locale, $translation->getLocale());
     }
@@ -87,9 +87,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetType(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
-        $type = 'abc';
+        $type = 'pqr';
         $this->assertSame($translation, $translation->setType($type));
         $this->assertSame($type, $translation->getType());
     }
@@ -101,9 +101,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
-        $name = 'abc';
+        $name = 'pqr';
         $this->assertSame($translation, $translation->setName($name));
         $this->assertSame($name, $translation->getName());
     }
@@ -115,9 +115,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetValue(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
-        $value = 'abc';
+        $value = 'pqr';
         $this->assertSame($translation, $translation->setValue($value));
         $this->assertSame($value, $translation->getValue());
     }
@@ -129,9 +129,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetDescription(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
-        $description = 'abc';
+        $description = 'pqr';
         $this->assertSame($translation, $translation->setDescription($description));
         $this->assertSame($description, $translation->getDescription());
     }
@@ -143,7 +143,7 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetIsDuplicatedByRecipe(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
         $isDuplicatedByRecipe = true;
         $this->assertSame($translation, $translation->setIsDuplicatedByRecipe($isDuplicatedByRecipe));
@@ -157,7 +157,7 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetIsDuplicatedByMachine(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc')), 'def', 'ghi', 'jkl');
+        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
 
         $isDuplicatedByMachine = true;
         $this->assertSame($translation, $translation->setIsDuplicatedByMachine($isDuplicatedByMachine));
