@@ -188,7 +188,7 @@ ENGINE=InnoDB;
 
 -- Icon related tables
 CREATE TABLE `IconFile` (
-  `hash` BINARY(4) NOT NULL COMMENT 'The hash of the icon file.',
+  `hash` BINARY(8) NOT NULL COMMENT 'The hash of the icon file.',
   `image` BLOB NOT NULL COMMENT 'The actual image.',
   PRIMARY KEY (`hash`)
 )
@@ -199,11 +199,11 @@ ENGINE=InnoDB;
 CREATE TABLE `Icon` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The internal id of the icon.',
   `modCombinationId` INT(10) UNSIGNED NOT NULL COMMENT 'The id of the mod combination adding the icon.',
-  `iconFileHash` BINARY(4) NOT NULL COMMENT 'The hash of the icon file.',
+  `iconFileHash` BINARY(8) NOT NULL COMMENT 'The hash of the icon file.',
   `type` VARCHAR(32) NOT NULL COMMENT 'The type of the icon\'s prototype.',
   `name` VARCHAR(255) NOT NULL COMMENT 'The name of the icon\'s prototype.',
   PRIMARY KEY (`id`),
-  INDEX `idx_modId` (`modCombinationId`),
+  INDEX `idx_modCombinationId` (`modCombinationId`),
   INDEX `idx_iconFileHash` (`iconFileHash`),
   INDEX `idx_type_name` (`type`, `name`),
   CONSTRAINT `fk_I_iconFileHash` FOREIGN KEY (`iconFileHash`) REFERENCES `IconFile` (`hash`),

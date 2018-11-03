@@ -2,9 +2,10 @@
 
 ## Unreleased
 
-###
+### Added
 
-- Added `RepositoryWithOrphansInterface` to signal that orphans must be cleaned. 
+- `RepositoryWithOrphansInterface` to signal that orphans must be cleaned.
+- Method `findByNames` to the `ModCombinationRepository`. 
 
 ### Removed
 
