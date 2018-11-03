@@ -21,6 +21,73 @@ use PHPUnit\Framework\TestCase;
 class ModCombinationRepositoryTest extends TestCase
 {
     /**
+     * Provides the data for the findByNames test.
+     * @return array
+     */
+    public function provideFindByNames(): array
+    {
+        return [
+            [true],
+            [false],
+        ];
+    }
+
+    /**
+     * Tests the findByNames method.
+     * @param bool $withNames
+     * @covers ::findByNames
+     * @dataProvider provideFindByNames
+     */
+    public function testFindByNames(bool $withNames): void
+    {
+        $names = $withNames ? ['abc', 'def'] : [];
+        $queryResult = $withNames ? [$this->createMock(ModCombination::class)] : [];
+
+        /* @var AbstractQuery|MockObject $query */
+        $query = $this->getMockBuilder(AbstractQuery::class)
+                      ->setMethods(['getResult'])
+                      ->disableOriginalConstructor()
+                      ->getMockForAbstractClass();
+        $query->expects($withNames ? $this->once() : $this->never())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        /* @var QueryBuilder|MockObject $queryBuilder */
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+                             ->setMethods(['andWhere', 'addOrderBy', 'setParameter', 'getQuery'])
+                             ->disableOriginalConstructor()
+                             ->getMock();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('andWhere')
+                     ->with('mc.name IN (:names)')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('addOrderBy')
+                     ->with('mc.order', 'ASC')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('setParameter')
+                     ->with('names', $names)
+                     ->willReturnSelf();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        /* @var ModCombinationRepository|MockObject $repository */
+        $repository = $this->getMockBuilder(ModCombinationRepository::class)
+                           ->setMethods(['createQueryBuilder'])
+                           ->disableOriginalConstructor()
+                           ->getMock();
+        $repository->expects($withNames ? $this->once() : $this->never())
+                   ->method('createQueryBuilder')
+                   ->with('mc')
+                   ->willReturn($queryBuilder);
+
+        $result = $repository->findByNames($names);
+        $this->assertSame($queryResult, $result);
+    }
+    
+    /**
      * Provides the data for the findByModNames test.
      * @return array
      */

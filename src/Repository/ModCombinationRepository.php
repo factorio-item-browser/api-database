@@ -16,6 +16,25 @@ use FactorioItemBrowser\Api\Database\Entity\ModCombination;
 class ModCombinationRepository extends EntityRepository
 {
     /**
+     * Finds the combinations with the specified names.
+     * @param array|string[] $names
+     * @return array|ModCombination[]
+     */
+    public function findByNames(array $names): array
+    {
+        $result = [];
+        if (count($names) > 0) {
+            $queryBuilder = $this->createQueryBuilder('mc');
+            $queryBuilder->andWhere('mc.name IN (:names)')
+                         ->addOrderBy('mc.order', 'ASC')
+                         ->setParameter('names', array_values($names));
+
+            $result = $queryBuilder->getQuery()->getResult();
+        }
+        return $result;
+    }
+
+    /**
      * Finds the combinations where the specified mod names are the main mod of.
      * @param array|string[] $modNames
      * @return array|ModCombination[]
