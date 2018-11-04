@@ -6,7 +6,8 @@
 
 - `RepositoryWithOrphansInterface` to signal that orphans must be cleaned.
 - Method `findByNames` to the `ModCombinationRepository`.
-- Required parameter `$name` to the constructor of the `ModCombination` entity. 
+- Required parameter `$name` to the constructor of the `ModCombination` entity.
+- Constant interface for the types of the `Translation` entity. 
 
 ### Removed
 
