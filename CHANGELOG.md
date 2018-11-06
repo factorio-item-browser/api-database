@@ -9,6 +9,10 @@
 - Required parameter `$name` to the constructor of the `ModCombination` entity.
 - Constant interface for the types of the `Translation` entity. 
 
+### Fixed
+
+- Error in entity relation between `CraftingCategory` and `Recipe`.
+
 ### Removed
 
 - `EntityType` interface. It has been replaced by the interface from `factorio-item-browser/common`.
