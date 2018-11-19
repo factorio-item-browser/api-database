@@ -1,7 +1,14 @@
-version: "3"
+version: "3.5"
 services:
+
   php:
     container_name: fib-ad-php
     image: bluepsyduck/php-fpm
     volumes:
-      - ".:/project"
+    - ".:/project"
+    networks:
+    - network-fib
+
+networks:
+  network-fib:
+    name: network-fib
