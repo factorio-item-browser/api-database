@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database;
 
 use FactorioItemBrowser\Api\Database\ConfigProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,61 +22,14 @@ class ConfigProviderTest extends TestCase
      */
     public function testInvoke(): void
     {
-        $dependencyConfig = ['abc' => 'def'];
-        $doctrineConfig = ['ghi' => 'jkl'];
-        $expectedResult = [
-            'dependencies' => ['abc' => 'def'],
-            'doctrine' => ['ghi' => 'jkl'],
-        ];
-
-        /* @var ConfigProvider|MockObject $configProvider */
-        $configProvider = $this->getMockBuilder(ConfigProvider::class)
-                               ->setMethods(['getDependencyConfig', 'getDoctrineConfig'])
-                               ->disableOriginalConstructor()
-                               ->getMock();
-        $configProvider->expects($this->once())
-                       ->method('getDependencyConfig')
-                       ->willReturn($dependencyConfig);
-        $configProvider->expects($this->once())
-                       ->method('getDoctrineConfig')
-                       ->willReturn($doctrineConfig);
-
+        $configProvider = new ConfigProvider();
         $result = $configProvider();
-        $this->assertSame($expectedResult, $result);
-    }
 
-    /**
-     * Tests the getDependencyConfig method.
-     * @covers ::getDependencyConfig
-     */
-    public function testGetDependencyConfig(): void
-    {
-        $expectedKeys = [
-            'factories',
-        ];
+        $this->assertArrayHasKey('dependencies', $result);
+        $this->assertArrayHasKey('factories', $result['dependencies']);
 
-        $configProvider = new ConfigProvider();
-        $result = $configProvider->getDependencyConfig();
-        foreach ($expectedKeys as $expectedKey) {
-            $this->assertArrayHasKey($expectedKey, $result);
-        }
-    }
-
-    /**
-     * Tests the getDoctrineConfig method.
-     * @covers ::getDoctrineConfig
-     */
-    public function testGetDoctrineConfig(): void
-    {
-        $expectedKeys = [
-            'configuration',
-            'driver'
-        ];
-
-        $configProvider = new ConfigProvider();
-        $result = $configProvider->getDoctrineConfig();
-        foreach ($expectedKeys as $expectedKey) {
-            $this->assertArrayHasKey($expectedKey, $result);
-        }
+        $this->assertArrayHasKey('doctrine', $result);
+        $this->assertArrayHasKey('configuration', $result['doctrine']);
+        $this->assertArrayHasKey('driver', $result['doctrine']);
     }
 }

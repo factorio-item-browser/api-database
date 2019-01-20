@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database;
 
-use ContainerInteropDoctrine\EntityManagerFactory;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-
 /**
  * The config provider of the API database library.
  *
@@ -23,55 +18,9 @@ class ConfigProvider
      */
     public function __invoke(): array
     {
-        return [
-            'dependencies' => $this->getDependencyConfig(),
-            'doctrine' => $this->getDoctrineConfig(),
-        ];
-    }
-
-    /**
-     * Returns the dependencies configuration.
-     * @return array
-     */
-    public function getDependencyConfig(): array
-    {
-        return [
-            'factories' => [
-                EntityManager::class => EntityManagerFactory::class,
-            ],
-        ];
-    }
-
-    /**
-     * Returns the doctrine configuration.
-     * @return array
-     */
-    public function getDoctrineConfig(): array
-    {
-        return [
-            'configuration' => [
-                'orm_default' => [
-                    'numeric_functions' => [
-                        'Rand' => Functions\RandFunction::class,
-                    ],
-                ],
-            ],
-            'driver' => [
-                'orm_default' => [
-                    'class' => MappingDriverChain::class,
-                    'drivers' => [
-                        'FactorioItemBrowser\Api\Database\Entity' => 'fib-api-database',
-                    ],
-                ],
-
-                'fib-api-database' => [
-                    'class' => AnnotationDriver::class,
-                    'cache' => 'array',
-                    'paths' => [
-                        __DIR__ . '/../../src/Entity',
-                    ],
-                ],
-            ],
-        ];
+        return array_merge(
+            require(__DIR__ . '/../config/dependencies.php'),
+            require(__DIR__ . '/../config/doctrine.php')
+        );
     }
 }
