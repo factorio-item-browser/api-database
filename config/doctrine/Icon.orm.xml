@@ -29,7 +29,7 @@
             <join-column name="iconFileHash" referenced-column-name="hash" />
         </many-to-one>
 
-        <field name="type" length="255" unique="true">
+        <field name="type" length="32" unique="true">
             <options>
                 <option name="comment">The type of the icon's prototype.</option>
             </options>
