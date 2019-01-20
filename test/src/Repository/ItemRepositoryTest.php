@@ -371,8 +371,7 @@ class ItemRepositoryTest extends TestCase
                    ->method('removeIds')
                    ->with($orphanedIds);
 
-        $result = $repository->removeOrphans();
-        $this->assertSame($repository, $result);
+        $repository->removeOrphans();
     }
 
     /**
@@ -492,7 +491,6 @@ class ItemRepositoryTest extends TestCase
                    ->method('getEntityName')
                    ->willReturn($entityName);
 
-        $result = $this->invokeMethod($repository, 'removeIds', $itemIds);
-        $this->assertSame($repository, $result);
+        $this->invokeMethod($repository, 'removeIds', $itemIds);
     }
 }

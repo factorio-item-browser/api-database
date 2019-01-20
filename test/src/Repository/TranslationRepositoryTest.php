@@ -7,8 +7,8 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 use BluePsyduck\Common\Test\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\QueryBuilder;
-use FactorioItemBrowser\Api\Database\Constant\EntityType;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
+use FactorioItemBrowser\Api\Database\Constant\TranslationType;
 use FactorioItemBrowser\Api\Database\Data\TranslationData;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
 use FactorioItemBrowser\Api\Database\Repository\TranslationRepository;
@@ -59,9 +59,9 @@ class TranslationRepositoryTest extends TestCase
 
         if ($withNamesByTypes) {
             $namesByTypes = [
-                EntityType::RECIPE => ['abc', 'def'],
-                EntityType::MACHINE => ['ghi'],
-                EntityType::ITEM => ['jkl', 'mno']
+                TranslationType::RECIPE => ['abc', 'def'],
+                TranslationType::MACHINE => ['ghi'],
+                TranslationType::ITEM => ['jkl', 'mno']
             ];
 
             $condition = '(((t.type = :type0 OR t.isDuplicatedByRecipe = 1) AND t.name IN (:names0))'
@@ -112,11 +112,11 @@ class TranslationRepositoryTest extends TestCase
                      ->method('setParameter')
                      ->withConsecutive(
                          ['locales', [$locale, 'en']],
-                         ['type0', EntityType::RECIPE],
+                         ['type0', TranslationType::RECIPE],
                          ['names0', ['abc', 'def']],
-                         ['type1', EntityType::MACHINE],
+                         ['type1', TranslationType::MACHINE],
                          ['names1', ['ghi']],
-                         ['type2', EntityType::ITEM],
+                         ['type2', TranslationType::ITEM],
                          ['names2', ['jkl', 'mno']],
                          ['modCombinationIds', $modCombinationIds],
                          ['typeMod', 'mod']
@@ -245,7 +245,7 @@ class TranslationRepositoryTest extends TestCase
                          ['priorityPrimary', SearchResultPriority::PRIMARY_LOCALE_MATCH],
                          ['prioritySecondary', SearchResultPriority::SECONDARY_LOCALE_MATCH],
                          ['priorityAny', SearchResultPriority::ANY_MATCH],
-                         ['types', [EntityType::ITEM, EntityType::FLUID, EntityType::RECIPE]],
+                         ['types', [TranslationType::ITEM, TranslationType::FLUID, TranslationType::RECIPE]],
                          ['keyword0', '%foo%'],
                          ['keyword1', '%b\\_a\\\\r\\%%'],
                          ['modCombinationIds', $modCombinationIds]

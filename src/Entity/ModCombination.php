@@ -39,20 +39,20 @@ class ModCombination
     protected $mod;
 
     /**
-     * @ORM\Column(name="optionalModIds", type="json")
-     *
-     * The list of the loaded optional mods.
-     * @var array|int[]
-     */
-    protected $optionalModIds = [];
-
-    /**
      * @ORM\Column(name="name")
      *
      * The name of the mod combination.
      * @var string
      */
     protected $name = '';
+
+    /**
+     * @ORM\Column(name="optionalModIds", type="json")
+     *
+     * The list of the loaded optional mods.
+     * @var array|int[]
+     */
+    protected $optionalModIds = [];
 
     /**
      * @ORM\Column(name="`order`", type="integer")
@@ -117,10 +117,12 @@ class ModCombination
     /**
      * Initializes the combination.
      * @param Mod $mod
+     * @param string $name
      */
-    public function __construct(Mod $mod)
+    public function __construct(Mod $mod, string $name)
     {
         $this->mod = $mod;
+        $this->name = $name;
 
         $this->items = new ArrayCollection();
         $this->recipes = new ArrayCollection();
@@ -170,26 +172,6 @@ class ModCombination
     }
 
     /**
-     * Sets the list of the loaded optional mods.
-     * @param array|int[] $optionalModIds
-     * @return $this Implementing fluent interface.
-     */
-    public function setOptionalModIds(array $optionalModIds)
-    {
-        $this->optionalModIds = $optionalModIds;
-        return $this;
-    }
-
-    /**
-     * Returns the list of the loaded optional mods.
-     * @return array|int[]
-     */
-    public function getOptionalModIds(): array
-    {
-        return $this->optionalModIds;
-    }
-
-    /**
      * Sets the name of the mod combination.
      * @param string $name
      * @return $this Implementing fluent interface.
@@ -207,6 +189,26 @@ class ModCombination
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * Sets the list of the loaded optional mods.
+     * @param array|int[] $optionalModIds
+     * @return $this Implementing fluent interface.
+     */
+    public function setOptionalModIds(array $optionalModIds)
+    {
+        $this->optionalModIds = $optionalModIds;
+        return $this;
+    }
+
+    /**
+     * Returns the list of the loaded optional mods.
+     * @return array|int[]
+     */
+    public function getOptionalModIds(): array
+    {
+        return $this->optionalModIds;
     }
 
     /**

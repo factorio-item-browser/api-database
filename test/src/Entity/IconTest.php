@@ -25,7 +25,7 @@ class IconTest extends TestCase
      */
     public function testConstruct(): void
     {
-        $modCombination = new ModCombination(new Mod('abc'));
+        $modCombination = new ModCombination(new Mod('abc'), 'def');
         $file = new IconFile('12ab34cd');
 
         $icon = new Icon($modCombination, $file);
@@ -43,7 +43,7 @@ class IconTest extends TestCase
      */
     public function testSetAndGetId(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
+        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
         $id = 42;
         $this->assertSame($icon, $icon->setId($id));
@@ -57,9 +57,9 @@ class IconTest extends TestCase
      */
     public function testSetAndGetModCombination(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
+        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
-        $modCombination = new ModCombination(new Mod('abc'));
+        $modCombination = new ModCombination(new Mod('abc'), 'def');
         $this->assertSame($icon, $icon->setModCombination($modCombination));
         $this->assertSame($modCombination, $icon->getModCombination());
     }
@@ -71,7 +71,7 @@ class IconTest extends TestCase
      */
     public function testSetAndGetFile(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
+        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
         $file = new IconFile('12ab34cd');
         $this->assertSame($icon, $icon->setFile($file));
@@ -85,7 +85,7 @@ class IconTest extends TestCase
      */
     public function testSetAndGetType(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
+        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
         $type = 'abc';
         $this->assertSame($icon, $icon->setType($type));
@@ -99,7 +99,7 @@ class IconTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo')), new IconFile('ab12cd34'));
+        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
         $name = 'abc';
         $this->assertSame($icon, $icon->setName($name));

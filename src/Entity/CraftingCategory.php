@@ -46,7 +46,7 @@ class CraftingCategory
     protected $machines;
 
     /**
-     * @ORM\OneToMany(targetEntity="RecipeIngredient", mappedBy="craftingCategory")
+     * @ORM\OneToMany(targetEntity="Recipe", mappedBy="craftingCategory")
      *
      * The recipes using the crafting category.
      * @var Collection|Recipe[]

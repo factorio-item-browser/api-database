@@ -13,7 +13,7 @@ use FactorioItemBrowser\Api\Database\Entity\IconFile;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class IconFileRepository extends EntityRepository
+class IconFileRepository extends EntityRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the icon files with the specified hashes.
@@ -35,15 +35,13 @@ class IconFileRepository extends EntityRepository
 
     /**
      * Removes any orphaned icon files, i.e. icon files no longer used by any icon.
-     * @return $this
      */
-    public function removeOrphans()
+    public function removeOrphans(): void
     {
         $hashes = $this->findOrphanedHashes();
         if (count($hashes) > 0) {
             $this->removeHashes($hashes);
         }
-        return $this;
     }
 
     /**
@@ -67,9 +65,8 @@ class IconFileRepository extends EntityRepository
     /**
      * Removes the icon files with the specified hashes from the database.
      * @param array|string[] $hashes
-     * @return $this
      */
-    protected function removeHashes(array $hashes)
+    protected function removeHashes(array $hashes): void
     {
         $queryBuilder = $this->createQueryBuilder('if');
         $queryBuilder->delete($this->getEntityName(), 'if')
@@ -77,6 +74,5 @@ class IconFileRepository extends EntityRepository
                      ->setParameter('hashes', array_values($hashes));
 
         $queryBuilder->getQuery()->execute();
-        return $this;
     }
 }

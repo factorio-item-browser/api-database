@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use FactorioItemBrowser\Api\Database\Constant\EntityType;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
+use FactorioItemBrowser\Api\Database\Constant\TranslationType;
 use FactorioItemBrowser\Api\Database\Data\TranslationData;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
 
@@ -49,13 +49,13 @@ class TranslationRepository extends EntityRepository
             if (count($names) > 0) {
                 $index = count($conditions);
                 switch ($type) {
-                    case EntityType::RECIPE:
+                    case TranslationType::RECIPE:
                         // Special case: Recipes may re-use the translations provided by the item with the same name.
                         $conditions[] = '((t.type = :type' . $index . ' OR t.isDuplicatedByRecipe = 1) '
                             . 'AND t.name IN (:names' . $index . '))';
                         break;
 
-                    case EntityType::MACHINE:
+                    case TranslationType::MACHINE:
                         // Special case: Machines may re-use the translations provided by the item with the same name.
                         $conditions[] = '((t.type = :type' . $index . ' OR t.isDuplicatedByMachine = 1) '
                             . 'AND t.name IN (:names' . $index . '))';
@@ -130,7 +130,11 @@ class TranslationRepository extends EntityRepository
                          ->setParameter('priorityPrimary', SearchResultPriority::PRIMARY_LOCALE_MATCH)
                          ->setParameter('prioritySecondary', SearchResultPriority::SECONDARY_LOCALE_MATCH)
                          ->setParameter('priorityAny', SearchResultPriority::ANY_MATCH)
-                         ->setParameter('types', [EntityType::ITEM, EntityType::FLUID, EntityType::RECIPE]);
+                         ->setParameter('types', [
+                             TranslationType::ITEM,
+                             TranslationType::FLUID,
+                             TranslationType::RECIPE
+                         ]);
 
             $index = 0;
             foreach ($keywords as $keyword) {

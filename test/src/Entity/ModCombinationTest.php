@@ -30,12 +30,13 @@ class ModCombinationTest extends TestCase
     public function testConstruct(): void
     {
         $mod = new Mod('abc');
-        $modCombination = new ModCombination($mod);
+        $name = 'def';
+        $modCombination = new ModCombination($mod, $name);
 
         $this->assertSame(0, $modCombination->getId());
         $this->assertSame($mod, $modCombination->getMod());
+        $this->assertSame($name, $modCombination->getName());
         $this->assertSame([], $modCombination->getOptionalModIds());
-        $this->assertSame('', $modCombination->getName());
         $this->assertSame(0, $modCombination->getOrder());
         $this->assertInstanceOf(ArrayCollection::class, $modCombination->getItems());
         $this->assertInstanceOf(ArrayCollection::class, $modCombination->getRecipes());
@@ -51,7 +52,7 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetId(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'));
+        $modCombination = new ModCombination(new Mod('foo'), 'bar');
 
         $id = 42;
         $this->assertSame($modCombination, $modCombination->setId($id));
@@ -65,25 +66,11 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetMod(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'));
+        $modCombination = new ModCombination(new Mod('foo'), 'bar');
 
         $mod = new Mod('abc');
         $this->assertSame($modCombination, $modCombination->setMod($mod));
         $this->assertSame($mod, $modCombination->getMod());
-    }
-
-    /**
-     * Tests setting and getting the optionalModIds.
-     * @covers ::getOptionalModIds
-     * @covers ::setOptionalModIds
-     */
-    public function testSetAndGetOptionalModIds(): void
-    {
-        $modCombination = new ModCombination(new Mod('foo'));
-
-        $optionalModIds = [42, 1337];
-        $this->assertSame($modCombination, $modCombination->setOptionalModIds($optionalModIds));
-        $this->assertSame($optionalModIds, $modCombination->getOptionalModIds());
     }
 
     /**
@@ -93,11 +80,25 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'));
+        $modCombination = new ModCombination(new Mod('foo'), 'bar');
 
         $name = 'abc';
         $this->assertSame($modCombination, $modCombination->setName($name));
         $this->assertSame($name, $modCombination->getName());
+    }
+
+    /**
+     * Tests setting and getting the optionalModIds.
+     * @covers ::getOptionalModIds
+     * @covers ::setOptionalModIds
+     */
+    public function testSetAndGetOptionalModIds(): void
+    {
+        $modCombination = new ModCombination(new Mod('foo'), 'bar');
+
+        $optionalModIds = [42, 1337];
+        $this->assertSame($modCombination, $modCombination->setOptionalModIds($optionalModIds));
+        $this->assertSame($optionalModIds, $modCombination->getOptionalModIds());
     }
 
     /**
@@ -107,7 +108,7 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetOrder(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'));
+        $modCombination = new ModCombination(new Mod('foo'), 'bar');
 
         $order = 42;
         $this->assertSame($modCombination, $modCombination->setOrder($order));

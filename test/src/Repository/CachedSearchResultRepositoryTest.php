@@ -144,8 +144,7 @@ class CachedSearchResultRepositoryTest extends TestCase
                    ->method('getEntityName')
                    ->willReturn($entityName);
 
-        $result = $repository->cleanup($maxAge);
-        $this->assertSame($repository, $result);
+        $repository->cleanup($maxAge);
     }
 
     /**
@@ -190,7 +189,6 @@ class CachedSearchResultRepositoryTest extends TestCase
                    ->method('getEntityName')
                    ->willReturn($entityName);
 
-        $result = $repository->clear();
-        $this->assertSame($repository, $result);
+        $repository->clear();
     }
 }

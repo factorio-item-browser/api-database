@@ -167,7 +167,7 @@ class IconData implements DataInterface
 
         $result = new self();
         $result->setId($data->getInteger('id'))
-               ->setHash(bin2hex($data->getString('hash')))
+               ->setHash(bin2hex($data->get('hash', '')))
                ->setType($data->getString('type'))
                ->setName($data->getString('name'))
                ->setOrder($data->getInteger('order'));

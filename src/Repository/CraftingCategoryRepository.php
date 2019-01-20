@@ -13,7 +13,7 @@ use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class CraftingCategoryRepository extends EntityRepository
+class CraftingCategoryRepository extends EntityRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the crafting categories with the specified names.
@@ -35,15 +35,13 @@ class CraftingCategoryRepository extends EntityRepository
 
     /**
      * Removes any orphaned crafting categories, i.e. those no longer used by any recipe or machine.
-     * @return $this
      */
-    public function removeOrphans()
+    public function removeOrphans(): void
     {
         $machineIds = $this->findOrphanedIds();
         if (count($machineIds) > 0) {
             $this->removeIds($machineIds);
         }
-        return $this;
     }
 
     /**
@@ -69,9 +67,8 @@ class CraftingCategoryRepository extends EntityRepository
     /**
      * Removes the crafting categories with the specified ids from the database.
      * @param array|int[] $craftingCategoryIds
-     * @return $this
      */
-    protected function removeIds(array $craftingCategoryIds)
+    protected function removeIds(array $craftingCategoryIds): void
     {
         $queryBuilder = $this->createQueryBuilder('cc');
         $queryBuilder->delete($this->getEntityName(), 'cc')
@@ -79,6 +76,5 @@ class CraftingCategoryRepository extends EntityRepository
                      ->setParameter('craftingCategoryIds', array_values($craftingCategoryIds));
 
         $queryBuilder->getQuery()->execute();
-        return $this;
     }
 }

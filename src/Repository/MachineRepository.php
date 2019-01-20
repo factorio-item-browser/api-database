@@ -14,7 +14,7 @@ use FactorioItemBrowser\Api\Database\Entity\Machine;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class MachineRepository extends EntityRepository
+class MachineRepository extends EntityRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the data of the machines with the specified names.
@@ -115,15 +115,13 @@ class MachineRepository extends EntityRepository
 
     /**
      * Removes any orphaned machines, i.e. machines no longer used by any combination.
-     * @return $this
      */
-    public function removeOrphans()
+    public function removeOrphans(): void
     {
         $machineIds = $this->findOrphanedIds();
         if (count($machineIds) > 0) {
             $this->removeIds($machineIds);
         }
-        return $this;
     }
 
     /**
@@ -147,9 +145,8 @@ class MachineRepository extends EntityRepository
     /**
      * Removes the machines with the specified ids from the database.
      * @param array|int[] $machineIds
-     * @return $this
      */
-    protected function removeIds(array $machineIds)
+    protected function removeIds(array $machineIds): void
     {
         $queryBuilder = $this->createQueryBuilder('m');
         $queryBuilder->delete($this->getEntityName(), 'm')
@@ -157,6 +154,5 @@ class MachineRepository extends EntityRepository
                      ->setParameter('machineIds', array_values($machineIds));
 
         $queryBuilder->getQuery()->execute();
-        return $this;
     }
 }

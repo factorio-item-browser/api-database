@@ -40,9 +40,8 @@ class CachedSearchResultRepository extends EntityRepository
     /**
      * Cleans up no longer needed data.
      * @param DateTime $maxAge
-     * @return $this
      */
-    public function cleanup(DateTime $maxAge)
+    public function cleanup(DateTime $maxAge): void
     {
         $queryBuilder = $this->createQueryBuilder('r');
         $queryBuilder->delete($this->getEntityName(), 'r')
@@ -50,19 +49,16 @@ class CachedSearchResultRepository extends EntityRepository
                      ->setParameter('maxAge', $maxAge);
 
         $queryBuilder->getQuery()->execute();
-        return $this;
     }
 
     /**
      * Clears the database table, emptying the cache.
-     * @return $this
      */
-    public function clear()
+    public function clear(): void
     {
         $queryBuilder = $this->createQueryBuilder('r');
         $queryBuilder->delete($this->getEntityName(), 'r');
 
         $queryBuilder->getQuery()->execute();
-        return $this;
     }
 }
