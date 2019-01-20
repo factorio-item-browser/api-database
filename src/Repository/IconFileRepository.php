@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Entity\IconFile;
 
 /**
@@ -13,7 +12,7 @@ use FactorioItemBrowser\Api\Database\Entity\IconFile;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class IconFileRepository extends EntityRepository implements RepositoryWithOrphansInterface
+class IconFileRepository extends AbstractRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the icon files with the specified hashes.
@@ -24,8 +23,10 @@ class IconFileRepository extends EntityRepository implements RepositoryWithOrpha
     {
         $result = [];
         if (count($hashes) > 0) {
-            $queryBuilder = $this->createQueryBuilder('if');
-            $queryBuilder->andWhere('if.hash IN (:hashes)')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select('if')
+                         ->from(IconFile::class, 'if')
+                         ->andWhere('if.hash IN (:hashes)')
                          ->setParameter('hashes', array_values(array_map('hex2bin', $hashes)));
 
             $result = $queryBuilder->getQuery()->getResult();
@@ -50,8 +51,9 @@ class IconFileRepository extends EntityRepository implements RepositoryWithOrpha
      */
     protected function findOrphanedHashes(): array
     {
-        $queryBuilder = $this->createQueryBuilder('if');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('if.hash AS hash')
+                     ->from(IconFile::class, 'if')
                      ->leftJoin('if.icons', 'i')
                      ->andWhere('i.id IS NULL');
 
@@ -68,8 +70,8 @@ class IconFileRepository extends EntityRepository implements RepositoryWithOrpha
      */
     protected function removeHashes(array $hashes): void
     {
-        $queryBuilder = $this->createQueryBuilder('if');
-        $queryBuilder->delete($this->getEntityName(), 'if')
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(IconFile::class, 'if')
                      ->andWhere('if.hash IN (:hashes)')
                      ->setParameter('hashes', array_values($hashes));
 

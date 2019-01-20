@@ -6,39 +6,28 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The entity of the icon file database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\IconFileRepository")
- * @ORM\Table(name="IconFile")
  */
 class IconFile
 {
     /**
-     * @ORM\Id
-     * @ORM\Column(name="`hash`")
-     *
      * The hash of the icon file.
      * @var string
      */
     protected $hash;
 
     /**
-     * @ORM\Column(name="image", type="blob")
-     *
      * The actual image data.
      * @var string|resource
      */
     protected $image = '';
 
     /**
-     * @ORM\OneToMany(targetEntity="Icon", mappedBy="file")
-     *
      * The icons using the file.
      * @var Collection|Icon[]
      */

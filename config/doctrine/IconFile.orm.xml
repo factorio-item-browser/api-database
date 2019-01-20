@@ -1,0 +1,27 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\IconFile">
+        <options>
+            <option name="comment">The table holding the actual file data of the icons.</option>
+        </options>
+
+        <id name="hash" length="8" column-definition="BINARY(8)">
+            <options>
+                <option name="fixed">true</option>
+                <option name="comment">The hash of the icon file.</option>
+            </options>
+        </id>
+
+        <field name="image" type="blob">
+            <options>
+                <option name="comment">The actual image.</option>
+            </options>
+        </field>
+
+        <one-to-many field="icons" target-entity="Icon" mapped-by="file" />
+    </entity>
+</doctrine-mapping>
