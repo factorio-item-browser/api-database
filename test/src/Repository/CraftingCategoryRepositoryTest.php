@@ -6,6 +6,7 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use BluePsyduck\Common\Test\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
 use FactorioItemBrowser\Api\Database\Repository\CraftingCategoryRepository;
@@ -58,9 +59,17 @@ class CraftingCategoryRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with('cc')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(CraftingCategory::class, 'cc')
+                     ->willReturnSelf();
         $queryBuilder->expects($withNames ? $this->once() : $this->never())
                      ->method('andWhere')
                      ->with('cc.name IN (:names)')
@@ -73,15 +82,15 @@ class CraftingCategoryRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var CraftingCategoryRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(CraftingCategoryRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withNames ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('cc')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withNames ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new CraftingCategoryRepository($entityManager);
 
         $result = $repository->findByNames($names);
         $this->assertSame($queryResult, $result);
@@ -147,12 +156,16 @@ class CraftingCategoryRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'leftJoin', 'andWhere', 'getQuery'])
+                             ->setMethods(['select', 'from', 'leftJoin', 'andWhere', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('select')
                      ->with('cc.id AS id')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with(CraftingCategory::class, 'cc')
                      ->willReturnSelf();
         $queryBuilder->expects($this->exactly(2))
                      ->method('leftJoin')
@@ -172,15 +185,15 @@ class CraftingCategoryRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var CraftingCategoryRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(CraftingCategoryRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('cc')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new CraftingCategoryRepository($entityManager);
 
         $result = $this->invokeMethod($repository, 'findOrphanedIds');
         $this->assertEquals($expectedResult, $result);
@@ -193,7 +206,6 @@ class CraftingCategoryRepositoryTest extends TestCase
      */
     public function testRemoveIds(): void
     {
-        $entityName = 'abc';
         $craftingCategoryIds = [42, 1337];
 
         /* @var AbstractQuery|MockObject $query */
@@ -211,7 +223,7 @@ class CraftingCategoryRepositoryTest extends TestCase
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('delete')
-                     ->with($entityName, 'cc')
+                     ->with(CraftingCategory::class, 'cc')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('andWhere')
@@ -225,18 +237,15 @@ class CraftingCategoryRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var CraftingCategoryRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(CraftingCategoryRepository::class)
-                           ->setMethods(['createQueryBuilder', 'getEntityName'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('cc')
-                   ->willReturn($queryBuilder);
-        $repository->expects($this->once())
-                   ->method('getEntityName')
-                   ->willReturn($entityName);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new CraftingCategoryRepository($entityManager);
 
         $this->invokeMethod($repository, 'removeIds', $craftingCategoryIds);
     }
