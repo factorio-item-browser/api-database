@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use DateTime;
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 
 /**
@@ -14,7 +13,7 @@ use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class CachedSearchResultRepository extends EntityRepository
+class CachedSearchResultRepository extends AbstractRepository
 {
     /**
      * Finds the search results with the specified hashes.
@@ -26,8 +25,10 @@ class CachedSearchResultRepository extends EntityRepository
     {
         $result = [];
         if (count($hashes) > 0) {
-            $queryBuilder = $this->createQueryBuilder('r');
-            $queryBuilder->andWhere('r.hash IN (:hashes)')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select('r')
+                         ->from(CachedSearchResult::class, 'r')
+                         ->andWhere('r.hash IN (:hashes)')
                          ->andWhere('r.lastSearchTime > :maxAge')
                          ->setParameter('hashes', array_values(array_map('hex2bin', $hashes)))
                          ->setParameter('maxAge', $maxAge);
@@ -43,8 +44,8 @@ class CachedSearchResultRepository extends EntityRepository
      */
     public function cleanup(DateTime $maxAge): void
     {
-        $queryBuilder = $this->createQueryBuilder('r');
-        $queryBuilder->delete($this->getEntityName(), 'r')
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(CachedSearchResult::class, 'r')
                      ->andWhere('r.lastSearchTime < :maxAge')
                      ->setParameter('maxAge', $maxAge);
 
@@ -56,8 +57,8 @@ class CachedSearchResultRepository extends EntityRepository
      */
     public function clear(): void
     {
-        $queryBuilder = $this->createQueryBuilder('r');
-        $queryBuilder->delete($this->getEntityName(), 'r');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(CachedSearchResult::class, 'r');
 
         $queryBuilder->getQuery()->execute();
     }

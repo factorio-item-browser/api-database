@@ -1,0 +1,31 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\CachedSearchResult">
+        <options>
+            <option name="comment">The table caching the search results.</option>
+        </options>
+
+        <id name="hash" length="8" column-definition="BINARY(8)">
+            <options>
+                <option name="fixed">true</option>
+                <option name="comment">The hash of the search.</option>
+            </options>
+        </id>
+
+        <field name="resultData">
+            <options>
+                <option name="comment">The result data of the search.</option>
+            </options>
+        </field>
+
+        <field name="lastSearchTime" type="datetime">
+            <options>
+                <option name="comment">The time when the search result was last used.</option>
+            </options>
+        </field>
+    </entity>
+</doctrine-mapping>

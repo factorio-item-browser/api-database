@@ -5,39 +5,29 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Entity;
 
 use DateTime;
-use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 /**
  * The entity of the cached search result database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository")
- * @ORM\Table(name="CachedSearchResult")
  */
 class CachedSearchResult
 {
     /**
-     * @ORM\Id
-     * @ORM\Column(name="hash")
-     *
      * The hash of the search result.
      * @var string
      */
     protected $hash;
 
     /**
-     * @ORM\Column(name="resultData")
-     *
      * The result data of the search.
      * @var string
      */
     protected $resultData = '';
 
     /**
-     * @ORM\Column(name="lastSearchTime", type="datetime")
-     *
      * The time when the search result was last used.
      * @var DateTime
      */
@@ -46,6 +36,7 @@ class CachedSearchResult
     /**
      * Initializes the entity.
      * @param string $hash
+     * @throws Exception
      */
     public function __construct(string $hash)
     {

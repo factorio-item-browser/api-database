@@ -17,6 +17,9 @@ use Doctrine\ORM\EntityManagerInterface;
 return [
     'dependencies' => [
         'factories'  => [
+            Repository\CachedSearchResultRepository::class => Repository\AbstractRepositoryFactory::class,
+
+            // 3rd-party dependencies
             EntityManagerInterface::class => EntityManagerFactory::class,
         ],
     ],
