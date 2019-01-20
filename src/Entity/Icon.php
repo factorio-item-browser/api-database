@@ -4,58 +4,39 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * The entity of the icon database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\IconRepository")
- * @ORM\Table(name="Icon")
  */
 class Icon
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The internal id of the icon.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ModCombination")
-     * @ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")
-     *
      * The mod combination adding the icon.
      * @var ModCombination
      */
     protected $modCombination;
 
     /**
-     * @ORM\ManyToOne(targetEntity="IconFile")
-     * @ORM\JoinColumn(name="iconFileHash", referencedColumnName="hash")
-     *
      * The file of the icon.
      * @var IconFile
      */
     protected $file;
 
     /**
-     * @ORM\Column(name="type")
-     *
      * The type of the icon's prototype.
      * @var string
      */
     protected $type = '';
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The name of the icons's prototype.
      * @var string
      */

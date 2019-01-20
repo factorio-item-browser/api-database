@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Data\IconData;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 
@@ -14,7 +13,7 @@ use FactorioItemBrowser\Api\Database\Entity\Icon;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class IconRepository extends EntityRepository
+class IconRepository extends AbstractRepository
 {
     /**
      * Finds the data of the specified entities.
@@ -32,8 +31,9 @@ class IconRepository extends EntityRepository
             'mc.order AS order'
         ];
 
-        $queryBuilder = $this->createQueryBuilder('i');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select($columns)
+                     ->from(Icon::class, 'i')
                      ->innerJoin('i.modCombination', 'mc');
 
         $index = 0;
@@ -77,8 +77,9 @@ class IconRepository extends EntityRepository
                 'mc.order AS order'
             ];
 
-            $queryBuilder = $this->createQueryBuilder('i');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select($columns)
+                         ->from(Icon::class, 'i')
                          ->innerJoin('i.modCombination', 'mc')
                          ->andWhere('i.file IN (:hashes)')
                          ->setParameter('hashes', array_map('hex2bin', array_values($hashes)));
@@ -116,8 +117,10 @@ class IconRepository extends EntityRepository
     {
         $result = [];
         if (count($ids) > 0) {
-            $queryBuilder = $this->createQueryBuilder('i');
-            $queryBuilder->andWhere('i.id IN (:ids)')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select('i')
+                         ->from(Icon::class, 'i')
+                         ->andWhere('i.id IN (:ids)')
                          ->setParameter('ids', array_values($ids));
 
             $result = $queryBuilder->getQuery()->getResult();
