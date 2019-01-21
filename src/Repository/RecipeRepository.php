@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Data\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
@@ -16,7 +15,7 @@ use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class RecipeRepository extends EntityRepository implements RepositoryWithOrphansInterface
+class RecipeRepository extends AbstractRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the data of the recipes with the specified names.
@@ -35,8 +34,9 @@ class RecipeRepository extends EntityRepository implements RepositoryWithOrphans
                 'mc.order AS order'
             ];
 
-            $queryBuilder = $this->createQueryBuilder('r');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select($columns)
+                         ->from(Recipe::class, 'r')
                          ->innerJoin('r.modCombinations', 'mc')
                          ->andWhere('r.name IN (:names)')
                          ->setParameter('names', array_values($names));
@@ -92,8 +92,9 @@ class RecipeRepository extends EntityRepository implements RepositoryWithOrphans
                 'mc.order AS order'
             ];
 
-            $queryBuilder = $this->createQueryBuilder('r');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select($columns)
+                         ->from(Recipe::class, 'r')
                          ->innerJoin('r.' . $recipeProperty, 'r2')
                          ->innerJoin('r.modCombinations', 'mc')
                          ->andWhere('r2.item IN (:itemIds)')
@@ -128,8 +129,9 @@ class RecipeRepository extends EntityRepository implements RepositoryWithOrphans
                 'mc.order AS order'
             ];
 
-            $queryBuilder = $this->createQueryBuilder('r');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select($columns)
+                         ->from(Recipe::class, 'r')
                          ->innerJoin('r.modCombinations', 'mc');
 
             $index = 0;
@@ -172,11 +174,9 @@ class RecipeRepository extends EntityRepository implements RepositoryWithOrphans
     {
         $result = [];
         if (count($ids) > 0) {
-            $queryBuilder = $this->createQueryBuilder('r');
-            $queryBuilder->addSelect('ri')
-                         ->addSelect('rii')
-                         ->addSelect('rp')
-                         ->addSelect('rpi')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select(['r', 'ri', 'rii', 'rp', 'rpi'])
+                         ->from(Recipe::class, 'r')
                          ->leftJoin('r.ingredients', 'ri')
                          ->leftJoin('ri.item', 'rii')
                          ->leftJoin('r.products', 'rp')
@@ -206,8 +206,9 @@ class RecipeRepository extends EntityRepository implements RepositoryWithOrphans
      */
     protected function findOrphanedIds(): array
     {
-        $queryBuilder = $this->createQueryBuilder('r');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('r.id AS id')
+                     ->from(Recipe::class, 'r')
                      ->leftJoin('r.modCombinations', 'mc')
                      ->andWhere('mc.id IS NULL');
 
@@ -225,22 +226,22 @@ class RecipeRepository extends EntityRepository implements RepositoryWithOrphans
     protected function removeIds(array $recipeIds): void
     {
         // First delete the ingredients...
-        $queryBuilder = $this->createQueryBuilder('r');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->delete(RecipeIngredient::class, 'ri')
                      ->andWhere('ri.recipe IN (:recipeIds)')
                      ->setParameter('recipeIds', array_values($recipeIds));
         $queryBuilder->getQuery()->execute();
 
         // ... and the products.
-        $queryBuilder = $this->createQueryBuilder('r');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->delete(RecipeProduct::class, 'rp')
                      ->andWhere('rp.recipe IN (:recipeIds)')
                      ->setParameter('recipeIds', array_values($recipeIds));
         $queryBuilder->getQuery()->execute();
 
         // And finally the recipes itself.
-        $queryBuilder = $this->createQueryBuilder('r');
-        $queryBuilder->delete($this->getEntityName(), 'r')
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(Recipe::class, 'r')
                      ->andWhere('r.id IN (:recipeIds)')
                      ->setParameter('recipeIds', array_values($recipeIds));
 

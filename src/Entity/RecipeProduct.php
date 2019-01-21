@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * The entity class of the recipe product database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity
- * @ORM\Table(name="RecipeProduct")
  */
 class RecipeProduct
 {
@@ -33,52 +28,36 @@ class RecipeProduct
     protected const FACTOR_AMOUNT_PROBABILITY = 1000;
 
     /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="results")
-     * @ORM\JoinColumn(name="recipeId", referencedColumnName="id")
-     *
      * The recipe of the result.
      * @var Recipe
      */
     protected $recipe;
 
     /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Item", fetch="EAGER")
-     * @ORM\JoinColumn(name="itemId", referencedColumnName="id")
-     *
      * The item of the result.
      * @var Item
      */
     protected $item;
 
     /**
-     * @ORM\Column(name="amountMin", type="integer")
-     *
      * The minimal amount of the product in the recipe.
      * @var int
      */
     protected $amountMin = 0;
 
     /**
-     * @ORM\Column(name="amountMax", type="integer")
-     *
      * The maximal amount of the product in the recipe.
      * @var int
      */
     protected $amountMax = 0;
 
     /**
-     * @ORM\Column(name="probability", type="integer")
-     *
      * The probability of the product in the recipe.
      * @var int
      */
     protected $probability = 0;
 
     /**
-     * @ORM\Column(name="`order`", type="integer")
-     *
      * The order of the product in the recipe.
      * @var int
      */

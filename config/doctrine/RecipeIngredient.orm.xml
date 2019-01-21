@@ -1,0 +1,37 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\RecipeIngredient">
+        <options>
+            <option name="comment">The table holding the ingredients for the recipes.</option>
+        </options>
+
+        <id name="recipe" association-key="true" />
+        <id name="item" association-key="true" />
+
+        <many-to-one field="recipe" target-entity="Recipe" inversed-by="ingredients">
+            <join-column name="recipeId" />
+        </many-to-one>
+
+        <many-to-one field="item" target-entity="Item" fetch="EAGER">
+            <join-column name="itemId" />
+        </many-to-one>
+
+        <field name="amount" type="integer">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The amount required for the recipe.</option>
+            </options>
+        </field>
+
+        <field name="order" type="smallint" column-definition="TINYINT">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The order of the ingredient in the recipe.</option>
+            </options>
+        </field>
+    </entity>
+</doctrine-mapping>

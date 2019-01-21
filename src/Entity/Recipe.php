@@ -7,16 +7,12 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The entity class of the recipe database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\RecipeRepository")
- * @ORM\Table(name="Recipe")
  */
 class Recipe
 {
@@ -26,67 +22,48 @@ class Recipe
     protected const FACTOR_CRAFTING_TIME = 1000;
 
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The internal id of the recipe.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ModCombination", mappedBy="recipes")
-     *
      * The mod combinations which are adding the recipe.
      * @var Collection|ModCombination[]
      */
     protected $modCombinations;
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The name of the recipe.
      * @var string
      */
     protected $name = '';
 
     /**
-     * @ORM\Column(name="mode")
-     *
      * The mode of the recipe.
      * @var string
      */
     protected $mode = '';
 
     /**
-     * @ORM\Column(name="craftingTime", type="integer")
-     *
      * The required time in milliseconds to craft the recipe.
      * @var int
      */
     protected $craftingTime = 0;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CraftingCategory")
-     * @ORM\JoinColumn(name="craftingCategoryId", referencedColumnName="id")
-     *
      * The crafting category of the recipe.
      * @var CraftingCategory
      */
     protected $craftingCategory;
 
     /**
-     * @ORM\OneToMany(targetEntity="RecipeIngredient", mappedBy="recipe")
-     *
      * The ingredients of the recipe.
      * @var Collection|RecipeIngredient[]
      */
     protected $ingredients;
 
     /**
-     * @ORM\OneToMany(targetEntity="RecipeProduct", mappedBy="recipe")
-     *
      * The products of the recipe.
      * @var Collection|RecipeProduct[]
      */

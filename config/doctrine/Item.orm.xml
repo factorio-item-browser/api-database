@@ -21,13 +21,13 @@
             </options>
         </id>
 
-        <field name="type" unique="true" column-definition="ENUM('item', 'fluid')">
+        <field name="type" column-definition="ENUM('item', 'fluid')">
             <options>
                 <option name="comment">The type of the item.</option>
             </options>
         </field>
 
-        <field name="name" length="255" unique="true">
+        <field name="name" length="255">
             <options>
                 <option name="comment">The unique name of the item.</option>
             </options>

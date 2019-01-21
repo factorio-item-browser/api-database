@@ -1,0 +1,53 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\Recipe">
+        <options>
+            <option name="comment">The table holding the recipes to craft the items.</option>
+        </options>
+
+        <indexes>
+            <index columns="name" />
+        </indexes>
+
+        <id name="id" type="integer">
+            <generator />
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The internal id of the recipe.</option>
+            </options>
+        </id>
+
+        <many-to-many field="modCombinations" target-entity="ModCombinations" mapped-by="recipes" />
+
+        <field name="name" length="255" unique="true">
+            <options>
+                <option name="comment">The name of the recipe.</option>
+            </options>
+        </field>
+
+        <field name="mode" column-definition="ENUM('normal', 'expensive')">
+            <options>
+                <option name="comment">The mode of the recipe.</option>
+            </options>
+        </field>
+
+        <field name="craftingTime" type="integer">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The required time in milliseconds to craft the recipe.</option>
+            </options>
+        </field>
+
+        <many-to-one field="craftingCategory" target-entity="CraftingCategory">
+            <join-column name="craftingCategoryId" />
+        </many-to-one>
+
+        <one-to-many field="ingredients" target-entity="RecipeIngredient" mapped-by="recipe" />
+
+        <one-to-many field="products" target-entity="RecipeProduct" mapped-by="recipe" />
+    </entity>
+</doctrine-mapping>
