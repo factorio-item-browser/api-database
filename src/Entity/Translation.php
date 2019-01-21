@@ -4,89 +4,63 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * The entity class of the Translation database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\TranslationRepository")
- * @ORM\Table(name="Translation")
  */
 class Translation
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The internal id of the translation.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ModCombination", inversedBy="translations")
-     * @ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")
-     *
      * The mod combination providing the translation.
      * @var ModCombination
      */
     protected $modCombination;
 
     /**
-     * @ORM\Column(name="locale")
-     *
      * The locale of the translation.
      * @var string
      */
     protected $locale = '';
 
     /**
-     * @ORM\Column(name="type")
-     *
      * The type of the translation.
      * @var string
      */
     protected $type = '';
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The name of the translation.
      * @var string
      */
     protected $name = '';
 
     /**
-     * @ORM\Column(name="value")
-     *
      * The actual translation.
      * @var string
      */
     protected $value = '';
 
     /**
-     * @ORM\Column(name="description")
-     *
      * The translated description.
      * @var string
      */
     protected $description = '';
 
     /**
-     * @ORM\Column(name="isDuplicatedByRecipe", type="boolean")
-     *
      * Whether this translation is duplicated by the recipe.
      * @var bool
      */
     protected $isDuplicatedByRecipe = false;
 
     /**
-     * @ORM\Column(name="isDuplicatedByMachine", type="boolean")
-     *
      * Whether this translation is duplicated by the machine.
      * @var bool
      */

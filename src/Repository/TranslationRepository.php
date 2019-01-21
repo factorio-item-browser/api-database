@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
 use FactorioItemBrowser\Api\Database\Constant\TranslationType;
 use FactorioItemBrowser\Api\Database\Data\TranslationData;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
+use FactorioItemBrowser\Api\Database\Entity\Translation;
 
 /**
  * The repository of the translation database table.
@@ -16,7 +16,7 @@ use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class TranslationRepository extends EntityRepository
+class TranslationRepository extends AbstractRepository
 {
     /**
      * Finds the translation data with the specified types and names.
@@ -38,8 +38,9 @@ class TranslationRepository extends EntityRepository
             'mc.order AS order'
         ];
 
-        $queryBuilder = $this->createQueryBuilder('t');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select($columns)
+                     ->from(Translation::class, 't')
                      ->innerJoin('t.modCombination', 'mc')
                      ->andWhere('t.locale IN (:locales)')
                      ->setParameter('locales', [$locale, 'en']);
@@ -120,8 +121,9 @@ class TranslationRepository extends EntityRepository
                 'MIN(' . $priorityCase . ') AS priority'
             ];
 
-            $queryBuilder = $this->createQueryBuilder('t');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select($columns)
+                         ->from(Translation::class, 't')
                          ->andWhere('t.type IN (:types)')
                          ->addGroupBy('t.type')
                          ->addGroupBy('t.name')

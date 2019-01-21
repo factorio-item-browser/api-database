@@ -18,6 +18,13 @@ return [
     'dependencies' => [
         'factories'  => [
             Repository\CachedSearchResultRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\CraftingCategoryRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\IconFileRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\IconRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\ItemRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\MachineRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\RecipeRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\TranslationRepository::class => Repository\AbstractRepositoryFactory::class,
 
             // 3rd-party dependencies
             EntityManagerInterface::class => EntityManagerFactory::class,
