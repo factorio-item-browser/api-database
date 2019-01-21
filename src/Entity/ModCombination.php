@@ -6,109 +6,70 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The entity representing the ModCombination database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\ModCombinationRepository")
- * @ORM\Table(name="ModCombination")
  */
 class ModCombination
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The id of the mod combination.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Mod", inversedBy="combinations")
-     * @ORM\JoinColumn(name="modId", referencedColumnName="id")
-     *
      * The main mod.
      * @var Mod
      */
     protected $mod;
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The name of the mod combination.
      * @var string
      */
     protected $name = '';
 
     /**
-     * @ORM\Column(name="optionalModIds", type="json")
-     *
      * The list of the loaded optional mods.
      * @var array|int[]
      */
     protected $optionalModIds = [];
 
     /**
-     * @ORM\Column(name="`order`", type="integer")
-     *
      * The order of the mod combination.
      * @var int
      */
     protected $order = 0;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Item", inversedBy="modCombinations")
-     * @ORM\JoinTable(name="ModCombinationXItem",
-     *     joinColumns={@ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="itemId", referencedColumnName="id")}
-     * )
-     *
      * The items added by the mod combination.
      * @var Collection|Item[]
      */
     protected $items;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Recipe", inversedBy="modCombinations")
-     * @ORM\JoinTable(name="ModCombinationXRecipe",
-     *     joinColumns={@ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="recipeId", referencedColumnName="id")}
-     * )
-     *
      * The recipes added by the mod combination.
      * @var Collection|Recipe[]
      */
     protected $recipes;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Machine", inversedBy="modCombinations")
-     * @ORM\JoinTable(name="ModCombinationXMachine",
-     *     joinColumns={@ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="machineId", referencedColumnName="id")}
-     * )
-     *
      * The machines added by the mod combination.
      * @var Collection|Machine[]
      */
     protected $machines;
 
     /**
-     * @ORM\OneToMany(targetEntity="Translation", mappedBy="modCombination")
-     *
      * The translations added by the mod combination.
      * @var Collection|Translation[]
      */
     protected $translations;
 
     /**
-     * @ORM\OneToMany(targetEntity="Icon", mappedBy="modCombination")
-     *
      * The icons used by the mod combination.
      * @var Collection|Icon[]
      */

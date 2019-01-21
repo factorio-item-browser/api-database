@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\ModCombination;
 use FactorioItemBrowser\Api\Database\Repository\ModCombinationRepository;
@@ -54,9 +55,17 @@ class ModCombinationRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['andWhere', 'addOrderBy', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'andWhere', 'addOrderBy', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with('mc')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(ModCombination::class, 'mc')
+                     ->willReturnSelf();
         $queryBuilder->expects($withNames ? $this->once() : $this->never())
                      ->method('andWhere')
                      ->with('mc.name IN (:names)')
@@ -73,15 +82,15 @@ class ModCombinationRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ModCombinationRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ModCombinationRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withNames ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('mc')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withNames ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ModCombinationRepository($entityManager);
 
         $result = $repository->findByNames($names);
         $this->assertSame($queryResult, $result);
@@ -121,9 +130,25 @@ class ModCombinationRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['innerJoin', 'andWhere', 'addOrderBy', 'setParameter', 'getQuery'])
+                             ->setMethods([
+                                 'select',
+                                 'from',
+                                 'innerJoin',
+                                 'andWhere',
+                                 'addOrderBy',
+                                 'setParameter',
+                                 'getQuery'
+                             ])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($withModNames ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with(['mc', 'm'])
+                     ->willReturnSelf();
+        $queryBuilder->expects($withModNames ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(ModCombination::class, 'mc')
+                     ->willReturnSelf();
         $queryBuilder->expects($withModNames ? $this->once() : $this->never())
                      ->method('innerJoin')
                      ->with('mc.mod', 'm')
@@ -144,15 +169,15 @@ class ModCombinationRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ModCombinationRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ModCombinationRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withModNames ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('mc')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withModNames ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ModCombinationRepository($entityManager);
 
         $result = $repository->findByModNames($modNames);
         $this->assertSame($queryResult, $result);
@@ -193,12 +218,16 @@ class ModCombinationRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($withModCombinationIds ? $this->once() : $this->never())
                      ->method('select')
                      ->with('m.name')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withModCombinationIds ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(ModCombination::class, 'mc')
                      ->willReturnSelf();
         $queryBuilder->expects($withModCombinationIds ? $this->once() : $this->never())
                      ->method('innerJoin')
@@ -216,15 +245,15 @@ class ModCombinationRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ModCombinationRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ModCombinationRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withModCombinationIds ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('mc')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withModCombinationIds ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ModCombinationRepository($entityManager);
 
         $result = $repository->findModNamesByIds($modCombinationIds);
         $this->assertSame($expectedResult, $result);

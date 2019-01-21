@@ -23,6 +23,8 @@ return [
             Repository\IconRepository::class => Repository\AbstractRepositoryFactory::class,
             Repository\ItemRepository::class => Repository\AbstractRepositoryFactory::class,
             Repository\MachineRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\ModRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\ModCombinationRepository::class => Repository\AbstractRepositoryFactory::class,
             Repository\RecipeRepository::class => Repository\AbstractRepositoryFactory::class,
             Repository\TranslationRepository::class => Repository\AbstractRepositoryFactory::class,
 
