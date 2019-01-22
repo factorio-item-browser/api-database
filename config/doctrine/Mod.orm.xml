@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                         https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
 >
-    <entity name="FactorioItemBrowser\Api\Database\Entity\Mod">
+    <entity name="FactorioItemBrowser\Api\Database\Entity\Mod" table="`Mod`">
         <options>
             <option name="comment">The table holding the imported mods.</option>
         </options>

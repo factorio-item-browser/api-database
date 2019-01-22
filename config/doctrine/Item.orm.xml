@@ -33,6 +33,6 @@
             </options>
         </field>
 
-        <many-to-many field="modCombinations" target-entity="ModCombinations" mapped-by="items" />
+        <many-to-many field="modCombinations" target-entity="ModCombination" mapped-by="items" />
     </entity>
 </doctrine-mapping>

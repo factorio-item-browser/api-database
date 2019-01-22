@@ -21,7 +21,7 @@
             </options>
         </id>
 
-        <many-to-many field="modCombinations" target-entity="ModCombinations" mapped-by="recipes" />
+        <many-to-many field="modCombinations" target-entity="ModCombination" mapped-by="recipes" />
 
         <field name="name" length="255" unique="true">
             <options>
