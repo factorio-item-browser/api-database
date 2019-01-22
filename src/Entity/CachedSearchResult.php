@@ -36,7 +36,6 @@ class CachedSearchResult
     /**
      * Initializes the entity.
      * @param string $hash
-     * @throws Exception
      */
     public function __construct(string $hash)
     {

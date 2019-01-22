@@ -104,6 +104,34 @@ class CachedSearchResultRepositoryTest extends TestCase
     }
 
     /**
+     * Tests the persist method.
+     * @covers ::persist
+     */
+    public function testPersist(): void
+    {
+        $cachedSearchResult = new CachedSearchResult('ab12cd34');
+        $mergedCachedSearchResult = new CachedSearchResult('12ab34cd');
+
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['merge', 'persist', 'flush'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('merge')
+                      ->with($cachedSearchResult)
+                      ->willReturn($mergedCachedSearchResult);
+        $entityManager->expects($this->once())
+                      ->method('persist')
+                      ->with($mergedCachedSearchResult);
+        $entityManager->expects($this->once())
+                      ->method('flush');
+
+        $repository = new CachedSearchResultRepository($entityManager);
+
+        $repository->persist($cachedSearchResult);
+    }
+
+    /**
      * Tests the cleanup method.
      * @throws Exception
      * @covers ::cleanup

@@ -39,6 +39,17 @@ class CachedSearchResultRepository extends AbstractRepository
     }
 
     /**
+     * Persists the specified cached search result into the database.
+     * @param CachedSearchResult $cachedSearchResult
+     */
+    public function persist(CachedSearchResult $cachedSearchResult): void
+    {
+        $cachedSearchResult = $this->entityManager->merge($cachedSearchResult);
+        $this->entityManager->persist($cachedSearchResult);
+        $this->entityManager->flush();
+    }
+
+    /**
      * Cleans up no longer needed data.
      * @param DateTime $maxAge
      */
