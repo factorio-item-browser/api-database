@@ -53,6 +53,7 @@
     "phpstan": "phpstan analyse --no-interaction --ansi",
     "phpunit": "phpunit --colors=always --coverage-html=test/log --coverage-clover=test/log/clover.xml",
     "test": [
+      "@composer validate --strict",
       "@phpunit",
       "@coverage-check",
       "@phpcs",

@@ -80,4 +80,17 @@ class ModCombinationRepository extends AbstractRepository
         }
         return $result;
     }
+
+    /**
+     * Returns all the mods.
+     * @return array|ModCombination[]
+     */
+    public function findAll(): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('mc')
+                     ->from(ModCombination::class, 'mc');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

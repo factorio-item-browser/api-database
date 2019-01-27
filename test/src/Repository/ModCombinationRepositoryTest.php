@@ -7,6 +7,7 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Entity\Mod;
 use FactorioItemBrowser\Api\Database\Entity\ModCombination;
 use FactorioItemBrowser\Api\Database\Repository\ModCombinationRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -257,5 +258,56 @@ class ModCombinationRepositoryTest extends TestCase
 
         $result = $repository->findModNamesByIds($modCombinationIds);
         $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * Tests the findAll method.
+     * @covers ::findAll
+     */
+    public function testFindAll(): void
+    {
+        $queryResult = [
+            new ModCombination(new Mod('abc'), 'def'),
+            new ModCombination(new Mod('ghi'), 'jkl'),
+        ];
+
+        /* @var AbstractQuery|MockObject $query */
+        $query = $this->getMockBuilder(AbstractQuery::class)
+                      ->setMethods(['getResult'])
+                      ->disableOriginalConstructor()
+                      ->getMockForAbstractClass();
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        /* @var QueryBuilder|MockObject $queryBuilder */
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+                             ->setMethods(['select', 'from', 'getQuery'])
+                             ->disableOriginalConstructor()
+                             ->getMock();
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with('mc')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with(ModCombination::class, 'mc')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ModCombinationRepository($entityManager);
+
+        $result = $repository->findAll();
+        $this->assertSame($queryResult, $result);
     }
 }
