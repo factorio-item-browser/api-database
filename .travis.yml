@@ -19,6 +19,7 @@ install:
   - composer install --prefer-dist --no-interaction
 
 script:
+  - composer validate --strict
   - vendor/bin/phpunit --coverage-clover=coverage.xml
   - if [ "$SKIP_COVERAGE" != "true" ]; then vendor/bin/coverage-check coverage.xml 100; fi
   - vendor/bin/phpcs -np --colors

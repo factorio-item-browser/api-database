@@ -9,6 +9,11 @@
 - Required parameter `$name` to the constructor of the `ModCombination` entity.
 - Constant interface for the types of the `Translation` entity. 
 
+### Changed
+
+- Using `EntityManagerInterface` in the container instead of the `EntityManager` itself.
+- Repositories no linger inherit from the `EntityRepository` and are registered directly to the container.
+
 ### Fixed
 
 - Error in entity relation between `CraftingCategory` and `Recipe`.
