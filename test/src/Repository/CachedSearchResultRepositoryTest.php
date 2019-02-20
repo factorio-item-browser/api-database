@@ -13,6 +13,7 @@ use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 use FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 
 /**
  * The PHPUnit test of the CachedSearchResultRepository class.
@@ -105,6 +106,8 @@ class CachedSearchResultRepositoryTest extends TestCase
 
     /**
      * Tests the persist method.
+     * @throws ReflectionException
+     * @throws Exception
      * @covers ::persist
      */
     public function testPersist(): void
@@ -184,6 +187,7 @@ class CachedSearchResultRepositoryTest extends TestCase
 
     /**
      * Tests the clear method.
+     * @throws ReflectionException
      * @covers ::clear
      */
     public function testClear(): void

@@ -47,6 +47,7 @@ class TranslationRepositoryTest extends TestCase
      * Tests the findDataByTypesAndNames method.
      * @param bool $withNamesByTypes
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByTypesAndNames
      * @dataProvider provideFindDataByTypesAndNames
      */
@@ -195,6 +196,7 @@ class TranslationRepositoryTest extends TestCase
      * Tests the findDataByKeywords method.
      * @param bool $withKeywords
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByKeywords
      * @dataProvider provideFindDataByKeywords
      */

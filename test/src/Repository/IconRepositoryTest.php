@@ -44,6 +44,7 @@ class IconRepositoryTest extends TestCase
      * Tests the findDataByTypesAndNames method.
      * @param bool $withNamesByTypes
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByTypesAndNames
      * @dataProvider provideFindDataByTypesAndNames
      */
@@ -147,6 +148,7 @@ class IconRepositoryTest extends TestCase
      * Tests the findDataByHashes method.
      * @param bool $withHashes
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByHashes
      * @dataProvider provideFindDataByHashes
      */
@@ -270,6 +272,7 @@ class IconRepositoryTest extends TestCase
     /**
      * Tests the findByIds method.
      * @param bool $withIds
+     * @throws ReflectionException
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */

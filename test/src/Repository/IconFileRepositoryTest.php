@@ -40,6 +40,7 @@ class IconFileRepositoryTest extends TestCase
     /**
      * Tests the findByHashes method.
      * @param bool $withHashes
+     * @throws ReflectionException
      * @covers ::findByHashes
      * @dataProvider provideFindByHashes
      */
@@ -113,6 +114,7 @@ class IconFileRepositoryTest extends TestCase
      * Tests the removeOrphans method.
      * @param array $orphanedHashes
      * @param bool $expectRemove
+     * @throws ReflectionException
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */

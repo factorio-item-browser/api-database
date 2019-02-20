@@ -11,22 +11,23 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database;
 
+use Blast\ReflectionFactory\ReflectionFactory;
 use ContainerInteropDoctrine\EntityManagerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 
 return [
     'dependencies' => [
         'factories'  => [
-            Repository\CachedSearchResultRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\CraftingCategoryRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\IconFileRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\IconRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\ItemRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\MachineRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\ModRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\ModCombinationRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\RecipeRepository::class => Repository\AbstractRepositoryFactory::class,
-            Repository\TranslationRepository::class => Repository\AbstractRepositoryFactory::class,
+            Repository\CachedSearchResultRepository::class => ReflectionFactory::class,
+            Repository\CraftingCategoryRepository::class => ReflectionFactory::class,
+            Repository\IconFileRepository::class => ReflectionFactory::class,
+            Repository\IconRepository::class => ReflectionFactory::class,
+            Repository\ItemRepository::class => ReflectionFactory::class,
+            Repository\MachineRepository::class => ReflectionFactory::class,
+            Repository\ModRepository::class => ReflectionFactory::class,
+            Repository\ModCombinationRepository::class => ReflectionFactory::class,
+            Repository\RecipeRepository::class => ReflectionFactory::class,
+            Repository\TranslationRepository::class => ReflectionFactory::class,
 
             // 3rd-party dependencies
             EntityManagerInterface::class => EntityManagerFactory::class,

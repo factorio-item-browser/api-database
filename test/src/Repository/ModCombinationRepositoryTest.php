@@ -12,6 +12,7 @@ use FactorioItemBrowser\Api\Database\Entity\ModCombination;
 use FactorioItemBrowser\Api\Database\Repository\ModCombinationRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 
 /**
  * The PHPUnit test of the ModCombinationRepository class.
@@ -37,6 +38,7 @@ class ModCombinationRepositoryTest extends TestCase
     /**
      * Tests the findByNames method.
      * @param bool $withNames
+     * @throws ReflectionException
      * @covers ::findByNames
      * @dataProvider provideFindByNames
      */
@@ -112,6 +114,7 @@ class ModCombinationRepositoryTest extends TestCase
     /**
      * Tests the findByModNames method.
      * @param bool $withModNames
+     * @throws ReflectionException
      * @covers ::findByModNames
      * @dataProvider provideFindByModNames
      */
@@ -199,6 +202,7 @@ class ModCombinationRepositoryTest extends TestCase
     /**
      * Tests the findModNamesByIds method.
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findModNamesByIds
      * @dataProvider provideFindModNamesByIds
      */
@@ -262,6 +266,7 @@ class ModCombinationRepositoryTest extends TestCase
 
     /**
      * Tests the findAll method.
+     * @throws ReflectionException
      * @covers ::findAll
      */
     public function testFindAll(): void

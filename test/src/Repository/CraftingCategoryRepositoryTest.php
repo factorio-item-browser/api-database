@@ -40,6 +40,7 @@ class CraftingCategoryRepositoryTest extends TestCase
     /**
      * Tests the findByNames method.
      * @param bool $withNames
+     * @throws ReflectionException
      * @covers ::findByNames
      * @dataProvider provideFindByNames
      */
@@ -112,6 +113,7 @@ class CraftingCategoryRepositoryTest extends TestCase
      * Tests the removeOrphans method.
      * @param array $orphanedIds
      * @param bool $expectRemove
+     * @throws ReflectionException
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */

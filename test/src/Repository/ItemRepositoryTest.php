@@ -45,6 +45,7 @@ class ItemRepositoryTest extends TestCase
      * Tests the findByTypesAndNames method.
      * @param bool $withNamesByTypes
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findByTypesAndNames
      * @dataProvider provideFindByTypesAndNames
      */
@@ -131,6 +132,7 @@ class ItemRepositoryTest extends TestCase
     /**
      * Tests the findByIds method.
      * @param bool $withIds
+     * @throws ReflectionException
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
@@ -205,6 +207,7 @@ class ItemRepositoryTest extends TestCase
      * Tests the findByKeywords method.
      * @param bool $withKeywords
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findByKeywords
      * @dataProvider provideFindByKeywords
      */
@@ -290,6 +293,7 @@ class ItemRepositoryTest extends TestCase
     /**
      * Tests the findRandom method.
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findRandom
      * @dataProvider provideFindRandom
      */
@@ -384,6 +388,7 @@ class ItemRepositoryTest extends TestCase
      * Tests the removeOrphans method.
      * @param array $orphanedIds
      * @param bool $expectRemove
+     * @throws ReflectionException
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */

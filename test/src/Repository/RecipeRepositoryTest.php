@@ -46,6 +46,7 @@ class RecipeRepositoryTest extends TestCase
      * Tests the findDataByNames method.
      * @param bool $withNames
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByNames
      * @dataProvider provideFindDataByNames
      */
@@ -129,6 +130,7 @@ class RecipeRepositoryTest extends TestCase
     
     /**
      * Tests the findDataByIngredientItemIds method.
+     * @throws ReflectionException
      * @covers ::findDataByIngredientItemIds
      */
     public function testFindDataByIngredientItemIds(): void
@@ -153,6 +155,7 @@ class RecipeRepositoryTest extends TestCase
 
     /**
      * Tests the findDataByProductItemIds method.
+     * @throws ReflectionException
      * @covers ::findDataByProductItemIds
      */
     public function testFindDataByProductItemIds(): void
@@ -313,6 +316,7 @@ class RecipeRepositoryTest extends TestCase
      * Tests the findDataByKeywords method.
      * @param bool $withKeywords
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByKeywords
      * @dataProvider provideFindDataByKeywords
      */
@@ -434,6 +438,7 @@ class RecipeRepositoryTest extends TestCase
     /**
      * Tests the findByIds method.
      * @param bool $withIds
+     * @throws ReflectionException
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
@@ -516,6 +521,7 @@ class RecipeRepositoryTest extends TestCase
      * Tests the removeOrphans method.
      * @param array $orphanedIds
      * @param bool $expectRemove
+     * @throws ReflectionException
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */

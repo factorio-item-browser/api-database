@@ -74,7 +74,7 @@ class RecipeRepository extends AbstractRepository implements RepositoryWithOrpha
     }
 
     /**
-     * Finds the data of recipes having a specific item involed.
+     * Finds the data of recipes having a specific item involved.
      * @param string $recipeProperty
      * @param array|int[] $itemIds
      * @param array|int[] $modCombinationIds

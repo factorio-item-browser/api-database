@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use DateTime;
+use Exception;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 use PHPUnit\Framework\TestCase;
 
@@ -19,6 +20,7 @@ class CachedSearchResultTest extends TestCase
 {
     /**
      * Tests the constructing.
+     * @throws Exception
      * @covers ::__construct
      */
     public function testConstruct(): void
@@ -32,6 +34,7 @@ class CachedSearchResultTest extends TestCase
 
     /**
      * Tests setting and getting the hash.
+     * @throws Exception
      * @covers ::getHash
      * @covers ::setHash
      */
@@ -46,6 +49,7 @@ class CachedSearchResultTest extends TestCase
 
     /**
      * Tests setting and getting the resultData.
+     * @throws Exception
      * @covers ::getResultData
      * @covers ::setResultData
      */
@@ -60,6 +64,7 @@ class CachedSearchResultTest extends TestCase
 
     /**
      * Tests setting and getting the lastSearchTime.
+     * @throws Exception
      * @covers ::getLastSearchTime
      * @covers ::setLastSearchTime
      */

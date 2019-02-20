@@ -44,6 +44,7 @@ class MachineRepositoryTest extends TestCase
      * Tests the findDataByNames method.
      * @param bool $withNames
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByNames
      * @dataProvider provideFindDataByNames
      */
@@ -142,6 +143,7 @@ class MachineRepositoryTest extends TestCase
      * Tests the findDataByCraftingCategories method.
      * @param bool $withCraftingCategories
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByCraftingCategories
      * @dataProvider provideFindDataByCraftingCategories
      */
@@ -263,6 +265,7 @@ class MachineRepositoryTest extends TestCase
     /**
      * Tests the findByIds method.
      * @param bool $withIds
+     * @throws ReflectionException
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
@@ -339,6 +342,7 @@ class MachineRepositoryTest extends TestCase
      * Tests the removeOrphans method.
      * @param array $orphanedIds
      * @param bool $expectRemove
+     * @throws ReflectionException
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */

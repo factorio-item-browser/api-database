@@ -11,6 +11,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use FactorioItemBrowser\Api\Database\Functions\RandFunction;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 
 /**
  * The PHPUnit test of the RandFunction class.
@@ -23,8 +24,9 @@ class RandFunctionTest extends TestCase
 {
     /**
      * Tests the parse method.
-     * @covers ::parse
      * @throws QueryException
+     * @throws ReflectionException
+     * @covers ::parse
      */
     public function testParse(): void
     {
@@ -48,6 +50,7 @@ class RandFunctionTest extends TestCase
 
     /**
      * Tests the getSql method.
+     * @throws ReflectionException
      * @covers ::getSql
      */
     public function testGetSql(): void
