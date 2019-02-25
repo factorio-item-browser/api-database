@@ -57,7 +57,7 @@ class RecipeIngredient
      * @param Recipe $recipe
      * @return $this Implementing fluent interface.
      */
-    public function setRecipe(Recipe $recipe)
+    public function setRecipe(Recipe $recipe): self
     {
         $this->recipe = $recipe;
         return $this;
@@ -77,7 +77,7 @@ class RecipeIngredient
      * @param Item $item
      * @return $this Implementing fluent interface.
      */
-    public function setItem(Item $item)
+    public function setItem(Item $item): self
     {
         $this->item = $item;
         return $this;
@@ -97,7 +97,7 @@ class RecipeIngredient
      * @param float $amount
      * @return $this Implementing fluent interface.
      */
-    public function setAmount(float $amount)
+    public function setAmount(float $amount): self
     {
         $this->amount = (int) ($amount * self::FACTOR_AMOUNT);
         return $this;
@@ -117,7 +117,7 @@ class RecipeIngredient
      * @param int $order
      * @return $this Implementing fluent interface.
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

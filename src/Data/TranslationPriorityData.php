@@ -38,7 +38,7 @@ class TranslationPriorityData implements DataInterface
      * @param string $type
      * @return $this
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
@@ -58,7 +58,7 @@ class TranslationPriorityData implements DataInterface
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -78,7 +78,7 @@ class TranslationPriorityData implements DataInterface
      * @param int $priority
      * @return $this
      */
-    public function setPriority(int $priority)
+    public function setPriority(int $priority): self
     {
         $this->priority = $priority;
         return $this;

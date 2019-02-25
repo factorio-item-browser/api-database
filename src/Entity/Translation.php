@@ -86,7 +86,7 @@ class Translation
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -106,7 +106,7 @@ class Translation
      * @param ModCombination $modCombination
      * @return $this Implementing fluent interface.
      */
-    public function setModCombination(ModCombination $modCombination)
+    public function setModCombination(ModCombination $modCombination): self
     {
         $this->modCombination = $modCombination;
         return $this;
@@ -126,7 +126,7 @@ class Translation
      * @param string $locale
      * @return $this Implementing fluent interface.
      */
-    public function setLocale(string $locale)
+    public function setLocale(string $locale): self
     {
         $this->locale = $locale;
         return $this;
@@ -146,7 +146,7 @@ class Translation
      * @param string $type
      * @return $this Implementing fluent interface.
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
@@ -166,7 +166,7 @@ class Translation
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -186,7 +186,7 @@ class Translation
      * @param string $value
      * @return $this Implementing fluent interface.
      */
-    public function setValue(string $value)
+    public function setValue(string $value): self
     {
         $this->value = $value;
         return $this;
@@ -206,7 +206,7 @@ class Translation
      * @param string $description
      * @return $this Implementing fluent interface.
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
         return $this;
@@ -226,7 +226,7 @@ class Translation
      * @param bool $isDuplicatedByRecipe
      * @return $this Implementing fluent interface.
      */
-    public function setIsDuplicatedByRecipe(bool $isDuplicatedByRecipe)
+    public function setIsDuplicatedByRecipe(bool $isDuplicatedByRecipe): self
     {
         $this->isDuplicatedByRecipe = $isDuplicatedByRecipe;
         return $this;
@@ -246,7 +246,7 @@ class Translation
      * @param bool $isDuplicatedByMachine
      * @return $this Implementing fluent interface.
      */
-    public function setIsDuplicatedByMachine(bool $isDuplicatedByMachine)
+    public function setIsDuplicatedByMachine(bool $isDuplicatedByMachine): self
     {
         $this->isDuplicatedByMachine = $isDuplicatedByMachine;
         return $this;

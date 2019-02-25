@@ -56,7 +56,7 @@ class Item
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -76,7 +76,7 @@ class Item
      * @param string $type
      * @return $this Implementing fluent interface.
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
@@ -96,7 +96,7 @@ class Item
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;

@@ -97,7 +97,7 @@ class ModCombination
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -117,7 +117,7 @@ class ModCombination
      * @param Mod $mod
      * @return $this Implementing fluent interface.
      */
-    public function setMod(Mod $mod)
+    public function setMod(Mod $mod): self
     {
         $this->mod = $mod;
         return $this;
@@ -137,7 +137,7 @@ class ModCombination
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -157,7 +157,7 @@ class ModCombination
      * @param array|int[] $optionalModIds
      * @return $this Implementing fluent interface.
      */
-    public function setOptionalModIds(array $optionalModIds)
+    public function setOptionalModIds(array $optionalModIds): self
     {
         $this->optionalModIds = $optionalModIds;
         return $this;
@@ -177,7 +177,7 @@ class ModCombination
      * @param int $order
      * @return $this Implementing fluent interface.
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

@@ -49,7 +49,7 @@ class RecipeData implements DataInterface
      * @param int $id
      * @return $this
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -69,7 +69,7 @@ class RecipeData implements DataInterface
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -89,7 +89,7 @@ class RecipeData implements DataInterface
      * @param string $mode
      * @return $this
      */
-    public function setMode(string $mode)
+    public function setMode(string $mode): self
     {
         $this->mode = $mode;
         return $this;
@@ -109,7 +109,7 @@ class RecipeData implements DataInterface
      * @param int $itemId
      * @return $this
      */
-    public function setItemId(int $itemId)
+    public function setItemId(int $itemId): self
     {
         $this->itemId = $itemId;
         return $this;
@@ -129,7 +129,7 @@ class RecipeData implements DataInterface
      * @param int $order
      * @return $this
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

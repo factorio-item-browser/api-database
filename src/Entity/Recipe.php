@@ -90,7 +90,7 @@ class Recipe
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -109,7 +109,7 @@ class Recipe
      * Returns the mod combinations adding the recipe.
      * @return Collection|ModCombination[]
      */
-    public function getModCombinations()
+    public function getModCombinations(): Collection
     {
         return $this->modCombinations;
     }
@@ -119,7 +119,7 @@ class Recipe
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -139,7 +139,7 @@ class Recipe
      * @param string $mode
      * @return $this Implementing fluent interface.
      */
-    public function setMode(string $mode)
+    public function setMode(string $mode): self
     {
         $this->mode = $mode;
         return $this;
@@ -159,7 +159,7 @@ class Recipe
      * @param float $craftingTime
      * @return $this Implementing fluent interface.
      */
-    public function setCraftingTime(float $craftingTime)
+    public function setCraftingTime(float $craftingTime): self
     {
         $this->craftingTime = (int) ($craftingTime * self::FACTOR_CRAFTING_TIME);
         return $this;
@@ -179,7 +179,7 @@ class Recipe
      * @param CraftingCategory $craftingCategory
      * @return $this
      */
-    public function setCraftingCategory(CraftingCategory $craftingCategory)
+    public function setCraftingCategory(CraftingCategory $craftingCategory): self
     {
         $this->craftingCategory = $craftingCategory;
         return $this;

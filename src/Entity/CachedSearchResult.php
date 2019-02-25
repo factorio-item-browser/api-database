@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use Exception;
 
 /**
@@ -29,7 +30,7 @@ class CachedSearchResult
 
     /**
      * The time when the search result was last used.
-     * @var DateTime
+     * @var DateTimeInterface
      */
     protected $lastSearchTime;
 
@@ -49,7 +50,7 @@ class CachedSearchResult
      * @param string $hash
      * @return $this
      */
-    public function setHash(string $hash)
+    public function setHash(string $hash): self
     {
         $this->hash = (string) hex2bin($hash);
         return $this;
@@ -69,7 +70,7 @@ class CachedSearchResult
      * @param string $resultData
      * @return $this
      */
-    public function setResultData(string $resultData)
+    public function setResultData(string $resultData): self
     {
         $this->resultData = $resultData;
         return $this;
@@ -86,10 +87,10 @@ class CachedSearchResult
 
     /**
      * Sets the time when the search result was last used.
-     * @param DateTime $lastSearchTime
+     * @param DateTimeInterface $lastSearchTime
      * @return $this
      */
-    public function setLastSearchTime(DateTime $lastSearchTime)
+    public function setLastSearchTime(DateTimeInterface $lastSearchTime): self
     {
         $this->lastSearchTime = $lastSearchTime;
         return $this;
@@ -97,9 +98,9 @@ class CachedSearchResult
 
     /**
      * Returns the time when the search result was last used.
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    public function getLastSearchTime(): DateTime
+    public function getLastSearchTime(): DateTimeInterface
     {
         return $this->lastSearchTime;
     }

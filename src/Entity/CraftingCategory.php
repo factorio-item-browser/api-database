@@ -55,7 +55,7 @@ class CraftingCategory
      * @param int $id
      * @return $this
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -75,7 +75,7 @@ class CraftingCategory
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;

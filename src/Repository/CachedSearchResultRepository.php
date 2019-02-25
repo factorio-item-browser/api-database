@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use DateTime;
+use DateTimeInterface;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 
 /**
@@ -18,10 +18,10 @@ class CachedSearchResultRepository extends AbstractRepository
     /**
      * Finds the search results with the specified hashes.
      * @param array|string[] $hashes
-     * @param DateTime $maxAge
+     * @param DateTimeInterface $maxAge
      * @return array|CachedSearchResult[]
      */
-    public function findByHashes(array $hashes, DateTime $maxAge): array
+    public function findByHashes(array $hashes, DateTimeInterface $maxAge): array
     {
         $result = [];
         if (count($hashes) > 0) {
@@ -51,9 +51,9 @@ class CachedSearchResultRepository extends AbstractRepository
 
     /**
      * Cleans up no longer needed data.
-     * @param DateTime $maxAge
+     * @param DateTimeInterface $maxAge
      */
-    public function cleanup(DateTime $maxAge): void
+    public function cleanup(DateTimeInterface $maxAge): void
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->delete(CachedSearchResult::class, 'r')

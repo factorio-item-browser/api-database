@@ -58,7 +58,7 @@ class Icon
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -78,7 +78,7 @@ class Icon
      * @param ModCombination $modCombination
      * @return $this Implementing fluent interface.
      */
-    public function setModCombination(ModCombination $modCombination)
+    public function setModCombination(ModCombination $modCombination): self
     {
         $this->modCombination = $modCombination;
         return $this;
@@ -98,7 +98,7 @@ class Icon
      * @param IconFile $file
      * @return $this Implementing fluent interface.
      */
-    public function setFile(IconFile $file)
+    public function setFile(IconFile $file): self
     {
         $this->file = $file;
         return $this;
@@ -118,7 +118,7 @@ class Icon
      * @param string $type
      * @return $this Implementing fluent interface.
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
@@ -138,7 +138,7 @@ class Icon
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;

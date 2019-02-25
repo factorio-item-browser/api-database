@@ -117,7 +117,7 @@ class Machine
      * @param int $id
      * @return $this
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -137,7 +137,7 @@ class Machine
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -175,7 +175,7 @@ class Machine
      * @param float $craftingSpeed
      * @return $this
      */
-    public function setCraftingSpeed(float $craftingSpeed)
+    public function setCraftingSpeed(float $craftingSpeed): self
     {
         $this->craftingSpeed = (int) ($craftingSpeed * self::FACTOR_CRAFTING_SPEED);
         return $this;
@@ -195,7 +195,7 @@ class Machine
      * @param int $numberOfItemSlots
      * @return $this
      */
-    public function setNumberOfItemSlots(int $numberOfItemSlots)
+    public function setNumberOfItemSlots(int $numberOfItemSlots): self
     {
         if ($numberOfItemSlots === self::VALUE_UNLIMITED_SLOTS) {
             $this->numberOfItemSlots = self::VALUE_UNLIMITED_SLOTS_DATABASE;
@@ -284,7 +284,7 @@ class Machine
      * @param float $energyUsage
      * @return $this
      */
-    public function setEnergyUsage(float $energyUsage)
+    public function setEnergyUsage(float $energyUsage): self
     {
         $this->energyUsage = (int) ($energyUsage * self::FACTOR_ENERGY_USAGE);
         return $this;
@@ -304,7 +304,7 @@ class Machine
      * @param string $energyUsageUnit
      * @return $this
      */
-    public function setEnergyUsageUnit(string $energyUsageUnit)
+    public function setEnergyUsageUnit(string $energyUsageUnit): self
     {
         $this->energyUsageUnit = $energyUsageUnit;
         return $this;

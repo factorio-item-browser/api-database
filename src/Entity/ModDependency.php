@@ -52,7 +52,7 @@ class ModDependency
      * @param Mod $mod
      * @return $this Implementing fluent interface.
      */
-    public function setMod(Mod $mod)
+    public function setMod(Mod $mod): self
     {
         $this->mod = $mod;
         return $this;
@@ -112,7 +112,7 @@ class ModDependency
      * @param string $type
      * @return $this Implementing fluent interface.
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;

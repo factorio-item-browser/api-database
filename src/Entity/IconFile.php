@@ -48,7 +48,7 @@ class IconFile
      * @param string $hash
      * @return $this Implementing fluent interface.
      */
-    public function setHash(string $hash)
+    public function setHash(string $hash): self
     {
         $this->hash = (string) hex2bin($hash);
         return $this;
@@ -68,7 +68,7 @@ class IconFile
      * @param string $image
      * @return $this Implementing fluent interface.
      */
-    public function setImage(string $image)
+    public function setImage(string $image): self
     {
         $this->image = $image;
         return $this;

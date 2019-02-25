@@ -13,6 +13,7 @@
 
 - Using `EntityManagerInterface` in the container instead of the `EntityManager` itself.
 - Repositories no linger inherit from the `EntityRepository` and are registered directly to the container.
+- Type hints from `DateTime` to `DateTimeInterface`.
 
 ### Fixed
 

@@ -74,7 +74,7 @@ class Mod
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -94,7 +94,7 @@ class Mod
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -114,7 +114,7 @@ class Mod
      * @param string $author
      * @return $this Implementing fluent interface.
      */
-    public function setAuthor(string $author)
+    public function setAuthor(string $author): self
     {
         $this->author = $author;
         return $this;
@@ -134,7 +134,7 @@ class Mod
      * @param string $currentVersion
      * @return $this Implementing fluent interface.
      */
-    public function setCurrentVersion(string $currentVersion)
+    public function setCurrentVersion(string $currentVersion): self
     {
         $this->currentVersion = $currentVersion;
         return $this;
@@ -154,7 +154,7 @@ class Mod
      * @param int $order
      * @return $this Implementing fluent interface.
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;
