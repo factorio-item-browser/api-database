@@ -6,6 +6,7 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use BluePsyduck\Common\Test\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Data\IconData;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
@@ -43,6 +44,7 @@ class IconRepositoryTest extends TestCase
      * Tests the findDataByTypesAndNames method.
      * @param bool $withNamesByTypes
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByTypesAndNames
      * @dataProvider provideFindDataByTypesAndNames
      */
@@ -62,9 +64,9 @@ class IconRepositoryTest extends TestCase
               ->method('getResult')
               ->willReturn($queryResult);
 
-                /* @var QueryBuilder|MockObject $queryBuilder */
+        /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($this->once())
@@ -76,6 +78,10 @@ class IconRepositoryTest extends TestCase
                          'i.name AS name',
                          'mc.order AS order',
                      ])
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with(Icon::class, 'i')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('innerJoin')
@@ -102,15 +108,19 @@ class IconRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
         /* @var IconRepository|MockObject $repository */
         $repository = $this->getMockBuilder(IconRepository::class)
-                           ->setMethods(['createQueryBuilder', 'mapIconDataResult'])
-                           ->disableOriginalConstructor()
+                           ->setMethods(['mapIconDataResult'])
+                           ->setConstructorArgs([$entityManager])
                            ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
         $repository->expects($withNamesByTypes ? $this->once() : $this->never())
                    ->method('mapIconDataResult')
                    ->with($queryResult)
@@ -138,6 +148,7 @@ class IconRepositoryTest extends TestCase
      * Tests the findDataByHashes method.
      * @param bool $withHashes
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByHashes
      * @dataProvider provideFindDataByHashes
      */
@@ -160,7 +171,7 @@ class IconRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($withHashes ? $this->once() : $this->never())
@@ -172,6 +183,10 @@ class IconRepositoryTest extends TestCase
                          'i.name AS name',
                          'mc.order AS order',
                      ])
+                     ->willReturnSelf();
+        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(Icon::class, 'i')
                      ->willReturnSelf();
         $queryBuilder->expects($withHashes ? $this->once() : $this->never())
                      ->method('innerJoin')
@@ -195,15 +210,19 @@ class IconRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withHashes ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
         /* @var IconRepository|MockObject $repository */
         $repository = $this->getMockBuilder(IconRepository::class)
-                           ->setMethods(['createQueryBuilder', 'mapIconDataResult'])
-                           ->disableOriginalConstructor()
+                           ->setMethods(['mapIconDataResult'])
+                           ->setConstructorArgs([$entityManager])
                            ->getMock();
-        $repository->expects($withHashes ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
         $repository->expects($withHashes ? $this->once() : $this->never())
                    ->method('mapIconDataResult')
                    ->with($queryResult)
@@ -229,8 +248,10 @@ class IconRepositoryTest extends TestCase
             (new IconData())->setId(1337),
         ];
 
-        /* @var IconRepository $repository */
-        $repository = $this->createMock(IconRepository::class);
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+
+        $repository = new IconRepository($entityManager);
 
         $result = $this->invokeMethod($repository, 'mapIconDataResult', $iconData);
         $this->assertEquals($expectedResult, $result);
@@ -251,6 +272,7 @@ class IconRepositoryTest extends TestCase
     /**
      * Tests the findByIds method.
      * @param bool $withIds
+     * @throws ReflectionException
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
@@ -270,9 +292,17 @@ class IconRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($withIds ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with('i')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withIds ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(Icon::class, 'i')
+                     ->willReturnSelf();
         $queryBuilder->expects($withIds ? $this->once() : $this->never())
                      ->method('andWhere')
                      ->with('i.id IN (:ids)')
@@ -285,15 +315,15 @@ class IconRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var IconRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(IconRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withIds ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withIds ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new IconRepository($entityManager);
 
         $result = $repository->findByIds($ids);
         $this->assertSame($queryResult, $result);

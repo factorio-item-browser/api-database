@@ -1,0 +1,91 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\Machine">
+        <options>
+            <option name="comment">The table holding the crafting machines of the recipes.</option>
+        </options>
+
+        <indexes>
+            <index columns="name" />
+        </indexes>
+
+        <id name="id" type="integer">
+            <generator />
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The internal id of the machine.</option>
+            </options>
+        </id>
+
+        <field name="name" length="255">
+            <options>
+                <option name="comment">The name of the machine.</option>
+            </options>
+        </field>
+
+        <many-to-many field="modCombinations" target-entity="ModCombination" mapped-by="machines" />
+
+        <many-to-many field="craftingCategories" target-entity="CraftingCategory">
+            <join-table name="MachineXCraftingCategory">
+                <join-columns>
+                    <join-column name="machineId" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="craftingCategoryId" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+        <field name="craftingSpeed" type="integer" column-definition="MEDIUMINT">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The crafting speed of the machine.</option>
+            </options>
+        </field>
+
+        <field name="numberOfItemSlots" type="smallint" column-definition="TINYINT">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The number of item slots available in the machine, or 255 for unlimited.</option>
+            </options>
+        </field>
+
+        <field name="numberOfFluidInputSlots" type="smallint" column-definition="TINYINT">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The number of fluid input slots available in the machine.</option>
+            </options>
+        </field>
+
+        <field name="numberOfFluidOutputSlots" type="smallint" column-definition="TINYINT">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The number of fluid output slots available in the machine.</option>
+            </options>
+        </field>
+
+        <field name="numberOfModuleSlots" type="smallint" column-definition="TINYINT">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The number of module slots available in the machine.</option>
+            </options>
+        </field>
+
+        <field name="energyUsage" type="integer" column-definition="MEDIUMINT">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The energy usage of the machine.</option>
+            </options>
+        </field>
+
+        <field name="energyUsageUnit" column-definition="ENUM('W','kW','MW','GW','TW','PW','EW','ZW','YW')">
+            <options>
+                <option name="comment">The unit of the energy usage.</option>
+            </options>
+        </field>
+    </entity>
+</doctrine-mapping>

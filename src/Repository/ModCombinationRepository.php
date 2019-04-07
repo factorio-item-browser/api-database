@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Entity\ModCombination;
 
 /**
@@ -13,7 +12,7 @@ use FactorioItemBrowser\Api\Database\Entity\ModCombination;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class ModCombinationRepository extends EntityRepository
+class ModCombinationRepository extends AbstractRepository
 {
     /**
      * Finds the combinations with the specified names.
@@ -24,8 +23,10 @@ class ModCombinationRepository extends EntityRepository
     {
         $result = [];
         if (count($names) > 0) {
-            $queryBuilder = $this->createQueryBuilder('mc');
-            $queryBuilder->andWhere('mc.name IN (:names)')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select('mc')
+                         ->from(ModCombination::class, 'mc')
+                         ->andWhere('mc.name IN (:names)')
                          ->addOrderBy('mc.order', 'ASC')
                          ->setParameter('names', array_values($names));
 
@@ -43,8 +44,9 @@ class ModCombinationRepository extends EntityRepository
     {
         $result = [];
         if (count($modNames) > 0) {
-            $queryBuilder = $this->createQueryBuilder('mc');
-            $queryBuilder->addSelect('m')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select(['mc', 'm'])
+                         ->from(ModCombination::class, 'mc')
                          ->innerJoin('mc.mod', 'm')
                          ->andWhere('m.name IN (:modNames)')
                          ->addOrderBy('mc.order', 'ASC')
@@ -64,8 +66,9 @@ class ModCombinationRepository extends EntityRepository
     {
         $result = [];
         if (count($modCombinationIds) > 0) {
-            $queryBuilder = $this->createQueryBuilder('mc');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select('m.name')
+                         ->from(ModCombination::class, 'mc')
                          ->innerJoin('mc.mod', 'm')
                          ->andWhere('mc.id IN (:modCombinationIds)')
                          ->addGroupBy('m.name')
@@ -76,5 +79,18 @@ class ModCombinationRepository extends EntityRepository
             }
         }
         return $result;
+    }
+
+    /**
+     * Returns all the mods.
+     * @return array|ModCombination[]
+     */
+    public function findAll(): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('mc')
+                     ->from(ModCombination::class, 'mc');
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }

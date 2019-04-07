@@ -1,0 +1,30 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\CraftingCategory">
+        <options>
+            <option name="comment">The table holding the crafting categories.</option>
+        </options>
+
+        <id name="id" type="integer">
+            <generator />
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The internal id of the crafting category.</option>
+            </options>
+        </id>
+
+        <field name="name" length="255" unique="true">
+            <options>
+                <option name="comment">The name of the crafting category.</option>
+            </options>
+        </field>
+
+        <many-to-many field="machines" target-entity="Machine" mapped-by="craftingCategories" />
+
+        <one-to-many field="recipes" target-entity="Recipe" mapped-by="craftingCategory" />
+    </entity>
+</doctrine-mapping>

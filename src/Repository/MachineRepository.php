@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Data\MachineData;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
 
@@ -14,7 +13,7 @@ use FactorioItemBrowser\Api\Database\Entity\Machine;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class MachineRepository extends EntityRepository implements RepositoryWithOrphansInterface
+class MachineRepository extends AbstractRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the data of the machines with the specified names.
@@ -32,8 +31,9 @@ class MachineRepository extends EntityRepository implements RepositoryWithOrphan
                 'mc.order AS order'
             ];
 
-            $queryBuilder = $this->createQueryBuilder('m');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select($columns)
+                         ->from(Machine::class, 'm')
                          ->innerJoin('m.modCombinations', 'mc')
                          ->andWhere('m.name IN (:names)')
                          ->setParameter('names', array_values($names));
@@ -63,8 +63,9 @@ class MachineRepository extends EntityRepository implements RepositoryWithOrphan
                 'mc.order AS order'
             ];
 
-            $queryBuilder = $this->createQueryBuilder('m');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select($columns)
+                         ->from(Machine::class, 'm')
                          ->innerJoin('m.craftingCategories', 'cc')
                          ->innerJoin('m.modCombinations', 'mc')
                          ->andWhere('cc.name IN (:craftingCategories)')
@@ -102,8 +103,9 @@ class MachineRepository extends EntityRepository implements RepositoryWithOrphan
     {
         $result = [];
         if (count($ids) > 0) {
-            $queryBuilder = $this->createQueryBuilder('m');
-            $queryBuilder->addSelect('cc')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select(['m', 'cc'])
+                         ->from(Machine::class, 'm')
                          ->leftJoin('m.craftingCategories', 'cc')
                          ->andWhere('m.id IN (:ids)')
                          ->setParameter('ids', array_values($ids));
@@ -130,8 +132,9 @@ class MachineRepository extends EntityRepository implements RepositoryWithOrphan
      */
     protected function findOrphanedIds(): array
     {
-        $queryBuilder = $this->createQueryBuilder('m');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('m.id AS id')
+                     ->from(Machine::class, 'm')
                      ->leftJoin('m.modCombinations', 'mc')
                      ->andWhere('mc.id IS NULL');
 
@@ -148,8 +151,8 @@ class MachineRepository extends EntityRepository implements RepositoryWithOrphan
      */
     protected function removeIds(array $machineIds): void
     {
-        $queryBuilder = $this->createQueryBuilder('m');
-        $queryBuilder->delete($this->getEntityName(), 'm')
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(Machine::class, 'm')
                      ->andWhere('m.id IN (:machineIds)')
                      ->setParameter('machineIds', array_values($machineIds));
 

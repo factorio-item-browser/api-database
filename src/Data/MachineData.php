@@ -37,7 +37,7 @@ class MachineData implements DataInterface
      * @param int $id
      * @return $this
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -57,7 +57,7 @@ class MachineData implements DataInterface
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -77,7 +77,7 @@ class MachineData implements DataInterface
      * @param int $order
      * @return $this
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

@@ -6,6 +6,7 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use BluePsyduck\Common\Test\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\IconFile;
 use FactorioItemBrowser\Api\Database\Repository\IconFileRepository;
@@ -39,6 +40,7 @@ class IconFileRepositoryTest extends TestCase
     /**
      * Tests the findByHashes method.
      * @param bool $withHashes
+     * @throws ReflectionException
      * @covers ::findByHashes
      * @dataProvider provideFindByHashes
      */
@@ -59,9 +61,17 @@ class IconFileRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with('if')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(IconFile::class, 'if')
+                     ->willReturnSelf();
         $queryBuilder->expects($withHashes ? $this->once() : $this->never())
                      ->method('andWhere')
                      ->with('if.hash IN (:hashes)')
@@ -74,15 +84,15 @@ class IconFileRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var IconFileRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(IconFileRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withHashes ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('if')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withHashes ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new IconFileRepository($entityManager);
 
         $result = $repository->findByHashes($hashes);
         $this->assertSame($queryResult, $result);
@@ -104,6 +114,7 @@ class IconFileRepositoryTest extends TestCase
      * Tests the removeOrphans method.
      * @param array $orphanedHashes
      * @param bool $expectRemove
+     * @throws ReflectionException
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */
@@ -148,12 +159,16 @@ class IconFileRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'leftJoin', 'andWhere', 'getQuery'])
+                             ->setMethods(['select', 'from', 'leftJoin', 'andWhere', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('select')
                      ->with('if.hash AS hash')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with(IconFile::class, 'if')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('leftJoin')
@@ -167,15 +182,15 @@ class IconFileRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var IconFileRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(IconFileRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('if')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new IconFileRepository($entityManager);
 
         $result = $this->invokeMethod($repository, 'findOrphanedHashes');
         $this->assertEquals($expectedResult, $result);
@@ -188,7 +203,6 @@ class IconFileRepositoryTest extends TestCase
      */
     public function testRemoveHashes(): void
     {
-        $entityName = 'abc';
         $hashes = ['ab12cd34', '12ab34cd'];
 
         /* @var AbstractQuery|MockObject $query */
@@ -206,7 +220,7 @@ class IconFileRepositoryTest extends TestCase
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('delete')
-                     ->with($entityName, 'if')
+                     ->with(IconFile::class, 'if')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('andWhere')
@@ -220,18 +234,15 @@ class IconFileRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var IconFileRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(IconFileRepository::class)
-                           ->setMethods(['createQueryBuilder', 'getEntityName'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('if')
-                   ->willReturn($queryBuilder);
-        $repository->expects($this->once())
-                   ->method('getEntityName')
-                   ->willReturn($entityName);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new IconFileRepository($entityManager);
 
         $this->invokeMethod($repository, 'removeHashes', $hashes);
     }

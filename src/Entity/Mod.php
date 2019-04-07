@@ -6,72 +6,52 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The entity class of the Mod database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\ModRepository")
- * @ORM\Table(name="`Mod`")
  */
 class Mod
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The internal id of the mod.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\Column(name="name", unique=true)
-     *
      * The name of the mod.
      * @var string
      */
     protected $name = '';
 
     /**
-     * @ORM\Column(name="author")
-     *
      * The author of the mod.
      * @var string
      */
     protected $author = '';
 
     /**
-     * @ORM\Column(name="currentVersion")
-     *
      * The current version of the mod that has been imported.
      * @var string
      */
     protected $currentVersion = '';
 
     /**
-     * @ORM\Column(name="`order`", type="integer")
-     *
      * The order position of the mod, 1 being the base mod.
      * @var int
      */
     protected $order = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="ModDependency", mappedBy="mod")
-     *
      * The dependencies of the mod.
      * @var Collection|ModDependency[]
      */
     protected $dependencies;
 
     /**
-     * @ORM\OneToMany(targetEntity="ModCombination", mappedBy="mod")
-     *
      * The combinations this mod is the main mod of.
      * @var Collection|ModCombination[]
      */
@@ -94,7 +74,7 @@ class Mod
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -114,7 +94,7 @@ class Mod
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -134,7 +114,7 @@ class Mod
      * @param string $author
      * @return $this Implementing fluent interface.
      */
-    public function setAuthor(string $author)
+    public function setAuthor(string $author): self
     {
         $this->author = $author;
         return $this;
@@ -154,7 +134,7 @@ class Mod
      * @param string $currentVersion
      * @return $this Implementing fluent interface.
      */
-    public function setCurrentVersion(string $currentVersion)
+    public function setCurrentVersion(string $currentVersion): self
     {
         $this->currentVersion = $currentVersion;
         return $this;
@@ -174,7 +154,7 @@ class Mod
      * @param int $order
      * @return $this Implementing fluent interface.
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

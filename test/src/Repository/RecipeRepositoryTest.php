@@ -6,6 +6,7 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use BluePsyduck\Common\Test\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Data\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
@@ -45,6 +46,7 @@ class RecipeRepositoryTest extends TestCase
      * Tests the findDataByNames method.
      * @param bool $withNames
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByNames
      * @dataProvider provideFindDataByNames
      */
@@ -66,7 +68,7 @@ class RecipeRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($withNames ? $this->once() : $this->never())
@@ -77,6 +79,10 @@ class RecipeRepositoryTest extends TestCase
                          'r.mode AS mode',
                          'mc.order AS order'
                      ])
+                     ->willReturnSelf();
+        $queryBuilder->expects($withNames ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(Recipe::class, 'r')
                      ->willReturnSelf();
         $queryBuilder->expects($withNames ? $this->once() : $this->never())
                      ->method('innerJoin')
@@ -100,15 +106,19 @@ class RecipeRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withNames ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
         /* @var RecipeRepository|MockObject $repository */
         $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->setMethods(['createQueryBuilder', 'mapRecipeDataResult'])
-                           ->disableOriginalConstructor()
+                           ->setMethods(['mapRecipeDataResult'])
+                           ->setConstructorArgs([$entityManager])
                            ->getMock();
-        $repository->expects($withNames ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturn($queryBuilder);
         $repository->expects($withNames ? $this->once() : $this->never())
                    ->method('mapRecipeDataResult')
                    ->with($queryResult)
@@ -120,6 +130,7 @@ class RecipeRepositoryTest extends TestCase
     
     /**
      * Tests the findDataByIngredientItemIds method.
+     * @throws ReflectionException
      * @covers ::findDataByIngredientItemIds
      */
     public function testFindDataByIngredientItemIds(): void
@@ -144,6 +155,7 @@ class RecipeRepositoryTest extends TestCase
 
     /**
      * Tests the findDataByProductItemIds method.
+     * @throws ReflectionException
      * @covers ::findDataByProductItemIds
      */
     public function testFindDataByProductItemIds(): void
@@ -207,7 +219,15 @@ class RecipeRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'innerJoin', 'andWhere', 'setParameter', 'addOrderBy', 'getQuery'])
+                             ->setMethods([
+                                 'select',
+                                 'from',
+                                 'innerJoin',
+                                 'andWhere',
+                                 'setParameter',
+                                 'addOrderBy',
+                                 'getQuery'
+                             ])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($withItemIds ? $this->once() : $this->never())
@@ -219,6 +239,10 @@ class RecipeRepositoryTest extends TestCase
                          'IDENTITY(r2.item) AS itemId',
                          'mc.order AS order'
                      ])
+                     ->willReturnSelf();
+        $queryBuilder->expects($withItemIds ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(Recipe::class, 'r')
                      ->willReturnSelf();
         $queryBuilder->expects($withItemIds ? $this->exactly(2) : $this->never())
                      ->method('innerJoin')
@@ -252,15 +276,19 @@ class RecipeRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withItemIds ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
         /* @var RecipeRepository|MockObject $repository */
         $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->setMethods(['createQueryBuilder', 'mapRecipeDataResult'])
-                           ->disableOriginalConstructor()
+                           ->setMethods(['mapRecipeDataResult'])
+                           ->setConstructorArgs([$entityManager])
                            ->getMock();
-        $repository->expects($withItemIds ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturn($queryBuilder);
         $repository->expects($withItemIds ? $this->once() : $this->never())
                    ->method('mapRecipeDataResult')
                    ->with($queryResult)
@@ -288,6 +316,7 @@ class RecipeRepositoryTest extends TestCase
      * Tests the findDataByKeywords method.
      * @param bool $withKeywords
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findDataByKeywords
      * @dataProvider provideFindDataByKeywords
      */
@@ -309,7 +338,7 @@ class RecipeRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'andWhere', 'setParameter', 'innerJoin', 'getQuery'])
+                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'innerJoin', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
@@ -320,6 +349,10 @@ class RecipeRepositoryTest extends TestCase
                          'r.mode AS mode',
                          'mc.order AS order'
                      ])
+                     ->willReturnSelf();
+        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(Recipe::class, 'r')
                      ->willReturnSelf();
         $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
                      ->method('innerJoin')
@@ -345,20 +378,23 @@ class RecipeRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withKeywords ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
         /* @var RecipeRepository|MockObject $repository */
         $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->setMethods(['createQueryBuilder', 'mapRecipeDataResult'])
-                           ->disableOriginalConstructor()
+                           ->setMethods(['mapRecipeDataResult'])
+                           ->setConstructorArgs([$entityManager])
                            ->getMock();
-        $repository->expects($withKeywords ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturn($queryBuilder);
         $repository->expects($withKeywords ? $this->once() : $this->never())
                    ->method('mapRecipeDataResult')
                    ->with($queryResult)
                    ->willReturn($dataResult);
-
 
         $result = $repository->findDataByKeywords($keywords, $modCombinationIds);
         $this->assertEquals($dataResult, $result);
@@ -402,6 +438,7 @@ class RecipeRepositoryTest extends TestCase
     /**
      * Tests the findByIds method.
      * @param bool $withIds
+     * @throws ReflectionException
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
@@ -421,17 +458,16 @@ class RecipeRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['addSelect', 'leftJoin', 'andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'leftJoin', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
-        $queryBuilder->expects($withIds ? $this->exactly(4) : $this->never())
-                     ->method('addSelect')
-                     ->withConsecutive(
-                         ['ri'],
-                         ['rii'],
-                         ['rp'],
-                         ['rpi']
-                     )
+        $queryBuilder->expects($withIds ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with(['r', 'ri', 'rii', 'rp', 'rpi'])
+                     ->willReturnSelf();
+        $queryBuilder->expects($withIds ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(Recipe::class, 'r')
                      ->willReturnSelf();
         $queryBuilder->expects($withIds ? $this->exactly(4) : $this->never())
                      ->method('leftJoin')
@@ -454,15 +490,15 @@ class RecipeRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var RecipeRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withIds ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withIds ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new RecipeRepository($entityManager);
 
         $result = $repository->findByIds($ids);
         $this->assertSame($queryResult, $result);
@@ -485,6 +521,7 @@ class RecipeRepositoryTest extends TestCase
      * Tests the removeOrphans method.
      * @param array $orphanedIds
      * @param bool $expectRemove
+     * @throws ReflectionException
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */
@@ -529,12 +566,16 @@ class RecipeRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'leftJoin', 'andWhere', 'getQuery'])
+                             ->setMethods(['select', 'from', 'leftJoin', 'andWhere', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('select')
                      ->with('r.id AS id')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with(Recipe::class, 'r')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('leftJoin')
@@ -548,15 +589,15 @@ class RecipeRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var RecipeRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new RecipeRepository($entityManager);
 
         $result = $this->invokeMethod($repository, 'findOrphanedIds');
         $this->assertEquals($expectedResult, $result);
@@ -569,7 +610,6 @@ class RecipeRepositoryTest extends TestCase
      */
     public function testRemoveIds(): void
     {
-        $entityName = 'abc';
         $recipeIds = [42, 1337];
 
         /* @var AbstractQuery|MockObject $query */
@@ -630,7 +670,7 @@ class RecipeRepositoryTest extends TestCase
                               ->getMock();
         $queryBuilder3->expects($this->once())
                       ->method('delete')
-                      ->with($entityName, 'r')
+                      ->with(Recipe::class, 'r')
                       ->willReturnSelf();
         $queryBuilder3->expects($this->once())
                       ->method('andWhere')
@@ -644,22 +684,19 @@ class RecipeRepositoryTest extends TestCase
                       ->method('getQuery')
                       ->willReturn($query);
 
-        /* @var RecipeRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->setMethods(['createQueryBuilder', 'getEntityName'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->exactly(3))
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturnOnConsecutiveCalls(
-                       $queryBuilder1,
-                       $queryBuilder2,
-                       $queryBuilder3
-                   );
-        $repository->expects($this->once())
-                   ->method('getEntityName')
-                   ->willReturn($entityName);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->exactly(3))
+                      ->method('createQueryBuilder')
+                      ->willReturnOnConsecutiveCalls(
+                          $queryBuilder1,
+                          $queryBuilder2,
+                          $queryBuilder3
+                      );
+
+        $repository = new RecipeRepository($entityManager);
 
         $this->invokeMethod($repository, 'removeIds', $recipeIds);
     }

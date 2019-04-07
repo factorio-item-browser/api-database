@@ -7,16 +7,12 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The entity class of the recipe database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\RecipeRepository")
- * @ORM\Table(name="Recipe")
  */
 class Recipe
 {
@@ -26,67 +22,48 @@ class Recipe
     protected const FACTOR_CRAFTING_TIME = 1000;
 
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The internal id of the recipe.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ModCombination", mappedBy="recipes")
-     *
      * The mod combinations which are adding the recipe.
      * @var Collection|ModCombination[]
      */
     protected $modCombinations;
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The name of the recipe.
      * @var string
      */
     protected $name = '';
 
     /**
-     * @ORM\Column(name="mode")
-     *
      * The mode of the recipe.
      * @var string
      */
     protected $mode = '';
 
     /**
-     * @ORM\Column(name="craftingTime", type="integer")
-     *
      * The required time in milliseconds to craft the recipe.
      * @var int
      */
     protected $craftingTime = 0;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CraftingCategory")
-     * @ORM\JoinColumn(name="craftingCategoryId", referencedColumnName="id")
-     *
      * The crafting category of the recipe.
      * @var CraftingCategory
      */
     protected $craftingCategory;
 
     /**
-     * @ORM\OneToMany(targetEntity="RecipeIngredient", mappedBy="recipe")
-     *
      * The ingredients of the recipe.
      * @var Collection|RecipeIngredient[]
      */
     protected $ingredients;
 
     /**
-     * @ORM\OneToMany(targetEntity="RecipeProduct", mappedBy="recipe")
-     *
      * The products of the recipe.
      * @var Collection|RecipeProduct[]
      */
@@ -113,7 +90,7 @@ class Recipe
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -132,7 +109,7 @@ class Recipe
      * Returns the mod combinations adding the recipe.
      * @return Collection|ModCombination[]
      */
-    public function getModCombinations()
+    public function getModCombinations(): Collection
     {
         return $this->modCombinations;
     }
@@ -142,7 +119,7 @@ class Recipe
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -162,7 +139,7 @@ class Recipe
      * @param string $mode
      * @return $this Implementing fluent interface.
      */
-    public function setMode(string $mode)
+    public function setMode(string $mode): self
     {
         $this->mode = $mode;
         return $this;
@@ -182,7 +159,7 @@ class Recipe
      * @param float $craftingTime
      * @return $this Implementing fluent interface.
      */
-    public function setCraftingTime(float $craftingTime)
+    public function setCraftingTime(float $craftingTime): self
     {
         $this->craftingTime = (int) ($craftingTime * self::FACTOR_CRAFTING_TIME);
         return $this;
@@ -202,7 +179,7 @@ class Recipe
      * @param CraftingCategory $craftingCategory
      * @return $this
      */
-    public function setCraftingCategory(CraftingCategory $craftingCategory)
+    public function setCraftingCategory(CraftingCategory $craftingCategory): self
     {
         $this->craftingCategory = $craftingCategory;
         return $this;

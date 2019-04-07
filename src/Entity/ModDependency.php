@@ -4,50 +4,33 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * The entity class of the ModDependency database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity
- * @ORM\Table(name="ModDependency")
  */
 class ModDependency
 {
     /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Mod", inversedBy="dependencies")
-     * @ORM\JoinColumn(name="modId", referencedColumnName="id")
-     *
      * The mod with the dependency.
      * @var Mod
      */
     protected $mod;
 
     /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Mod", fetch="EAGER")
-     * @ORM\JoinColumn(name="requiredModId", referencedColumnName="id")
-     *
      * The required mod.
      * @var Mod
      */
     protected $requiredMod;
 
     /**
-     * @ORM\Column(name="requiredVersion")
-     *
      * The required version of the mod.
      * @var string
      */
     protected $requiredVersion = '';
 
     /**
-     * @ORM\Column(name="type")
-     *
      * The type of the dependency.
      * @var string
      */
@@ -69,7 +52,7 @@ class ModDependency
      * @param Mod $mod
      * @return $this Implementing fluent interface.
      */
-    public function setMod(Mod $mod)
+    public function setMod(Mod $mod): self
     {
         $this->mod = $mod;
         return $this;
@@ -129,7 +112,7 @@ class ModDependency
      * @param string $type
      * @return $this Implementing fluent interface.
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;

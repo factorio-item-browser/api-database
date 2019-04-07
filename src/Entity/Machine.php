@@ -6,16 +6,12 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The entity of the machine database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\MachineRepository")
- * @ORM\Table(name="Machine")
  */
 class Machine
 {
@@ -40,94 +36,66 @@ class Machine
     protected const VALUE_UNLIMITED_SLOTS_DATABASE = 255;
 
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The internal id of the machine.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The name of the machine.
      * @var string
      */
     protected $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ModCombination", mappedBy="machines")
-     *
      * The mod combinations which are adding the machine.
      * @var Collection|ModCombination[]
      */
     protected $modCombinations;
 
     /**
-     * @ORM\ManyToMany(targetEntity="CraftingCategory", inversedBy="machines")
-     * @ORM\JoinTable(name="MachineXCraftingCategory",
-     *     joinColumns={@ORM\JoinColumn(name="machineId", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="craftingCategoryId", referencedColumnName="id")}
-     * )
-     *
      * The crafting categories supported by the machine.
      * @var Collection|CraftingCategory[]
      */
     protected $craftingCategories;
 
     /**
-     * @ORM\Column(name="craftingSpeed", type="integer")
-     *
      * The crafting speed of the machine.
      * @var int
      */
     protected $craftingSpeed = self::FACTOR_CRAFTING_SPEED;
 
     /**
-     * @ORM\Column(name="numberOfItemSlots", type="integer")
-     *
      * The number of item slots available in the machine.
      * @var int
      */
     protected $numberOfItemSlots = 0;
 
     /**
-     * @ORM\Column(name="numberOfFluidInputSlots", type="integer")
-     *
      * The number of fluid input slots available in the machine.
      * @var int
      */
     protected $numberOfFluidInputSlots = 0;
 
     /**
-     * @ORM\Column(name="numberOfFluidOutputSlots", type="integer")
-     *
      * The number of fluid output slots available in the machine.
      * @var int
      */
     protected $numberOfFluidOutputSlots = 0;
 
     /**
-     * @ORM\Column(name="numberOfModuleSlots", type="integer")
-     *
      * The number of module slots available in the machine.
      * @var int
      */
     protected $numberOfModuleSlots = 0;
 
     /**
-     * @ORM\Column(name="energyUsage", type="integer")
-     *
      * The energy usage of the machine.
      * @var int
      */
     protected $energyUsage = 0;
 
     /**
-     * @ORM\Column(name="energyUsageUnit")
-     *
      * The unit of the energy usage.
      * @var string
      */
@@ -149,7 +117,7 @@ class Machine
      * @param int $id
      * @return $this
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -169,7 +137,7 @@ class Machine
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -207,7 +175,7 @@ class Machine
      * @param float $craftingSpeed
      * @return $this
      */
-    public function setCraftingSpeed(float $craftingSpeed)
+    public function setCraftingSpeed(float $craftingSpeed): self
     {
         $this->craftingSpeed = (int) ($craftingSpeed * self::FACTOR_CRAFTING_SPEED);
         return $this;
@@ -227,7 +195,7 @@ class Machine
      * @param int $numberOfItemSlots
      * @return $this
      */
-    public function setNumberOfItemSlots(int $numberOfItemSlots)
+    public function setNumberOfItemSlots(int $numberOfItemSlots): self
     {
         if ($numberOfItemSlots === self::VALUE_UNLIMITED_SLOTS) {
             $this->numberOfItemSlots = self::VALUE_UNLIMITED_SLOTS_DATABASE;
@@ -316,7 +284,7 @@ class Machine
      * @param float $energyUsage
      * @return $this
      */
-    public function setEnergyUsage(float $energyUsage)
+    public function setEnergyUsage(float $energyUsage): self
     {
         $this->energyUsage = (int) ($energyUsage * self::FACTOR_ENERGY_USAGE);
         return $this;
@@ -336,7 +304,7 @@ class Machine
      * @param string $energyUsageUnit
      * @return $this
      */
-    public function setEnergyUsageUnit(string $energyUsageUnit)
+    public function setEnergyUsageUnit(string $energyUsageUnit): self
     {
         $this->energyUsageUnit = $energyUsageUnit;
         return $this;

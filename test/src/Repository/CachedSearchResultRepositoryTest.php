@@ -6,11 +6,14 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use DateTime;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Exception;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 use FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 
 /**
  * The PHPUnit test of the CachedSearchResultRepository class.
@@ -36,6 +39,7 @@ class CachedSearchResultRepositoryTest extends TestCase
     /**
      * Tests the findByHashes method.
      * @param bool $withHashes
+     * @throws Exception
      * @covers ::findByHashes
      * @dataProvider provideFindByHashes
      */
@@ -55,12 +59,19 @@ class CachedSearchResultRepositoryTest extends TestCase
               ->method('getResult')
               ->willReturn($queryResult);
 
-
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with('r')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(CachedSearchResult::class, 'r')
+                     ->willReturnSelf();
         $queryBuilder->expects($withHashes ? $this->exactly(2) : $this->never())
                      ->method('andWhere')
                      ->withConsecutive(
@@ -79,27 +90,57 @@ class CachedSearchResultRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var CachedSearchResultRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withHashes ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withHashes ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new CachedSearchResultRepository($entityManager);
 
         $result = $repository->findByHashes($hashes, $maxAge);
         $this->assertSame($queryResult, $result);
     }
 
     /**
+     * Tests the persist method.
+     * @throws ReflectionException
+     * @throws Exception
+     * @covers ::persist
+     */
+    public function testPersist(): void
+    {
+        $cachedSearchResult = new CachedSearchResult('ab12cd34');
+        $mergedCachedSearchResult = new CachedSearchResult('12ab34cd');
+
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['merge', 'persist', 'flush'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('merge')
+                      ->with($cachedSearchResult)
+                      ->willReturn($mergedCachedSearchResult);
+        $entityManager->expects($this->once())
+                      ->method('persist')
+                      ->with($mergedCachedSearchResult);
+        $entityManager->expects($this->once())
+                      ->method('flush');
+
+        $repository = new CachedSearchResultRepository($entityManager);
+
+        $repository->persist($cachedSearchResult);
+    }
+
+    /**
      * Tests the cleanup method.
+     * @throws Exception
      * @covers ::cleanup
      */
     public function testCleanup(): void
     {
-        $entityName = 'abc';
         $maxAge = new DateTime('2038-01-19 03:14:07');
 
         /* @var AbstractQuery|MockObject $query */
@@ -117,7 +158,7 @@ class CachedSearchResultRepositoryTest extends TestCase
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('delete')
-                     ->with($entityName, 'r')
+                     ->with(CachedSearchResult::class, 'r')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('andWhere')
@@ -131,30 +172,26 @@ class CachedSearchResultRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var CachedSearchResultRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
-                           ->setMethods(['createQueryBuilder', 'getEntityName'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturn($queryBuilder);
-        $repository->expects($this->once())
-                   ->method('getEntityName')
-                   ->willReturn($entityName);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new CachedSearchResultRepository($entityManager);
 
         $repository->cleanup($maxAge);
     }
 
     /**
      * Tests the clear method.
+     * @throws ReflectionException
      * @covers ::clear
      */
     public function testClear(): void
     {
-        $entityName = 'abc';
-
         /* @var AbstractQuery|MockObject $query */
         $query = $this->getMockBuilder(AbstractQuery::class)
                       ->setMethods(['execute'])
@@ -170,25 +207,21 @@ class CachedSearchResultRepositoryTest extends TestCase
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('delete')
-                     ->with($entityName, 'r')
+                     ->with(CachedSearchResult::class, 'r')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var CachedSearchResultRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
-                           ->setMethods(['createQueryBuilder', 'getEntityName'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('r')
-                   ->willReturn($queryBuilder);
-        $repository->expects($this->once())
-                   ->method('getEntityName')
-                   ->willReturn($entityName);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
 
+        $repository = new CachedSearchResultRepository($entityManager);
         $repository->clear();
     }
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace FactorioItemBrowserTest\Api\Database\Helper;
+namespace FactorioItemBrowserTest\Api\Database\Filter;
 
-use FactorioItemBrowser\Api\Database\Helper\DataHelper;
+use FactorioItemBrowser\Api\Database\Filter\DataFilter;
 use FactorioItemBrowserTestAsset\Api\Database\Data\TestData;
 use PHPUnit\Framework\TestCase;
 
@@ -13,9 +13,9 @@ use PHPUnit\Framework\TestCase;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Helper\DataHelper
+ * @coversDefaultClass \FactorioItemBrowser\Api\Database\Filter\DataFilter
  */
-class DataHelperTest extends TestCase
+class DataFilterTest extends TestCase
 {
     /**
      * Tests the filter method.
@@ -31,8 +31,8 @@ class DataHelperTest extends TestCase
 
         $expectedResult = [$data1, $data3, $data5];
 
-        $helper = new DataHelper();
-        $result = $helper->filter([$data1, $data2, $data3, $data4, $data5]);
+        $filter = new DataFilter();
+        $result = $filter->filter([$data1, $data2, $data3, $data4, $data5]);
         $this->assertEquals($expectedResult, $result);
     }
 }

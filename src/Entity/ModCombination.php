@@ -6,109 +6,70 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The entity representing the ModCombination database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\ModCombinationRepository")
- * @ORM\Table(name="ModCombination")
  */
 class ModCombination
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The id of the mod combination.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Mod", inversedBy="combinations")
-     * @ORM\JoinColumn(name="modId", referencedColumnName="id")
-     *
      * The main mod.
      * @var Mod
      */
     protected $mod;
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The name of the mod combination.
      * @var string
      */
     protected $name = '';
 
     /**
-     * @ORM\Column(name="optionalModIds", type="json")
-     *
      * The list of the loaded optional mods.
      * @var array|int[]
      */
     protected $optionalModIds = [];
 
     /**
-     * @ORM\Column(name="`order`", type="integer")
-     *
      * The order of the mod combination.
      * @var int
      */
     protected $order = 0;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Item", inversedBy="modCombinations")
-     * @ORM\JoinTable(name="ModCombinationXItem",
-     *     joinColumns={@ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="itemId", referencedColumnName="id")}
-     * )
-     *
      * The items added by the mod combination.
      * @var Collection|Item[]
      */
     protected $items;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Recipe", inversedBy="modCombinations")
-     * @ORM\JoinTable(name="ModCombinationXRecipe",
-     *     joinColumns={@ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="recipeId", referencedColumnName="id")}
-     * )
-     *
      * The recipes added by the mod combination.
      * @var Collection|Recipe[]
      */
     protected $recipes;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Machine", inversedBy="modCombinations")
-     * @ORM\JoinTable(name="ModCombinationXMachine",
-     *     joinColumns={@ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="machineId", referencedColumnName="id")}
-     * )
-     *
      * The machines added by the mod combination.
      * @var Collection|Machine[]
      */
     protected $machines;
 
     /**
-     * @ORM\OneToMany(targetEntity="Translation", mappedBy="modCombination")
-     *
      * The translations added by the mod combination.
      * @var Collection|Translation[]
      */
     protected $translations;
 
     /**
-     * @ORM\OneToMany(targetEntity="Icon", mappedBy="modCombination")
-     *
      * The icons used by the mod combination.
      * @var Collection|Icon[]
      */
@@ -136,7 +97,7 @@ class ModCombination
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -156,7 +117,7 @@ class ModCombination
      * @param Mod $mod
      * @return $this Implementing fluent interface.
      */
-    public function setMod(Mod $mod)
+    public function setMod(Mod $mod): self
     {
         $this->mod = $mod;
         return $this;
@@ -176,7 +137,7 @@ class ModCombination
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -196,7 +157,7 @@ class ModCombination
      * @param array|int[] $optionalModIds
      * @return $this Implementing fluent interface.
      */
-    public function setOptionalModIds(array $optionalModIds)
+    public function setOptionalModIds(array $optionalModIds): self
     {
         $this->optionalModIds = $optionalModIds;
         return $this;
@@ -216,7 +177,7 @@ class ModCombination
      * @param int $order
      * @return $this Implementing fluent interface.
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

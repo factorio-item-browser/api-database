@@ -1,0 +1,70 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\Translation">
+        <options>
+            <option name="comment">The table holding the localized translations of the items and recipes etc.</option>
+        </options>
+
+        <indexes>
+            <index columns="locale,type,name" />
+        </indexes>
+        
+        <id name="id" type="integer">
+            <generator />
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The internal id of the translation.</option>
+            </options>
+        </id>
+        
+        <many-to-one field="modCombination" target-entity="ModCombination" inversed-by="translations">
+            <join-column name="modCombinationId" />
+        </many-to-one>
+        
+        <field name="locale" length="5">
+            <options>
+                <option name="comment">The locale of the translation.</option>
+            </options>
+        </field>
+
+        <field name="type" length="32">
+            <options>
+                <option name="comment">The type of the translation.</option>
+            </options>
+        </field>
+
+        <field name="name" length="255">
+            <options>
+                <option name="comment">The name of the translation.</option>
+            </options>
+        </field>
+
+        <field name="value">
+            <options>
+                <option name="comment">The actual translation.</option>
+            </options>
+        </field>
+
+        <field name="description">
+            <options>
+                <option name="comment">The translated description.</option>
+            </options>
+        </field>
+
+        <field name="isDuplicatedByRecipe" type="boolean">
+            <options>
+                <option name="comment">Whether this translation is duplicated by the recipe.</option>
+            </options>
+        </field>
+
+        <field name="isDuplicatedByMachine" type="boolean">
+            <options>
+                <option name="comment">Whether this translation is duplicated by the machine.</option>
+            </options>
+        </field>
+    </entity>
+</doctrine-mapping>

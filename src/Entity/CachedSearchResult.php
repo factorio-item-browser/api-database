@@ -5,47 +5,39 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Entity;
 
 use DateTime;
-use Doctrine\ORM\Mapping as ORM;
+use DateTimeInterface;
+use Exception;
 
 /**
  * The entity of the cached search result database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository")
- * @ORM\Table(name="CachedSearchResult")
  */
 class CachedSearchResult
 {
     /**
-     * @ORM\Id
-     * @ORM\Column(name="hash")
-     *
      * The hash of the search result.
      * @var string
      */
     protected $hash;
 
     /**
-     * @ORM\Column(name="resultData")
-     *
      * The result data of the search.
      * @var string
      */
     protected $resultData = '';
 
     /**
-     * @ORM\Column(name="lastSearchTime", type="datetime")
-     *
      * The time when the search result was last used.
-     * @var DateTime
+     * @var DateTimeInterface
      */
     protected $lastSearchTime;
 
     /**
      * Initializes the entity.
      * @param string $hash
+     * @throws Exception
      */
     public function __construct(string $hash)
     {
@@ -58,7 +50,7 @@ class CachedSearchResult
      * @param string $hash
      * @return $this
      */
-    public function setHash(string $hash)
+    public function setHash(string $hash): self
     {
         $this->hash = (string) hex2bin($hash);
         return $this;
@@ -78,7 +70,7 @@ class CachedSearchResult
      * @param string $resultData
      * @return $this
      */
-    public function setResultData(string $resultData)
+    public function setResultData(string $resultData): self
     {
         $this->resultData = $resultData;
         return $this;
@@ -95,10 +87,10 @@ class CachedSearchResult
 
     /**
      * Sets the time when the search result was last used.
-     * @param DateTime $lastSearchTime
+     * @param DateTimeInterface $lastSearchTime
      * @return $this
      */
-    public function setLastSearchTime(DateTime $lastSearchTime)
+    public function setLastSearchTime(DateTimeInterface $lastSearchTime): self
     {
         $this->lastSearchTime = $lastSearchTime;
         return $this;
@@ -106,9 +98,9 @@ class CachedSearchResult
 
     /**
      * Returns the time when the search result was last used.
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    public function getLastSearchTime(): DateTime
+    public function getLastSearchTime(): DateTimeInterface
     {
         return $this->lastSearchTime;
     }

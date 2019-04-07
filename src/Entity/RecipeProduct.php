@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * The entity class of the recipe product database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity
- * @ORM\Table(name="RecipeProduct")
  */
 class RecipeProduct
 {
@@ -33,52 +28,36 @@ class RecipeProduct
     protected const FACTOR_AMOUNT_PROBABILITY = 1000;
 
     /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="results")
-     * @ORM\JoinColumn(name="recipeId", referencedColumnName="id")
-     *
      * The recipe of the result.
      * @var Recipe
      */
     protected $recipe;
 
     /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Item", fetch="EAGER")
-     * @ORM\JoinColumn(name="itemId", referencedColumnName="id")
-     *
      * The item of the result.
      * @var Item
      */
     protected $item;
 
     /**
-     * @ORM\Column(name="amountMin", type="integer")
-     *
      * The minimal amount of the product in the recipe.
      * @var int
      */
     protected $amountMin = 0;
 
     /**
-     * @ORM\Column(name="amountMax", type="integer")
-     *
      * The maximal amount of the product in the recipe.
      * @var int
      */
     protected $amountMax = 0;
 
     /**
-     * @ORM\Column(name="probability", type="integer")
-     *
      * The probability of the product in the recipe.
      * @var int
      */
     protected $probability = 0;
 
     /**
-     * @ORM\Column(name="`order`", type="integer")
-     *
      * The order of the product in the recipe.
      * @var int
      */
@@ -100,7 +79,7 @@ class RecipeProduct
      * @param Recipe $recipe
      * @return $this Implementing fluent interface.
      */
-    public function setRecipe(Recipe $recipe)
+    public function setRecipe(Recipe $recipe): self
     {
         $this->recipe = $recipe;
         return $this;
@@ -120,7 +99,7 @@ class RecipeProduct
      * @param Item $item
      * @return $this Implementing fluent interface.
      */
-    public function setItem(Item $item)
+    public function setItem(Item $item): self
     {
         $this->item = $item;
         return $this;
@@ -140,7 +119,7 @@ class RecipeProduct
      * @param float $amountMin
      * @return $this Implementing fluent interface.
      */
-    public function setAmountMin(float $amountMin)
+    public function setAmountMin(float $amountMin): self
     {
         $this->amountMin = (int) ($amountMin * self::FACTOR_AMOUNT_MIN);
         return $this;
@@ -160,7 +139,7 @@ class RecipeProduct
      * @param float $amountMax
      * @return $this Implementing fluent interface.
      */
-    public function setAmountMax(float $amountMax)
+    public function setAmountMax(float $amountMax): self
     {
         $this->amountMax = (int) ($amountMax * self::FACTOR_AMOUNT_MAX);
         return $this;
@@ -180,7 +159,7 @@ class RecipeProduct
      * @param float $probability
      * @return $this Implementing fluent interface.
      */
-    public function setProbability(float $probability)
+    public function setProbability(float $probability): self
     {
         $this->probability = (int) ($probability * self::FACTOR_AMOUNT_PROBABILITY);
         return $this;
@@ -209,7 +188,7 @@ class RecipeProduct
      * @param int $order
      * @return $this Implementing fluent interface.
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

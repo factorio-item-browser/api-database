@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace FactorioItemBrowser\Api\Database\Helper;
+namespace FactorioItemBrowser\Api\Database\Filter;
 
 use FactorioItemBrowser\Api\Database\Data\DataInterface;
 
 /**
- * A helper class for the data instances.
+ * A class filtering data instances by their order.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class DataHelper
+class DataFilter
 {
     /**
      * Filters the data to only contain the items with the highest order.

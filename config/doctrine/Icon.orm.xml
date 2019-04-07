@@ -1,0 +1,44 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\Icon">
+        <options>
+            <option name="comment">The table holding the icons of the items and recipes.</option>
+        </options>
+
+        <indexes>
+            <index columns="type,name" />
+        </indexes>
+
+        <id name="id" type="integer">
+            <generator />
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The internal id of the icon.</option>
+            </options>
+        </id>
+
+        <many-to-one field="modCombination" target-entity="ModCombination">
+            <join-column name="modCombinationId" />
+        </many-to-one>
+
+        <many-to-one field="file" target-entity="IconFile">
+            <join-column name="iconFileHash" referenced-column-name="hash" />
+        </many-to-one>
+
+        <field name="type" length="32" unique="true">
+            <options>
+                <option name="comment">The type of the icon's prototype.</option>
+            </options>
+        </field>
+
+        <field name="name" length="255" unique="true">
+            <options>
+                <option name="comment">The name of the icon's prototype.</option>
+            </options>
+        </field>
+    </entity>
+</doctrine-mapping>

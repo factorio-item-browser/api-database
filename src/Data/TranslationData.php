@@ -67,7 +67,7 @@ class TranslationData implements DataInterface
      * @param string $locale
      * @return $this
      */
-    public function setLocale(string $locale)
+    public function setLocale(string $locale): self
     {
         $this->locale = $locale;
         return $this;
@@ -87,7 +87,7 @@ class TranslationData implements DataInterface
      * @param string $type
      * @return $this
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
@@ -107,7 +107,7 @@ class TranslationData implements DataInterface
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -127,7 +127,7 @@ class TranslationData implements DataInterface
      * @param string $value
      * @return $this
      */
-    public function setValue(string $value)
+    public function setValue(string $value): self
     {
         $this->value = $value;
         return $this;
@@ -147,7 +147,7 @@ class TranslationData implements DataInterface
      * @param string $description
      * @return $this
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
         return $this;
@@ -167,7 +167,7 @@ class TranslationData implements DataInterface
      * @param bool $isDuplicatedByRecipe
      * @return $this
      */
-    public function setIsDuplicatedByRecipe(bool $isDuplicatedByRecipe)
+    public function setIsDuplicatedByRecipe(bool $isDuplicatedByRecipe): self
     {
         $this->isDuplicatedByRecipe = $isDuplicatedByRecipe;
         return $this;
@@ -187,7 +187,7 @@ class TranslationData implements DataInterface
      * @param bool $isDuplicatedByMachine
      * @return $this
      */
-    public function setIsDuplicatedByMachine(bool $isDuplicatedByMachine)
+    public function setIsDuplicatedByMachine(bool $isDuplicatedByMachine): self
     {
         $this->isDuplicatedByMachine = $isDuplicatedByMachine;
         return $this;
@@ -207,7 +207,7 @@ class TranslationData implements DataInterface
      * @param int $order
      * @return $this
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

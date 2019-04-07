@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
 
 /**
@@ -13,7 +12,7 @@ use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class CraftingCategoryRepository extends EntityRepository implements RepositoryWithOrphansInterface
+class CraftingCategoryRepository extends AbstractRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the crafting categories with the specified names.
@@ -24,8 +23,10 @@ class CraftingCategoryRepository extends EntityRepository implements RepositoryW
     {
         $result = [];
         if (count($names) > 0) {
-            $queryBuilder = $this->createQueryBuilder('cc');
-            $queryBuilder->andWhere('cc.name IN (:names)')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select('cc')
+                         ->from(CraftingCategory::class, 'cc')
+                         ->andWhere('cc.name IN (:names)')
                          ->setParameter('names', array_values($names));
 
             $result = $queryBuilder->getQuery()->getResult();
@@ -50,8 +51,9 @@ class CraftingCategoryRepository extends EntityRepository implements RepositoryW
      */
     protected function findOrphanedIds(): array
     {
-        $queryBuilder = $this->createQueryBuilder('cc');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('cc.id AS id')
+                     ->from(CraftingCategory::class, 'cc')
                      ->leftJoin('cc.machines', 'm')
                      ->leftJoin('cc.recipes', 'r')
                      ->andWhere('m.id IS NULL')
@@ -70,8 +72,8 @@ class CraftingCategoryRepository extends EntityRepository implements RepositoryW
      */
     protected function removeIds(array $craftingCategoryIds): void
     {
-        $queryBuilder = $this->createQueryBuilder('cc');
-        $queryBuilder->delete($this->getEntityName(), 'cc')
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(CraftingCategory::class, 'cc')
                      ->andWhere('cc.id IN (:craftingCategoryIds)')
                      ->setParameter('craftingCategoryIds', array_values($craftingCategoryIds));
 

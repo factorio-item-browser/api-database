@@ -4,58 +4,39 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * The entity of the icon database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\IconRepository")
- * @ORM\Table(name="Icon")
  */
 class Icon
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The internal id of the icon.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ModCombination")
-     * @ORM\JoinColumn(name="modCombinationId", referencedColumnName="id")
-     *
      * The mod combination adding the icon.
      * @var ModCombination
      */
     protected $modCombination;
 
     /**
-     * @ORM\ManyToOne(targetEntity="IconFile")
-     * @ORM\JoinColumn(name="iconFileHash", referencedColumnName="hash")
-     *
      * The file of the icon.
      * @var IconFile
      */
     protected $file;
 
     /**
-     * @ORM\Column(name="type")
-     *
      * The type of the icon's prototype.
      * @var string
      */
     protected $type = '';
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The name of the icons's prototype.
      * @var string
      */
@@ -77,7 +58,7 @@ class Icon
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -97,7 +78,7 @@ class Icon
      * @param ModCombination $modCombination
      * @return $this Implementing fluent interface.
      */
-    public function setModCombination(ModCombination $modCombination)
+    public function setModCombination(ModCombination $modCombination): self
     {
         $this->modCombination = $modCombination;
         return $this;
@@ -117,7 +98,7 @@ class Icon
      * @param IconFile $file
      * @return $this Implementing fluent interface.
      */
-    public function setFile(IconFile $file)
+    public function setFile(IconFile $file): self
     {
         $this->file = $file;
         return $this;
@@ -137,7 +118,7 @@ class Icon
      * @param string $type
      * @return $this Implementing fluent interface.
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
@@ -157,7 +138,7 @@ class Icon
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;

@@ -6,6 +6,7 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use BluePsyduck\Common\Test\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
@@ -44,6 +45,7 @@ class ItemRepositoryTest extends TestCase
      * Tests the findByTypesAndNames method.
      * @param bool $withNamesByTypes
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findByTypesAndNames
      * @dataProvider provideFindByTypesAndNames
      */
@@ -65,9 +67,17 @@ class ItemRepositoryTest extends TestCase
 
                 /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['innerJoin', 'andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with('i')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with(Item::class, 'i')
+                     ->willReturnSelf();
         $queryBuilder->expects(($withNamesByTypes && $withModCombinationIds) ? $this->once() : $this->never())
                      ->method('innerJoin')
                      ->with('i.modCombinations', 'mc')
@@ -93,15 +103,15 @@ class ItemRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ItemRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ItemRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ItemRepository($entityManager);
 
         $result = $repository->findByTypesAndNames($namesByTypes, $modCombinationIds);
         $this->assertSame($expectedResult, $result);
@@ -122,6 +132,7 @@ class ItemRepositoryTest extends TestCase
     /**
      * Tests the findByIds method.
      * @param bool $withIds
+     * @throws ReflectionException
      * @covers ::findByIds
      * @dataProvider provideFindByIds
      */
@@ -141,9 +152,17 @@ class ItemRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['andWhere', 'setParameter', 'getQuery'])
+                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($withIds ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with('i')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withIds ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(Item::class, 'i')
+                     ->willReturnSelf();
         $queryBuilder->expects($withIds ? $this->once() : $this->never())
                      ->method('andWhere')
                      ->with('i.id IN (:ids)')
@@ -156,15 +175,15 @@ class ItemRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ItemRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ItemRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withIds ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withIds ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ItemRepository($entityManager);
 
         $result = $repository->findByIds($ids);
         $this->assertSame($queryResult, $result);
@@ -188,6 +207,7 @@ class ItemRepositoryTest extends TestCase
      * Tests the findByKeywords method.
      * @param bool $withKeywords
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findByKeywords
      * @dataProvider provideFindByKeywords
      */
@@ -209,9 +229,17 @@ class ItemRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['andWhere', 'setParameter', 'innerJoin', 'getQuery'])
+                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'innerJoin', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
+        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+                     ->method('select')
+                     ->with('i')
+                     ->willReturnSelf();
+        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+                     ->method('from')
+                     ->with(Item::class, 'i')
+                     ->willReturnSelf();
         $queryBuilder->expects($this->exactly($withKeywords ? $withModCombinationIds ? 3 : 2 : 0))
                      ->method('andWhere')
                      ->withConsecutive(
@@ -236,15 +264,15 @@ class ItemRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ItemRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ItemRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($withKeywords ? $this->once() : $this->never())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($withKeywords ? $this->once() : $this->never())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ItemRepository($entityManager);
 
         $result = $repository->findByKeywords($keywords, $modCombinationIds);
         $this->assertEquals($expectedResult, $result);
@@ -265,6 +293,7 @@ class ItemRepositoryTest extends TestCase
     /**
      * Tests the findRandom method.
      * @param bool $withModCombinationIds
+     * @throws ReflectionException
      * @covers ::findRandom
      * @dataProvider provideFindRandom
      */
@@ -286,7 +315,8 @@ class ItemRepositoryTest extends TestCase
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
                              ->setMethods([
-                                 'addSelect',
+                                 'select',
+                                 'from',
                                  'addOrderBy',
                                  'setMaxResults',
                                  'innerJoin',
@@ -297,8 +327,12 @@ class ItemRepositoryTest extends TestCase
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($this->once())
-                     ->method('addSelect')
-                     ->with('RAND() AS HIDDEN rand')
+                     ->method('select')
+                     ->with(['i', 'RAND() AS HIDDEN rand'])
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with(Item::class, 'i')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('addOrderBy')
@@ -324,15 +358,15 @@ class ItemRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ItemRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ItemRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ItemRepository($entityManager);
 
         $result = $repository->findRandom($numberOfItems, $modCombinationIds);
         $this->assertEquals($queryResult, $result);
@@ -354,6 +388,7 @@ class ItemRepositoryTest extends TestCase
      * Tests the removeOrphans method.
      * @param array $orphanedIds
      * @param bool $expectRemove
+     * @throws ReflectionException
      * @covers ::removeOrphans
      * @dataProvider provideRemoveOrphans
      */
@@ -398,12 +433,16 @@ class ItemRepositoryTest extends TestCase
 
         /* @var QueryBuilder|MockObject $queryBuilder */
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'leftJoin', 'andWhere', 'getQuery'])
+                             ->setMethods(['select', 'from', 'leftJoin', 'andWhere', 'getQuery'])
                              ->disableOriginalConstructor()
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('select')
                      ->with('i.id AS id')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with(Item::class, 'i')
                      ->willReturnSelf();
         $queryBuilder->expects($this->exactly(3))
                      ->method('leftJoin')
@@ -425,15 +464,15 @@ class ItemRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ItemRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ItemRepository::class)
-                           ->setMethods(['createQueryBuilder'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ItemRepository($entityManager);
 
         $result = $this->invokeMethod($repository, 'findOrphanedIds');
         $this->assertEquals($expectedResult, $result);
@@ -446,7 +485,6 @@ class ItemRepositoryTest extends TestCase
      */
     public function testRemoveIds(): void
     {
-        $entityName = 'abc';
         $itemIds = [42, 1337];
 
         /* @var AbstractQuery|MockObject $query */
@@ -464,7 +502,7 @@ class ItemRepositoryTest extends TestCase
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('delete')
-                     ->with($entityName, 'i')
+                     ->with(Item::class, 'i')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('andWhere')
@@ -478,18 +516,15 @@ class ItemRepositoryTest extends TestCase
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var ItemRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ItemRepository::class)
-                           ->setMethods(['createQueryBuilder', 'getEntityName'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('createQueryBuilder')
-                   ->with('i')
-                   ->willReturn($queryBuilder);
-        $repository->expects($this->once())
-                   ->method('getEntityName')
-                   ->willReturn($entityName);
+        /* @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
+                              ->setMethods(['createQueryBuilder'])
+                              ->getMockForAbstractClass();
+        $entityManager->expects($this->once())
+                      ->method('createQueryBuilder')
+                      ->willReturn($queryBuilder);
+
+        $repository = new ItemRepository($entityManager);
 
         $this->invokeMethod($repository, 'removeIds', $itemIds);
     }

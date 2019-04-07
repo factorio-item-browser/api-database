@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
@@ -15,7 +14,7 @@ use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class ItemRepository extends EntityRepository implements RepositoryWithOrphansInterface
+class ItemRepository extends AbstractRepository implements RepositoryWithOrphansInterface
 {
     /**
      * Finds the items with the specified types and names.
@@ -25,7 +24,9 @@ class ItemRepository extends EntityRepository implements RepositoryWithOrphansIn
      */
     public function findByTypesAndNames(array $namesByTypes, array $modCombinationIds = []): array
     {
-        $queryBuilder = $this->createQueryBuilder('i');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('i')
+                     ->from(Item::class, 'i');
 
         $index = 0;
         $conditions = [];
@@ -59,8 +60,10 @@ class ItemRepository extends EntityRepository implements RepositoryWithOrphansIn
     {
         $result = [];
         if (count($ids) > 0) {
-            $queryBuilder = $this->createQueryBuilder('i');
-            $queryBuilder->andWhere('i.id IN (:ids)')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select('i')
+                         ->from(Item::class, 'i')
+                         ->andWhere('i.id IN (:ids)')
                          ->setParameter('ids', array_values($ids));
 
             $result = $queryBuilder->getQuery()->getResult();
@@ -78,7 +81,9 @@ class ItemRepository extends EntityRepository implements RepositoryWithOrphansIn
     {
         $result = [];
         if (count($keywords) > 0) {
-            $queryBuilder = $this->createQueryBuilder('i');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select('i')
+                         ->from(Item::class, 'i');
 
             $index = 0;
             foreach ($keywords as $keyword) {
@@ -106,8 +111,9 @@ class ItemRepository extends EntityRepository implements RepositoryWithOrphansIn
      */
     public function findRandom(int $numberOfItems, array $modCombinationIds = []): array
     {
-        $queryBuilder = $this->createQueryBuilder('i');
-        $queryBuilder->addSelect('RAND() AS HIDDEN rand')
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select(['i', 'RAND() AS HIDDEN rand'])
+                     ->from(Item::class, 'i')
                      ->addOrderBy('rand')
                      ->setMaxResults($numberOfItems);
 
@@ -136,8 +142,9 @@ class ItemRepository extends EntityRepository implements RepositoryWithOrphansIn
      */
     protected function findOrphanedIds(): array
     {
-        $queryBuilder = $this->createQueryBuilder('i');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('i.id AS id')
+                     ->from(Item::class, 'i')
                      ->leftJoin('i.modCombinations', 'mc')
                      ->leftJoin(RecipeIngredient::class, 'ri', 'WITH', 'ri.item = i.id')
                      ->leftJoin(RecipeProduct::class, 'rp', 'WITH', 'rp.item = i.id')
@@ -158,8 +165,8 @@ class ItemRepository extends EntityRepository implements RepositoryWithOrphansIn
      */
     protected function removeIds(array $itemIds): void
     {
-        $queryBuilder = $this->createQueryBuilder('i');
-        $queryBuilder->delete($this->getEntityName(), 'i')
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(Item::class, 'i')
                      ->andWhere('i.id IN (:itemIds)')
                      ->setParameter('itemIds', array_values($itemIds));
 

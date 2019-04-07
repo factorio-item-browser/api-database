@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * The entity class of the recipe ingredient database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity
- * @ORM\Table(name="RecipeIngredient")
  */
 class RecipeIngredient
 {
@@ -23,36 +18,24 @@ class RecipeIngredient
     protected const FACTOR_AMOUNT = 1000;
 
     /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="ingredients")
-     * @ORM\JoinColumn(name="recipeId", referencedColumnName="id")
-     *
      * The recipe of the ingredient.
      * @var Recipe
      */
     protected $recipe;
 
     /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Item", fetch="EAGER")
-     * @ORM\JoinColumn(name="itemId", referencedColumnName="id")
-     *
      * The item of the ingredient.
      * @var Item
      */
     protected $item;
 
     /**
-     * @ORM\Column(name="amount", type="integer")
-     *
      * The amount required for the recipe.
      * @var int
      */
     protected $amount = 0;
 
     /**
-     * @ORM\Column(name="`order`", type="integer")
-     *
      * The order of the ingredient in the recipe.
      * @var int
      */
@@ -74,7 +57,7 @@ class RecipeIngredient
      * @param Recipe $recipe
      * @return $this Implementing fluent interface.
      */
-    public function setRecipe(Recipe $recipe)
+    public function setRecipe(Recipe $recipe): self
     {
         $this->recipe = $recipe;
         return $this;
@@ -94,7 +77,7 @@ class RecipeIngredient
      * @param Item $item
      * @return $this Implementing fluent interface.
      */
-    public function setItem(Item $item)
+    public function setItem(Item $item): self
     {
         $this->item = $item;
         return $this;
@@ -114,7 +97,7 @@ class RecipeIngredient
      * @param float $amount
      * @return $this Implementing fluent interface.
      */
-    public function setAmount(float $amount)
+    public function setAmount(float $amount): self
     {
         $this->amount = (int) ($amount * self::FACTOR_AMOUNT);
         return $this;
@@ -134,7 +117,7 @@ class RecipeIngredient
      * @param int $order
      * @return $this Implementing fluent interface.
      */
-    public function setOrder(int $order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;

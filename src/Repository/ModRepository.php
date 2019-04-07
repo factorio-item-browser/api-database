@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
 
@@ -14,7 +13,7 @@ use FactorioItemBrowser\Api\Database\Entity\Mod;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class ModRepository extends EntityRepository
+class ModRepository extends AbstractRepository
 {
     /**
      * Finds all mods with the specified names, fetching their dependencies as well.
@@ -25,9 +24,9 @@ class ModRepository extends EntityRepository
     {
         $result = [];
         if (count($modNames) > 0) {
-            $queryBuilder = $this->createQueryBuilder('m');
-            $queryBuilder->addSelect('d')
-                         ->addSelect('dm')
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->select(['m', 'd', 'dm'])
+                         ->from(Mod::class, 'm')
                          ->leftJoin('m.dependencies', 'd')
                          ->leftJoin('d.requiredMod', 'dm')
                          ->andWhere('m.name IN (:modNames)')
@@ -39,14 +38,28 @@ class ModRepository extends EntityRepository
     }
 
     /**
+     * Returns all the mods.
+     * @return array|Mod[]
+     */
+    public function findAll(): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('m')
+                     ->from(Mod::class, 'm');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
      * Counts the mods.
      * @param array|int[] $modCombinationIds
      * @return int
      */
     public function count(array $modCombinationIds = []): int
     {
-        $queryBuilder = $this->createQueryBuilder('m');
-        $queryBuilder->select('COUNT(DISTINCT m.id) AS numberOfMods');
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('COUNT(DISTINCT m.id) AS numberOfMods')
+                     ->from(Mod::class, 'm');
 
         if (count($modCombinationIds) > 0) {
             $queryBuilder->innerJoin('m.combinations', 'mc')

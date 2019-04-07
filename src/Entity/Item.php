@@ -6,48 +6,34 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The entity class if the item database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @ORM\Entity(repositoryClass="FactorioItemBrowser\Api\Database\Repository\ItemRepository")
- * @ORM\Table(name="Item")
  */
 class Item
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
-     *
      * The internal id of the item.
      * @var int|null
      */
     protected $id;
 
     /**
-     * @ORM\Column(name="type")
-     *
      * The type of the item.
      * @var string
      */
     protected $type = '';
 
     /**
-     * @ORM\Column(name="name")
-     *
      * The unique name of the item.
      * @var string
      */
     protected $name = '';
 
     /**
-     * @ORM\ManyToMany(targetEntity="ModCombination", mappedBy="items")
-     *
      * The mod combinations which are adding the item.
      * @var Collection|ModCombination[]
      */
@@ -70,7 +56,7 @@ class Item
      * @param int $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
@@ -90,7 +76,7 @@ class Item
      * @param string $type
      * @return $this Implementing fluent interface.
      */
-    public function setType(string $type)
+    public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
@@ -110,7 +96,7 @@ class Item
      * @param string $name
      * @return $this Implementing fluent interface.
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
