@@ -11,12 +11,12 @@ cache:
     - $HOME/.composer/cache/files
 
 install:
-  - composer install --prefer-dist --no-interaction
+  - composer install --prefer-dist --no-interaction --no-suggest
 
 script:
   - composer validate --strict
   - vendor/bin/phpunit --coverage-clover=coverage.xml
-  - if [ "$SKIP_COVERAGE" != "true" ]; then vendor/bin/coverage-check coverage.xml 100; fi
+  - vendor/bin/coverage-check coverage.xml 100
   - vendor/bin/phpcs -np --colors
   - vendor/bin/phpstan analyse --no-interaction
 
