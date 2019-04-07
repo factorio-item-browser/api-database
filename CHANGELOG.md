@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 - 2019-04-07
 
 ### Added
 
@@ -12,7 +12,7 @@
 ### Changed
 
 - Using `EntityManagerInterface` in the container instead of the `EntityManager` itself.
-- Repositories no linger inherit from the `EntityRepository` and are registered directly to the container.
+- Repositories no longer inherit from the `EntityRepository` and are registered directly to the container.
 - Type hints from `DateTime` to `DateTimeInterface`.
 
 ### Fixed
@@ -21,7 +21,7 @@
 
 ### Removed
 
-- `EntityType` interface. It has been replaced by the interface from `factorio-item-browser/common`.
+- `EntityType` interface. It is replaced by the interface from `factorio-item-browser/common`.
 - Fluent interface from repository methods.
 
 ## 1.0.0 - 2018-08-04
