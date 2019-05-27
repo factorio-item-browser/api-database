@@ -28,12 +28,7 @@ class Machine
     /**
      * The value representing unlimited slots.
      */
-    public const VALUE_UNLIMITED_SLOTS = -1;
-
-    /**
-     * The database value representing unlimited slots.
-     */
-    protected const VALUE_UNLIMITED_SLOTS_DATABASE = 255;
+    public const VALUE_UNLIMITED_SLOTS = 255;
 
     /**
      * The internal id of the machine.
@@ -197,11 +192,7 @@ class Machine
      */
     public function setNumberOfItemSlots(int $numberOfItemSlots): self
     {
-        if ($numberOfItemSlots === self::VALUE_UNLIMITED_SLOTS) {
-            $this->numberOfItemSlots = self::VALUE_UNLIMITED_SLOTS_DATABASE;
-        } else {
-            $this->numberOfItemSlots = $numberOfItemSlots;
-        }
+        $this->numberOfItemSlots = $numberOfItemSlots;
         return $this;
     }
 
@@ -211,12 +202,7 @@ class Machine
      */
     public function getNumberOfItemSlots(): int
     {
-        if ($this->numberOfItemSlots === self::VALUE_UNLIMITED_SLOTS_DATABASE) {
-            $result = self::VALUE_UNLIMITED_SLOTS;
-        } else {
-            $result = $this->numberOfItemSlots;
-        }
-        return $result;
+        return $this->numberOfItemSlots;
     }
 
     /**

@@ -28,6 +28,12 @@ class IconFile
     protected $image = '';
 
     /**
+     * The size of the image.
+     * @var int
+     */
+    protected $size = 0;
+
+    /**
      * The icons using the file.
      * @var Collection|Icon[]
      */
@@ -84,6 +90,26 @@ class IconFile
             $this->image = (string) stream_get_contents($this->image);
         }
         return $this->image;
+    }
+
+    /**
+     * Sets the size of the image.
+     * @param int $size
+     * @return $this
+     */
+    public function setSize(int $size): self
+    {
+        $this->size = $size;
+        return $this;
+    }
+
+    /**
+     * Returns the size of the image.
+     * @return int
+     */
+    public function getSize(): int
+    {
+        return $this->size;
     }
 
     /**

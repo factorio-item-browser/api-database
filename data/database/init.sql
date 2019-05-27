@@ -190,6 +190,7 @@ ENGINE=InnoDB;
 CREATE TABLE `IconFile` (
   `hash` BINARY(8) NOT NULL COMMENT 'The hash of the icon file.',
   `image` BLOB NOT NULL COMMENT 'The actual image.',
+  `size` SMALLINT NOT NULL COMMENT 'The size of the image.',
   PRIMARY KEY (`hash`)
 )
 COMMENT='The table holding the actual file data of the icons.'

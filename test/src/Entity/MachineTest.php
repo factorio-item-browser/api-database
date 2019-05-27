@@ -83,29 +83,17 @@ class MachineTest extends TestCase
         $this->assertSame($craftingSpeed, $machine->getCraftingSpeed());
     }
 
-    /**
-     * Provides the data for the setAndGetNumberOfItems test.
-     * @return array
-     */
-    public function provideSetAndGetNumberOfItems(): array
-    {
-        return [
-            [32],
-            [Machine::VALUE_UNLIMITED_SLOTS],
-        ];
-    }
 
     /**
      * Tests setting and getting the numberOfItemSlots.
-     * @param int $numberOfItemSlots
      * @covers ::getNumberOfItemSlots
      * @covers ::setNumberOfItemSlots
-     * @dataProvider provideSetAndGetNumberOfItems
      */
-    public function testSetAndGetNumberOfItemSlots($numberOfItemSlots): void
+    public function testSetAndGetNumberOfItemSlots(): void
     {
         $machine = new Machine('foo');
 
+        $numberOfItemSlots = 42;
         $this->assertSame($machine, $machine->setNumberOfItemSlots($numberOfItemSlots));
         $this->assertSame($numberOfItemSlots, $machine->getNumberOfItemSlots());
     }

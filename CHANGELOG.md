@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Property `size` to the `IconFile` entity. 
+
+### Changed
+
+- Value for unlimited item slots in machine from -1 to 255 to use the same value as in-game.
+
 ## 2.0.0 - 2019-04-07
 
 ### Added
