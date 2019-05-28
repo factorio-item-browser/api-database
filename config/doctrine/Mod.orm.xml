@@ -35,7 +35,7 @@
             </options>
         </field>
 
-        <field name="order" type="integer">
+        <field name="order" column="`order`" type="integer">
             <options>
                 <option name="unsigned">true</option>
                 <option name="comment">The order position of the mod, 1 being the base mod.</option>
