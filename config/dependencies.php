@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database;
 
-use Blast\ReflectionFactory\ReflectionFactory;
+use BluePsyduck\ZendAutoWireFactory\AutoWireFactory;
 use ContainerInteropDoctrine\EntityManagerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
@@ -21,16 +21,16 @@ return [
         'factories'  => [
             Filter\DataFilter::class => InvokableFactory::class,
 
-            Repository\CachedSearchResultRepository::class => ReflectionFactory::class,
-            Repository\CraftingCategoryRepository::class => ReflectionFactory::class,
-            Repository\IconFileRepository::class => ReflectionFactory::class,
-            Repository\IconRepository::class => ReflectionFactory::class,
-            Repository\ItemRepository::class => ReflectionFactory::class,
-            Repository\MachineRepository::class => ReflectionFactory::class,
-            Repository\ModRepository::class => ReflectionFactory::class,
-            Repository\ModCombinationRepository::class => ReflectionFactory::class,
-            Repository\RecipeRepository::class => ReflectionFactory::class,
-            Repository\TranslationRepository::class => ReflectionFactory::class,
+            Repository\CachedSearchResultRepository::class => AutoWireFactory::class,
+            Repository\CraftingCategoryRepository::class => AutoWireFactory::class,
+            Repository\IconFileRepository::class => AutoWireFactory::class,
+            Repository\IconRepository::class => AutoWireFactory::class,
+            Repository\ItemRepository::class => AutoWireFactory::class,
+            Repository\MachineRepository::class => AutoWireFactory::class,
+            Repository\ModRepository::class => AutoWireFactory::class,
+            Repository\ModCombinationRepository::class => AutoWireFactory::class,
+            Repository\RecipeRepository::class => AutoWireFactory::class,
+            Repository\TranslationRepository::class => AutoWireFactory::class,
 
             // 3rd-party dependencies
             EntityManagerInterface::class => EntityManagerFactory::class,

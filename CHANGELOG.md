@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1.0 - 2019-07-15
+
+### Added
+
+- Property `size` to the `IconFile` entity. 
+
+### Changed
+
+- Value for unlimited item slots in machine from -1 to 255 to use the same value as in-game.
+- Usage of `ReflectionFactory`to `AutoWireFactory`
+
 ## 2.0.0 - 2019-04-07
 
 ### Added

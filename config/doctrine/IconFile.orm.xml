@@ -22,6 +22,13 @@
             </options>
         </field>
 
+        <field name="size" type="smallint">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The size of the image.</option>
+            </options>
+        </field>
+
         <one-to-many field="icons" target-entity="Icon" mapped-by="file" />
     </entity>
 </doctrine-mapping>

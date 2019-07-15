@@ -91,4 +91,18 @@ class IconFileTest extends TestCase
         $this->injectProperty($iconFile, 'image', $propertyToSet);
         $this->assertSame($expectedImage, $iconFile->getImage());
     }
+    
+    /**
+     * Tests setting and getting the size.
+     * @covers ::getSize
+     * @covers ::setSize
+     */
+    public function testSetAndGetSize(): void
+    {
+        $iconFile = new IconFile('ab12cd34');
+
+        $size = 42;
+        $this->assertSame($iconFile, $iconFile->setSize($size));
+        $this->assertSame($size, $iconFile->getSize());
+    }
 }
