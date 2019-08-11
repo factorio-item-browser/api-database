@@ -41,7 +41,7 @@
             </options>
         </field>
 
-        <field name="order" type="smallint" column-definition="TINYINT">
+        <field name="order" column="`order`" type="smallint" column-definition="TINYINT">
             <options>
                 <option name="unsigned">true</option>
                 <option name="comment">The order of the ingredient in the recipe.</option>
