@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.1 - 2019-08-11
+
+### Fixed
+
+- Some unescaped column names leading to SQL errors.
+
 ## 2.1.0 - 2019-07-15
 
 ### Added
