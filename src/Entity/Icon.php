@@ -13,22 +13,10 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 class Icon
 {
     /**
-     * The internal id of the icon.
-     * @var int|null
+     * The combination adding the icon.
+     * @var Combination
      */
-    protected $id;
-
-    /**
-     * The mod combination adding the icon.
-     * @var ModCombination
-     */
-    protected $modCombination;
-
-    /**
-     * The file of the icon.
-     * @var IconFile
-     */
-    protected $file;
+    protected $combination;
 
     /**
      * The type of the icon's prototype.
@@ -43,74 +31,29 @@ class Icon
     protected $name = '';
 
     /**
-     * Initializes the entity.
-     * @param ModCombination $modCombination
-     * @param IconFile $iconFile
+     * The file of the icon.
+     * @var IconFile
      */
-    public function __construct(ModCombination $modCombination, IconFile $iconFile)
-    {
-        $this->modCombination = $modCombination;
-        $this->file = $iconFile;
-    }
+    protected $file;
 
     /**
-     * Sets the internal id of the icon.
-     * @param int $id
+     * Sets the combination adding the icon.
+     * @param Combination $combination
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id): self
+    public function setCombination(Combination $combination): self
     {
-        $this->id = $id;
+        $this->combination = $combination;
         return $this;
     }
 
     /**
-     * Returns the internal id of the icon.
-     * @return int
+     * Returns the combination adding the icon.
+     * @return Combination
      */
-    public function getId(): int
+    public function getCombination(): Combination
     {
-        return (int) $this->id;
-    }
-
-    /**
-     * Sets the mod combination adding the icon.
-     * @param ModCombination $modCombination
-     * @return $this Implementing fluent interface.
-     */
-    public function setModCombination(ModCombination $modCombination): self
-    {
-        $this->modCombination = $modCombination;
-        return $this;
-    }
-
-    /**
-     * Returns the mod combination adding the icon.
-     * @return ModCombination
-     */
-    public function getModCombination(): ModCombination
-    {
-        return $this->modCombination;
-    }
-
-    /**
-     * Sets the file of the icon.
-     * @param IconFile $file
-     * @return $this Implementing fluent interface.
-     */
-    public function setFile(IconFile $file): self
-    {
-        $this->file = $file;
-        return $this;
-    }
-
-    /**
-     * Returns the file of the icon.
-     * @return IconFile
-     */
-    public function getFile(): IconFile
-    {
-        return $this->file;
+        return $this->combination;
     }
 
     /**
@@ -151,5 +94,25 @@ class Icon
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * Sets the file of the icon.
+     * @param IconFile $file
+     * @return $this Implementing fluent interface.
+     */
+    public function setFile(IconFile $file): self
+    {
+        $this->file = $file;
+        return $this;
+    }
+
+    /**
+     * Returns the file of the icon.
+     * @return IconFile
+     */
+    public function getFile(): IconFile
+    {
+        return $this->file;
     }
 }

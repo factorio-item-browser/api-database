@@ -6,7 +6,7 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
-use FactorioItemBrowser\Api\Database\Entity\ModCombination;
+use FactorioItemBrowser\Api\Database\Entity\Combination;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\ModCombination
+ * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\Combination
  */
 class ModCombinationTest extends TestCase
 {
@@ -31,7 +31,7 @@ class ModCombinationTest extends TestCase
     {
         $mod = new Mod('abc');
         $name = 'def';
-        $modCombination = new ModCombination($mod, $name);
+        $modCombination = new Combination($mod, $name);
 
         $this->assertSame(0, $modCombination->getId());
         $this->assertSame($mod, $modCombination->getMod());
@@ -52,7 +52,7 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetId(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'), 'bar');
+        $modCombination = new Combination(new Mod('foo'), 'bar');
 
         $id = 42;
         $this->assertSame($modCombination, $modCombination->setId($id));
@@ -66,7 +66,7 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetMod(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'), 'bar');
+        $modCombination = new Combination(new Mod('foo'), 'bar');
 
         $mod = new Mod('abc');
         $this->assertSame($modCombination, $modCombination->setMod($mod));
@@ -80,7 +80,7 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'), 'bar');
+        $modCombination = new Combination(new Mod('foo'), 'bar');
 
         $name = 'abc';
         $this->assertSame($modCombination, $modCombination->setName($name));
@@ -94,7 +94,7 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetOptionalModIds(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'), 'bar');
+        $modCombination = new Combination(new Mod('foo'), 'bar');
 
         $optionalModIds = [42, 1337];
         $this->assertSame($modCombination, $modCombination->setOptionalModIds($optionalModIds));
@@ -108,7 +108,7 @@ class ModCombinationTest extends TestCase
      */
     public function testSetAndGetOrder(): void
     {
-        $modCombination = new ModCombination(new Mod('foo'), 'bar');
+        $modCombination = new Combination(new Mod('foo'), 'bar');
 
         $order = 42;
         $this->assertSame($modCombination, $modCombination->setOrder($order));

@@ -7,7 +7,7 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 use FactorioItemBrowser\Api\Database\Entity\IconFile;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
-use FactorioItemBrowser\Api\Database\Entity\ModCombination;
+use FactorioItemBrowser\Api\Database\Entity\Combination;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -25,12 +25,12 @@ class IconTest extends TestCase
      */
     public function testConstruct(): void
     {
-        $modCombination = new ModCombination(new Mod('abc'), 'def');
+        $modCombination = new Combination(new Mod('abc'), 'def');
         $file = new IconFile('12ab34cd');
 
         $icon = new Icon($modCombination, $file);
         $this->assertSame(0, $icon->getId());
-        $this->assertSame($modCombination, $icon->getModCombination());
+        $this->assertSame($modCombination, $icon->getCombination());
         $this->assertSame($file, $icon->getFile());
         $this->assertSame('', $icon->getType());
         $this->assertSame('', $icon->getName());
@@ -43,7 +43,7 @@ class IconTest extends TestCase
      */
     public function testSetAndGetId(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
+        $icon = new Icon(new Combination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
         $id = 42;
         $this->assertSame($icon, $icon->setId($id));
@@ -52,16 +52,16 @@ class IconTest extends TestCase
 
     /**
      * Tests setting and getting the modCombination.
-     * @covers ::getModCombination
-     * @covers ::setModCombination
+     * @covers ::getCombination
+     * @covers ::setCombination
      */
     public function testSetAndGetModCombination(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
+        $icon = new Icon(new Combination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
-        $modCombination = new ModCombination(new Mod('abc'), 'def');
-        $this->assertSame($icon, $icon->setModCombination($modCombination));
-        $this->assertSame($modCombination, $icon->getModCombination());
+        $modCombination = new Combination(new Mod('abc'), 'def');
+        $this->assertSame($icon, $icon->setCombination($modCombination));
+        $this->assertSame($modCombination, $icon->getCombination());
     }
 
     /**
@@ -71,7 +71,7 @@ class IconTest extends TestCase
      */
     public function testSetAndGetFile(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
+        $icon = new Icon(new Combination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
         $file = new IconFile('12ab34cd');
         $this->assertSame($icon, $icon->setFile($file));
@@ -85,7 +85,7 @@ class IconTest extends TestCase
      */
     public function testSetAndGetType(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
+        $icon = new Icon(new Combination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
         $type = 'abc';
         $this->assertSame($icon, $icon->setType($type));
@@ -99,7 +99,7 @@ class IconTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
+        $icon = new Icon(new Combination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
 
         $name = 'abc';
         $this->assertSame($icon, $icon->setName($name));

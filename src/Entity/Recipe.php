@@ -7,6 +7,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity class of the recipe database table.
@@ -23,15 +24,9 @@ class Recipe
 
     /**
      * The internal id of the recipe.
-     * @var int|null
+     * @var UuidInterface
      */
     protected $id;
-
-    /**
-     * The mod combinations which are adding the recipe.
-     * @var Collection|ModCombination[]
-     */
-    protected $modCombinations;
 
     /**
      * The name of the recipe.
@@ -70,27 +65,27 @@ class Recipe
     protected $products;
 
     /**
-     * Initializes the entity.
-     * @param string $name
-     * @param string $mode
-     * @param CraftingCategory $craftingCategory
+     * The combinations which are adding the recipe.
+     * @var Collection|Combination[]
      */
-    public function __construct(string $name, string $mode, CraftingCategory $craftingCategory)
+    protected $combinations;
+
+    /**
+     * Initializes the entity.
+     */
+    public function __construct()
     {
-        $this->name = $name;
-        $this->mode = $mode;
-        $this->craftingCategory = $craftingCategory;
-        $this->modCombinations = new ArrayCollection();
         $this->ingredients = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->combinations = new ArrayCollection();
     }
 
     /**
      * Sets the internal id of the recipe.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -98,20 +93,11 @@ class Recipe
 
     /**
      * Returns the internal id of the recipe.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
-        return (int) $this->id;
-    }
-
-    /**
-     * Returns the mod combinations adding the recipe.
-     * @return Collection|ModCombination[]
-     */
-    public function getModCombinations(): Collection
-    {
-        return $this->modCombinations;
+        return $this->id;
     }
 
     /**
@@ -228,5 +214,14 @@ class Recipe
     public function getOrderedProducts(): Collection
     {
         return $this->products->matching(Criteria::create()->orderBy(['order' => Criteria::ASC]));
+    }
+
+    /**
+     * Returns the combinations adding the recipe.
+     * @return Collection|Combination[]
+     */
+    public function getCombinations(): Collection
+    {
+        return $this->combinations;
     }
 }

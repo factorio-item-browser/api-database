@@ -9,10 +9,9 @@
             <option name="comment">The table holding the actual file data of the icons.</option>
         </options>
 
-        <id name="hash" length="8" column-definition="BINARY(8)">
+        <id name="id" type="uuid_binary">
             <options>
-                <option name="fixed">true</option>
-                <option name="comment">The hash of the icon file.</option>
+                <option name="comment">The internal id of the icon file.</option>
             </options>
         </id>
 

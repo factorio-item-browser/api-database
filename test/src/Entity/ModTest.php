@@ -31,7 +31,7 @@ class ModTest extends TestCase
         $this->assertSame(0, $mod->getId());
         $this->assertSame($name, $mod->getName());
         $this->assertSame('', $mod->getAuthor());
-        $this->assertSame('', $mod->getCurrentVersion());
+        $this->assertSame('', $mod->getVersion());
         $this->assertSame(0, $mod->getOrder());
         $this->assertInstanceOf(ArrayCollection::class, $mod->getDependencies());
         $this->assertInstanceOf(ArrayCollection::class, $mod->getCombinations());
@@ -81,16 +81,16 @@ class ModTest extends TestCase
 
     /**
      * Tests setting and getting the currentVersion.
-     * @covers ::getCurrentVersion
-     * @covers ::setCurrentVersion
+     * @covers ::getVersion
+     * @covers ::setVersion
      */
     public function testSetAndGetCurrentVersion(): void
     {
         $mod = new Mod('foo');
 
         $currentVersion = '1.2.3';
-        $this->assertSame($mod, $mod->setCurrentVersion($currentVersion));
-        $this->assertSame($currentVersion, $mod->getCurrentVersion());
+        $this->assertSame($mod, $mod->setVersion($currentVersion));
+        $this->assertSame($currentVersion, $mod->getVersion());
     }
 
     /**

@@ -42,17 +42,6 @@ class RecipeIngredient
     protected $order = 0;
 
     /**
-     * Initializes the entity.
-     * @param Recipe $recipe
-     * @param Item $item
-     */
-    public function __construct(Recipe $recipe, Item $item)
-    {
-        $this->recipe = $recipe;
-        $this->item = $item;
-    }
-
-    /**
      * Sets the recipe of the ingredient.
      * @param Recipe $recipe
      * @return $this Implementing fluent interface.

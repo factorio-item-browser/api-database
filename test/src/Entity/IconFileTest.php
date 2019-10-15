@@ -30,23 +30,23 @@ class IconFileTest extends TestCase
     {
         $iconFile = new IconFile('12ab34cd');
 
-        $this->assertSame('12ab34cd', $iconFile->getHash());
+        $this->assertSame('12ab34cd', $iconFile->getId());
         $this->assertSame('', $iconFile->getImage());
         $this->assertInstanceOf(ArrayCollection::class, $iconFile->getIcons());
     }
 
     /**
      * Tests setting and getting the hash.
-     * @covers ::getHash
-     * @covers ::setHash
+     * @covers ::getId
+     * @covers ::setId
      */
     public function testSetAndGetHash(): void
     {
         $iconFile = new IconFile('ab12cd34');
 
         $hash = '12ab34cd';
-        $this->assertSame($iconFile, $iconFile->setHash($hash));
-        $this->assertSame($hash, $iconFile->getHash());
+        $this->assertSame($iconFile, $iconFile->setId($hash));
+        $this->assertSame($hash, $iconFile->getId());
     }
 
     /**

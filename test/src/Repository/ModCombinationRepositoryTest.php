@@ -8,7 +8,7 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
-use FactorioItemBrowser\Api\Database\Entity\ModCombination;
+use FactorioItemBrowser\Api\Database\Entity\Combination;
 use FactorioItemBrowser\Api\Database\Repository\ModCombinationRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -45,7 +45,7 @@ class ModCombinationRepositoryTest extends TestCase
     public function testFindByNames(bool $withNames): void
     {
         $names = $withNames ? ['abc', 'def'] : [];
-        $queryResult = $withNames ? [$this->createMock(ModCombination::class)] : [];
+        $queryResult = $withNames ? [$this->createMock(Combination::class)] : [];
 
         /* @var AbstractQuery|MockObject $query */
         $query = $this->getMockBuilder(AbstractQuery::class)
@@ -67,7 +67,7 @@ class ModCombinationRepositoryTest extends TestCase
                      ->willReturnSelf();
         $queryBuilder->expects($withNames ? $this->once() : $this->never())
                      ->method('from')
-                     ->with(ModCombination::class, 'mc')
+                     ->with(Combination::class, 'mc')
                      ->willReturnSelf();
         $queryBuilder->expects($withNames ? $this->once() : $this->never())
                      ->method('andWhere')
@@ -121,7 +121,7 @@ class ModCombinationRepositoryTest extends TestCase
     public function testFindByModNames(bool $withModNames): void
     {
         $modNames = $withModNames ? ['abc', 'def'] : [];
-        $queryResult = $withModNames ? [$this->createMock(ModCombination::class)] : [];
+        $queryResult = $withModNames ? [$this->createMock(Combination::class)] : [];
 
         /* @var AbstractQuery|MockObject $query */
         $query = $this->getMockBuilder(AbstractQuery::class)
@@ -151,7 +151,7 @@ class ModCombinationRepositoryTest extends TestCase
                      ->willReturnSelf();
         $queryBuilder->expects($withModNames ? $this->once() : $this->never())
                      ->method('from')
-                     ->with(ModCombination::class, 'mc')
+                     ->with(Combination::class, 'mc')
                      ->willReturnSelf();
         $queryBuilder->expects($withModNames ? $this->once() : $this->never())
                      ->method('innerJoin')
@@ -232,7 +232,7 @@ class ModCombinationRepositoryTest extends TestCase
                      ->willReturnSelf();
         $queryBuilder->expects($withModCombinationIds ? $this->once() : $this->never())
                      ->method('from')
-                     ->with(ModCombination::class, 'mc')
+                     ->with(Combination::class, 'mc')
                      ->willReturnSelf();
         $queryBuilder->expects($withModCombinationIds ? $this->once() : $this->never())
                      ->method('innerJoin')
@@ -272,8 +272,8 @@ class ModCombinationRepositoryTest extends TestCase
     public function testFindAll(): void
     {
         $queryResult = [
-            new ModCombination(new Mod('abc'), 'def'),
-            new ModCombination(new Mod('ghi'), 'jkl'),
+            new Combination(new Mod('abc'), 'def'),
+            new Combination(new Mod('ghi'), 'jkl'),
         ];
 
         /* @var AbstractQuery|MockObject $query */
@@ -296,7 +296,7 @@ class ModCombinationRepositoryTest extends TestCase
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('from')
-                     ->with(ModCombination::class, 'mc')
+                     ->with(Combination::class, 'mc')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('getQuery')

@@ -27,7 +27,7 @@ class CachedSearchResultTest extends TestCase
     {
         $cachedSearchResult = new CachedSearchResult('12ab34cd');
 
-        $this->assertSame('12ab34cd', $cachedSearchResult->getHash());
+        $this->assertSame('12ab34cd', $cachedSearchResult->getId());
         $this->assertSame('', $cachedSearchResult->getResultData());
         $cachedSearchResult->getLastSearchTime(); // assertion through type hinting
     }
@@ -35,16 +35,16 @@ class CachedSearchResultTest extends TestCase
     /**
      * Tests setting and getting the hash.
      * @throws Exception
-     * @covers ::getHash
-     * @covers ::setHash
+     * @covers ::getId
+     * @covers ::setId
      */
     public function testSetAndGetHash(): void
     {
         $cachedSearchResult = new CachedSearchResult('ab12cd34');
 
         $hash = '12ab34cd';
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setHash($hash));
-        $this->assertSame($hash, $cachedSearchResult->getHash());
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setId($hash));
+        $this->assertSame($hash, $cachedSearchResult->getId());
     }
 
     /**

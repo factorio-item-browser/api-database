@@ -9,15 +9,17 @@
             <option name="comment">The table holding the crafting categories.</option>
         </options>
 
-        <id name="id" type="integer">
-            <generator />
+        <unique-constraints>
+            <unique-constraint columns="name" />
+        </unique-constraints>
+
+        <id name="id" type="uuid_binary">
             <options>
-                <option name="unsigned">true</option>
                 <option name="comment">The internal id of the crafting category.</option>
             </options>
         </id>
 
-        <field name="name" length="255" unique="true">
+        <field name="name" length="255">
             <options>
                 <option name="comment">The name of the crafting category.</option>
             </options>

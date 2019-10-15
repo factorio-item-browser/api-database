@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use FactorioItemBrowser\Api\Database\Entity\ModCombination;
+use FactorioItemBrowser\Api\Database\Entity\Combination;
 
 /**
  * The repository class of the ModCombination database table.
@@ -17,7 +17,7 @@ class ModCombinationRepository extends AbstractRepository
     /**
      * Finds the combinations with the specified names.
      * @param array|string[] $names
-     * @return array|ModCombination[]
+     * @return array|Combination[]
      */
     public function findByNames(array $names): array
     {
@@ -25,7 +25,7 @@ class ModCombinationRepository extends AbstractRepository
         if (count($names) > 0) {
             $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select('mc')
-                         ->from(ModCombination::class, 'mc')
+                         ->from(Combination::class, 'mc')
                          ->andWhere('mc.name IN (:names)')
                          ->addOrderBy('mc.order', 'ASC')
                          ->setParameter('names', array_values($names));
@@ -38,7 +38,7 @@ class ModCombinationRepository extends AbstractRepository
     /**
      * Finds the combinations where the specified mod names are the main mod of.
      * @param array|string[] $modNames
-     * @return array|ModCombination[]
+     * @return array|Combination[]
      */
     public function findByModNames(array $modNames): array
     {
@@ -46,7 +46,7 @@ class ModCombinationRepository extends AbstractRepository
         if (count($modNames) > 0) {
             $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select(['mc', 'm'])
-                         ->from(ModCombination::class, 'mc')
+                         ->from(Combination::class, 'mc')
                          ->innerJoin('mc.mod', 'm')
                          ->andWhere('m.name IN (:modNames)')
                          ->addOrderBy('mc.order', 'ASC')
@@ -68,7 +68,7 @@ class ModCombinationRepository extends AbstractRepository
         if (count($modCombinationIds) > 0) {
             $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select('m.name')
-                         ->from(ModCombination::class, 'mc')
+                         ->from(Combination::class, 'mc')
                          ->innerJoin('mc.mod', 'm')
                          ->andWhere('mc.id IN (:modCombinationIds)')
                          ->addGroupBy('m.name')
@@ -83,13 +83,13 @@ class ModCombinationRepository extends AbstractRepository
 
     /**
      * Returns all the mods.
-     * @return array|ModCombination[]
+     * @return array|Combination[]
      */
     public function findAll(): array
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('mc')
-                     ->from(ModCombination::class, 'mc');
+                     ->from(Combination::class, 'mc');
 
         return $queryBuilder->getQuery()->getResult();
     }

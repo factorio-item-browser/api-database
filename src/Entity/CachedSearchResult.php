@@ -7,6 +7,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 use DateTime;
 use DateTimeInterface;
 use Exception;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity of the cached search result database table.
@@ -17,10 +18,10 @@ use Exception;
 class CachedSearchResult
 {
     /**
-     * The hash of the search result.
-     * @var string
+     * The internal id of the search result.
+     * @var UuidInterface
      */
-    protected $hash;
+    protected $id;
 
     /**
      * The result data of the search.
@@ -36,33 +37,31 @@ class CachedSearchResult
 
     /**
      * Initializes the entity.
-     * @param string $hash
      * @throws Exception
      */
-    public function __construct(string $hash)
+    public function __construct()
     {
-        $this->setHash($hash);
         $this->lastSearchTime = new DateTime();
     }
 
     /**
-     * Sets the hash of the search result.
-     * @param string $hash
+     * Sets the internal id of the search result.
+     * @param UuidInterface $id
      * @return $this
      */
-    public function setHash(string $hash): self
+    public function setId(UuidInterface $id): self
     {
-        $this->hash = (string) hex2bin($hash);
+        $this->id = $id;
         return $this;
     }
 
     /**
-     * Returns the hash of the search result.
-     * @return string
+     * Returns the internal id of the search result.
+     * @return UuidInterface
      */
-    public function getHash(): string
+    public function getId(): UuidInterface
     {
-        return bin2hex($this->hash);
+        return $this->id;
     }
 
     /**

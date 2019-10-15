@@ -13,6 +13,7 @@ namespace FactorioItemBrowser\Api\Database;
 
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
 
 return [
     'doctrine' => [
@@ -20,6 +21,13 @@ return [
             'orm_default' => [
                 'numeric_functions' => [
                     'Rand' => Functions\RandFunction::class,
+                ],
+            ],
+        ],
+        'connection' => [
+            'orm_default' => [
+                'doctrine_mapping_types' => [
+                    UuidBinaryType::NAME => UuidBinaryType::BINARY,
                 ],
             ],
         ],
@@ -39,5 +47,14 @@ return [
                 ],
             ],
         ],
+        'types' => [
+            Type\EnumEnergyUnit::NAME => Type\EnumEnergyUnit::class,
+            Type\EnumItemType::NAME => Type\EnumItemType::class,
+            Type\EnumRecipeMode::NAME => Type\EnumRecipeMode::class,
+            Type\EnumEntityType::NAME => Type\EnumEntityType::class,
+            Type\TinyIntType::NAME => Type\TinyIntType::class,
+
+            UuidBinaryType::NAME => UuidBinaryType::class,
+        ]
     ],
 ];

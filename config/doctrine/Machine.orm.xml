@@ -13,10 +13,8 @@
             <index columns="name" />
         </indexes>
 
-        <id name="id" type="integer">
-            <generator />
+        <id name="id" type="uuid_binary">
             <options>
-                <option name="unsigned">true</option>
                 <option name="comment">The internal id of the machine.</option>
             </options>
         </id>
@@ -27,65 +25,65 @@
             </options>
         </field>
 
-        <many-to-many field="modCombinations" target-entity="ModCombination" mapped-by="machines" />
-
         <many-to-many field="craftingCategories" target-entity="CraftingCategory">
             <join-table name="MachineXCraftingCategory">
                 <join-columns>
-                    <join-column name="machineId" />
+                    <join-column name="machineId" nullable="false" />
                 </join-columns>
                 <inverse-join-columns>
-                    <join-column name="craftingCategoryId" />
+                    <join-column name="craftingCategoryId" nullable="false" />
                 </inverse-join-columns>
             </join-table>
         </many-to-many>
 
-        <field name="craftingSpeed" type="integer" column-definition="MEDIUMINT">
+        <field name="craftingSpeed" type="integer">
             <options>
                 <option name="unsigned">true</option>
                 <option name="comment">The crafting speed of the machine.</option>
             </options>
         </field>
 
-        <field name="numberOfItemSlots" type="smallint" column-definition="TINYINT">
+        <field name="numberOfItemSlots" type="tinyint">
             <options>
                 <option name="unsigned">true</option>
                 <option name="comment">The number of item slots available in the machine, or 255 for unlimited.</option>
             </options>
         </field>
 
-        <field name="numberOfFluidInputSlots" type="smallint" column-definition="TINYINT">
+        <field name="numberOfFluidInputSlots" type="tinyint">
             <options>
                 <option name="unsigned">true</option>
                 <option name="comment">The number of fluid input slots available in the machine.</option>
             </options>
         </field>
 
-        <field name="numberOfFluidOutputSlots" type="smallint" column-definition="TINYINT">
+        <field name="numberOfFluidOutputSlots" type="tinyint">
             <options>
                 <option name="unsigned">true</option>
                 <option name="comment">The number of fluid output slots available in the machine.</option>
             </options>
         </field>
 
-        <field name="numberOfModuleSlots" type="smallint" column-definition="TINYINT">
+        <field name="numberOfModuleSlots" type="tinyint">
             <options>
                 <option name="unsigned">true</option>
                 <option name="comment">The number of module slots available in the machine.</option>
             </options>
         </field>
 
-        <field name="energyUsage" type="integer" column-definition="MEDIUMINT">
+        <field name="energyUsage" type="integer">
             <options>
                 <option name="unsigned">true</option>
                 <option name="comment">The energy usage of the machine.</option>
             </options>
         </field>
 
-        <field name="energyUsageUnit" column-definition="ENUM('W','kW','MW','GW','TW','PW','EW','ZW','YW')">
+        <field name="energyUsageUnit" type="enum_energy_usage_unit">
             <options>
                 <option name="comment">The unit of the energy usage.</option>
             </options>
         </field>
+
+        <many-to-many field="combinations" target-entity="Combination" mapped-by="machines" />
     </entity>
 </doctrine-mapping>

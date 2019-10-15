@@ -25,7 +25,7 @@ class RecipeTest extends TestCase
      * Tests the constructing
      * @covers ::__construct
      * @covers ::getIngredients()
-     * @covers ::getModCombinations
+     * @covers ::getCombinations
      * @covers ::getProducts()
      */
     public function testConstruct(): void
@@ -36,7 +36,7 @@ class RecipeTest extends TestCase
 
         $recipe = new Recipe($name, $mode, $craftingCategory);
         $this->assertSame(0, $recipe->getId());
-        $this->assertInstanceOf(ArrayCollection::class, $recipe->getModCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $recipe->getCombinations());
         $this->assertSame($name, $recipe->getName());
         $this->assertSame($mode, $recipe->getMode());
         $this->assertSame(0., $recipe->getCraftingTime());

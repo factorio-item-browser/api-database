@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
+
 /**
  * The entity class of the Translation database table.
  *
@@ -14,15 +18,9 @@ class Translation
 {
     /**
      * The internal id of the translation.
-     * @var int|null
+     * @var UuidInterface
      */
     protected $id;
-
-    /**
-     * The mod combination providing the translation.
-     * @var ModCombination
-     */
-    protected $modCombination;
 
     /**
      * The locale of the translation.
@@ -67,26 +65,25 @@ class Translation
     protected $isDuplicatedByMachine = false;
 
     /**
-     * Initializes the entity.
-     * @param ModCombination $modCombination
-     * @param string $locale
-     * @param string $type
-     * @param string $name
+     * The combinations which are adding the translation.
+     * @var Collection|Combination[]
      */
-    public function __construct(ModCombination $modCombination, string $locale, string $type, string $name)
+    protected $combinations;
+
+    /**
+     * Initializes the entity.
+     */
+    public function __construct()
     {
-        $this->modCombination = $modCombination;
-        $this->locale = $locale;
-        $this->type = $type;
-        $this->name = $name;
+        $this->combinations = new ArrayCollection();
     }
 
     /**
      * Sets the internal id of the translation.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -94,31 +91,11 @@ class Translation
 
     /**
      * Returns the internal id of the translation.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
-        return (int) $this->id;
-    }
-
-    /**
-     * Sets the mod combination providing the translation.
-     * @param ModCombination $modCombination
-     * @return $this Implementing fluent interface.
-     */
-    public function setModCombination(ModCombination $modCombination): self
-    {
-        $this->modCombination = $modCombination;
-        return $this;
-    }
-
-    /**
-     * Returns the mod combination providing the translation.
-     * @return ModCombination
-     */
-    public function getModCombination(): ModCombination
-    {
-        return $this->modCombination;
+        return $this->id;
     }
 
     /**
@@ -259,5 +236,14 @@ class Translation
     public function getIsDuplicatedByMachine(): bool
     {
         return $this->isDuplicatedByMachine;
+    }
+
+    /**
+     * Returns the combinations which are adding the translation.
+     * @return Collection|Combination[]
+     */
+    public function getCombinations(): Collection
+    {
+        return $this->combinations;
     }
 }

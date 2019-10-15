@@ -20,7 +20,7 @@ class MachineTest extends TestCase
     /**
      * Tests the constructing.
      * @covers ::__construct
-     * @covers ::getModCombinations
+     * @covers ::getCombinations
      * @covers ::getCraftingCategories
      */
     public function testConstruct(): void
@@ -30,7 +30,7 @@ class MachineTest extends TestCase
 
         $this->assertSame(0, $machine->getId());
         $this->assertSame($name, $machine->getName());
-        $this->assertInstanceOf(ArrayCollection::class, $machine->getModCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $machine->getCombinations());
         $this->assertInstanceOf(ArrayCollection::class, $machine->getCraftingCategories());
         $this->assertSame(1., $machine->getCraftingSpeed());
         $this->assertSame(0, $machine->getNumberOfItemSlots());

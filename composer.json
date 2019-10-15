@@ -14,12 +14,13 @@
   "require": {
     "php": "^7.2",
     "ext-pdo": "*",
-    "bluepsyduck/zend-autowire-factory": "^1.0",
     "bluepsyduck/common": "^1.0",
+    "bluepsyduck/zend-autowire-factory": "^1.0",
     "dasprid/container-interop-doctrine": "^1.1",
     "doctrine/orm": "^2.6",
     "factorio-item-browser/common": "^1.0",
     "psr/container": "^1.0",
+    "ramsey/uuid-doctrine": "^1.5",
     "zendframework/zend-servicemanager": "^3.0"
   },
   "require-dev": {

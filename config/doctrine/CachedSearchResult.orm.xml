@@ -9,20 +9,19 @@
             <option name="comment">The table caching the search results.</option>
         </options>
 
-        <id name="hash" length="8" column-definition="BINARY(8)">
+        <id name="id" type="uuid_binary">
             <options>
-                <option name="fixed">true</option>
-                <option name="comment">The hash of the search.</option>
+                <option name="comment">The internal id of the search.</option>
             </options>
         </id>
 
-        <field name="resultData">
+        <field name="resultData" type="text">
             <options>
                 <option name="comment">The result data of the search.</option>
             </options>
         </field>
 
-        <field name="lastSearchTime" type="datetime">
+        <field name="lastSearchTime" type="datetime" version="true">
             <options>
                 <option name="comment">The time when the search result was last used.</option>
             </options>

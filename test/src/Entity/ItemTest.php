@@ -20,7 +20,7 @@ class ItemTest extends TestCase
     /**
      * Tests the constructing.
      * @covers ::__construct
-     * @covers ::getModCombinations
+     * @covers ::getCombinations
      */
     public function testConstruct(): void
     {
@@ -29,7 +29,7 @@ class ItemTest extends TestCase
         $this->assertSame(0, $item->getId());
         $this->assertSame('abc', $item->getType());
         $this->assertSame('def', $item->getName());
-        $this->assertInstanceOf(ArrayCollection::class, $item->getModCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $item->getCombinations());
     }
 
     /**

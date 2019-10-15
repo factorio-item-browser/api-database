@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity of the icon file database table.
@@ -16,10 +17,10 @@ use Doctrine\Common\Collections\Collection;
 class IconFile
 {
     /**
-     * The hash of the icon file.
-     * @var string
+     * The internal id of the icon file.
+     * @var UuidInterface
      */
-    protected $hash;
+    protected $id;
 
     /**
      * The actual image data.
@@ -41,32 +42,30 @@ class IconFile
 
     /**
      * Initializes the entity.
-     * @param string $hash
      */
-    public function __construct(string $hash)
+    public function __construct()
     {
-        $this->setHash($hash);
         $this->icons = new ArrayCollection();
     }
 
     /**
      * Sets the hash of the icon.
-     * @param string $hash
+     * @param UuidInterface $id
      * @return $this Implementing fluent interface.
      */
-    public function setHash(string $hash): self
+    public function setId(UuidInterface $id): self
     {
-        $this->hash = (string) hex2bin($hash);
+        $this->id = $id;
         return $this;
     }
 
     /**
      * Returns the hash of the icon.
-     * @return string
+     * @return UuidInterface
      */
-    public function getHash(): string
+    public function getId(): UuidInterface
     {
-        return bin2hex($this->hash);
+        return $this->id;
     }
 
     /**
