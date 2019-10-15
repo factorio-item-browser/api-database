@@ -6,7 +6,6 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -190,30 +189,12 @@ class Recipe
     }
 
     /**
-     * Returns the ordered ingredients of the recipe, in case the ingredients are not already ordered.
-     * @return Collection|RecipeIngredient[]
-     */
-    public function getOrderedIngredients(): Collection
-    {
-        return $this->ingredients->matching(Criteria::create()->orderBy(['order' => Criteria::ASC]));
-    }
-
-    /**
      * Returns the products of the recipe.
      * @return Collection|RecipeProduct[]
      */
     public function getProducts(): Collection
     {
         return $this->products;
-    }
-
-    /**
-     * Returns the ordered products of the recipe, in case the products are not already ordered.
-     * @return Collection|RecipeProduct[]
-     */
-    public function getOrderedProducts(): Collection
-    {
-        return $this->products->matching(Criteria::create()->orderBy(['order' => Criteria::ASC]));
     }
 
     /**

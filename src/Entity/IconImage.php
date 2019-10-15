@@ -9,24 +9,24 @@ use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * The entity of the icon file database table.
+ * The entity of the icon image database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class IconFile
+class IconImage
 {
     /**
-     * The internal id of the icon file.
+     * The internal id of the image.
      * @var UuidInterface
      */
     protected $id;
 
     /**
-     * The actual image data.
+     * The contents of the image.
      * @var string|resource
      */
-    protected $image = '';
+    protected $contents = '';
 
     /**
      * The size of the image.
@@ -35,7 +35,7 @@ class IconFile
     protected $size = 0;
 
     /**
-     * The icons using the file.
+     * The icons using the image.
      * @var Collection|Icon[]
      */
     protected $icons;
@@ -49,7 +49,7 @@ class IconFile
     }
 
     /**
-     * Sets the hash of the icon.
+     * Sets the internal id of the icon.
      * @param UuidInterface $id
      * @return $this Implementing fluent interface.
      */
@@ -60,7 +60,7 @@ class IconFile
     }
 
     /**
-     * Returns the hash of the icon.
+     * Returns the internal id of the icon.
      * @return UuidInterface
      */
     public function getId(): UuidInterface
@@ -69,26 +69,26 @@ class IconFile
     }
 
     /**
-     * Sets the actual image data.
-     * @param string $image
+     * Sets the contents of the image.
+     * @param string $contents
      * @return $this Implementing fluent interface.
      */
-    public function setImage(string $image): self
+    public function setContents(string $contents): self
     {
-        $this->image = $image;
+        $this->contents = $contents;
         return $this;
     }
 
     /**
-     * Returns the actual image data.
+     * Returns the contents of the image.
      * @return string
      */
-    public function getImage(): string
+    public function getContents(): string
     {
-        if (is_resource($this->image)) {
-            $this->image = (string) stream_get_contents($this->image);
+        if (is_resource($this->contents)) {
+            $this->contents = (string) stream_get_contents($this->contents);
         }
-        return $this->image;
+        return $this->contents;
     }
 
     /**
@@ -112,7 +112,7 @@ class IconFile
     }
 
     /**
-     * Returns the icons using this file.
+     * Returns the icons using this image.
      * @return Collection|Icon[]
      */
     public function getIcons(): Collection

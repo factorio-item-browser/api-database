@@ -27,8 +27,8 @@
             <join-column name="combinationId" nullable="false" />
         </many-to-one>
 
-        <many-to-one field="file" target-entity="IconFile">
-            <join-column name="fileId" nullable="false" />
+        <many-to-one field="image" target-entity="IconImage">
+            <join-column name="imageId" nullable="false" />
         </many-to-one>
     </entity>
 </doctrine-mapping>

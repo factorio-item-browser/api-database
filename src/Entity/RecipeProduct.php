@@ -34,6 +34,12 @@ class RecipeProduct
     protected $recipe;
 
     /**
+     * The order of the product in the recipe.
+     * @var int
+     */
+    protected $order = 0;
+
+    /**
      * The item of the result.
      * @var Item
      */
@@ -58,12 +64,6 @@ class RecipeProduct
     protected $probability = 0;
 
     /**
-     * The order of the product in the recipe.
-     * @var int
-     */
-    protected $order = 0;
-
-    /**
      * Sets the recipe of the result.
      * @param Recipe $recipe
      * @return $this Implementing fluent interface.
@@ -81,6 +81,26 @@ class RecipeProduct
     public function getRecipe(): Recipe
     {
         return $this->recipe;
+    }
+
+    /**
+     * Sets the order of the product in the recipe.
+     * @param int $order
+     * @return $this Implementing fluent interface.
+     */
+    public function setOrder(int $order): self
+    {
+        $this->order = $order;
+        return $this;
+    }
+
+    /**
+     * Returns the order of the product in the recipe.
+     * @return int
+     */
+    public function getOrder(): int
+    {
+        return $this->order;
     }
 
     /**
@@ -170,25 +190,5 @@ class RecipeProduct
     public function getAmount(): float
     {
         return ($this->getAmountMin() + $this->getAmountMax()) / 2 * $this->getProbability();
-    }
-
-    /**
-     * Sets the order of the product in the recipe.
-     * @param int $order
-     * @return $this Implementing fluent interface.
-     */
-    public function setOrder(int $order): self
-    {
-        $this->order = $order;
-        return $this;
-    }
-
-    /**
-     * Returns the order of the product in the recipe.
-     * @return int
-     */
-    public function getOrder(): int
-    {
-        return $this->order;
     }
 }

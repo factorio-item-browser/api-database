@@ -42,9 +42,17 @@
             <join-column name="craftingCategoryId" nullable="false" />
         </many-to-one>
 
-        <one-to-many field="ingredients" target-entity="RecipeIngredient" mapped-by="recipe" />
+        <one-to-many field="ingredients" target-entity="RecipeIngredient" mapped-by="recipe">
+            <order-by>
+                <order-by-field name="order" />
+            </order-by>
+        </one-to-many>
 
-        <one-to-many field="products" target-entity="RecipeProduct" mapped-by="recipe" />
+        <one-to-many field="products" target-entity="RecipeProduct" mapped-by="recipe">
+            <order-by>
+                <order-by-field name="order" />
+            </order-by>
+        </one-to-many>
 
         <many-to-many field="combinations" target-entity="Combination" mapped-by="recipes" />
     </entity>

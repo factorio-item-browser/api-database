@@ -31,10 +31,10 @@ class Icon
     protected $name = '';
 
     /**
-     * The file of the icon.
-     * @var IconFile
+     * The image of the icon.
+     * @var IconImage
      */
-    protected $file;
+    protected $image;
 
     /**
      * Sets the combination adding the icon.
@@ -97,22 +97,22 @@ class Icon
     }
 
     /**
-     * Sets the file of the icon.
-     * @param IconFile $file
+     * Sets the image of the icon.
+     * @param IconImage $image
      * @return $this Implementing fluent interface.
      */
-    public function setFile(IconFile $file): self
+    public function setImage(IconImage $image): self
     {
-        $this->file = $file;
+        $this->image = $image;
         return $this;
     }
 
     /**
-     * Returns the file of the icon.
-     * @return IconFile
+     * Returns the image of the icon.
+     * @return IconImage
      */
-    public function getFile(): IconFile
+    public function getImage(): IconImage
     {
-        return $this->file;
+        return $this->image;
     }
 }

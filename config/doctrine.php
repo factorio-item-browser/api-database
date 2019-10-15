@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 
@@ -33,13 +32,6 @@ return [
         ],
         'driver' => [
             'orm_default' => [
-                'class' => MappingDriverChain::class,
-                'drivers' => [
-                    'FactorioItemBrowser\Api\Database\Entity' => 'fib-api-database',
-                ],
-            ],
-
-            'fib-api-database' => [
                 'class' => SimplifiedXmlDriver::class,
                 'cache' => 'array',
                 'paths' => [

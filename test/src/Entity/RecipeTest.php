@@ -6,11 +6,10 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
-use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
-use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
-use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the Recipe class.
@@ -30,19 +29,11 @@ class RecipeTest extends TestCase
      */
     public function testConstruct(): void
     {
-        $name = 'abc';
-        $mode = 'def';
-        $craftingCategory = new CraftingCategory('ghi');
-
-        $recipe = new Recipe($name, $mode, $craftingCategory);
-        $this->assertSame(0, $recipe->getId());
-        $this->assertInstanceOf(ArrayCollection::class, $recipe->getCombinations());
-        $this->assertSame($name, $recipe->getName());
-        $this->assertSame($mode, $recipe->getMode());
-        $this->assertSame(0., $recipe->getCraftingTime());
-        $this->assertSame($craftingCategory, $recipe->getCraftingCategory());
+        $recipe = new Recipe();
+        
         $this->assertInstanceOf(ArrayCollection::class, $recipe->getIngredients());
         $this->assertInstanceOf(ArrayCollection::class, $recipe->getProducts());
+        $this->assertInstanceOf(ArrayCollection::class, $recipe->getCombinations());
     }
 
     /**
@@ -52,9 +43,10 @@ class RecipeTest extends TestCase
      */
     public function testSetAndGetId(): void
     {
-        $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
+        /* @var UuidInterface&MockObject $id */
+        $id = $this->createMock(UuidInterface::class);
+        $recipe = new Recipe();
 
-        $id = 42;
         $this->assertSame($recipe, $recipe->setId($id));
         $this->assertSame($id, $recipe->getId());
     }
@@ -66,9 +58,9 @@ class RecipeTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
-
         $name = 'abc';
+        $recipe = new Recipe();
+
         $this->assertSame($recipe, $recipe->setName($name));
         $this->assertSame($name, $recipe->getName());
     }
@@ -80,9 +72,9 @@ class RecipeTest extends TestCase
      */
     public function testSetAndGetMode(): void
     {
-        $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
-
         $mode = 'abc';
+        $recipe = new Recipe();
+
         $this->assertSame($recipe, $recipe->setMode($mode));
         $this->assertSame($mode, $recipe->getMode());
     }
@@ -94,9 +86,9 @@ class RecipeTest extends TestCase
      */
     public function testSetAndGetCraftingTime(): void
     {
-        $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
-
         $craftingTime = 13.37;
+        $recipe = new Recipe();
+
         $this->assertSame($recipe, $recipe->setCraftingTime($craftingTime));
         $this->assertSame($craftingTime, $recipe->getCraftingTime());
     }
@@ -108,50 +100,11 @@ class RecipeTest extends TestCase
      */
     public function testSetAndGetCraftingCategory(): void
     {
-        $recipe = new Recipe('foo', 'bar', new CraftingCategory('baz'));
+        /* @var CraftingCategory&MockObject $craftingCategory */
+        $craftingCategory = $this->createMock(CraftingCategory::class);
+        $recipe = new Recipe();
 
-        $craftingCategory = new CraftingCategory('abc');
         $this->assertSame($recipe, $recipe->setCraftingCategory($craftingCategory));
         $this->assertSame($craftingCategory, $recipe->getCraftingCategory());
-    }
-
-    /**
-     * Tests the getOrderedIngredients method.
-     * @covers ::getOrderedIngredients
-     */
-    public function testGetOrderedIngredients(): void
-    {
-        $recipe = new Recipe('abc', 'def', new CraftingCategory('baz'));
-
-        $ingredient1 = new RecipeIngredient($recipe, new Item('ghi', 'jkl'));
-        $ingredient1->setOrder(42);
-        $ingredient2 = new RecipeIngredient($recipe, new Item('mno', 'pqr'));
-        $ingredient2->setOrder(21);
-
-        $recipe->getIngredients()->add($ingredient1);
-        $recipe->getIngredients()->add($ingredient2);
-
-        $result = $recipe->getOrderedIngredients();
-        $this->assertSame([1 => $ingredient2, 0 => $ingredient1], $result->toArray());
-    }
-
-    /**
-     * Tests the getOrderedProducts method.
-     * @covers ::getOrderedProducts
-     */
-    public function testGetOrderedProducts(): void
-    {
-        $recipe = new Recipe('abc', 'def', new CraftingCategory('baz'));
-
-        $product1 = new RecipeProduct($recipe, new Item('ghi', 'jkl'));
-        $product1->setOrder(42);
-        $product2 = new RecipeProduct($recipe, new Item('mno', 'pqr'));
-        $product2->setOrder(21);
-
-        $recipe->getProducts()->add($product1);
-        $recipe->getProducts()->add($product2);
-
-        $result = $recipe->getOrderedProducts();
-        $this->assertSame([1 => $product2, 0 => $product1], $result->toArray());
     }
 }

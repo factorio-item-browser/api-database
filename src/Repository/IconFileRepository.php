@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use FactorioItemBrowser\Api\Database\Entity\IconFile;
+use FactorioItemBrowser\Api\Database\Entity\IconImage;
 
 /**
  * The repository class of the icon file database table.
@@ -17,7 +17,7 @@ class IconFileRepository extends AbstractRepository implements RepositoryWithOrp
     /**
      * Finds the icon files with the specified hashes.
      * @param array|string[] $hashes
-     * @return array|IconFile[]
+     * @return array|IconImage[]
      */
     public function findByHashes(array $hashes): array
     {
@@ -25,7 +25,7 @@ class IconFileRepository extends AbstractRepository implements RepositoryWithOrp
         if (count($hashes) > 0) {
             $queryBuilder = $this->entityManager->createQueryBuilder();
             $queryBuilder->select('if')
-                         ->from(IconFile::class, 'if')
+                         ->from(IconImage::class, 'if')
                          ->andWhere('if.hash IN (:hashes)')
                          ->setParameter('hashes', array_values(array_map('hex2bin', $hashes)));
 
@@ -53,7 +53,7 @@ class IconFileRepository extends AbstractRepository implements RepositoryWithOrp
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('if.hash AS hash')
-                     ->from(IconFile::class, 'if')
+                     ->from(IconImage::class, 'if')
                      ->leftJoin('if.icons', 'i')
                      ->andWhere('i.id IS NULL');
 
@@ -71,7 +71,7 @@ class IconFileRepository extends AbstractRepository implements RepositoryWithOrp
     protected function removeHashes(array $hashes): void
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete(IconFile::class, 'if')
+        $queryBuilder->delete(IconImage::class, 'if')
                      ->andWhere('if.hash IN (:hashes)')
                      ->setParameter('hashes', array_values($hashes));
 

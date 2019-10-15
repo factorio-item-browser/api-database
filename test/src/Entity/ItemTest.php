@@ -6,7 +6,9 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Item;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the Item class.
@@ -24,52 +26,50 @@ class ItemTest extends TestCase
      */
     public function testConstruct(): void
     {
-        $item = new Item('abc', 'def');
+        $item = new Item();
 
-        $this->assertSame(0, $item->getId());
-        $this->assertSame('abc', $item->getType());
-        $this->assertSame('def', $item->getName());
         $this->assertInstanceOf(ArrayCollection::class, $item->getCombinations());
     }
 
     /**
-     * Tests setting and getting the id.
+     * Tests the setting and getting the id.
      * @covers ::getId
      * @covers ::setId
      */
     public function testSetAndGetId(): void
     {
-        $item = new Item('foo', 'bar');
+        /* @var UuidInterface&MockObject $id */
+        $id = $this->createMock(UuidInterface::class);
+        $item = new Item();
 
-        $id = 42;
         $this->assertSame($item, $item->setId($id));
         $this->assertSame($id, $item->getId());
     }
 
     /**
-     * Tests setting and getting the type.
+     * Tests the setting and getting the type.
      * @covers ::getType
      * @covers ::setType
      */
     public function testSetAndGetType(): void
     {
-        $item = new Item('foo', 'bar');
-
         $type = 'abc';
+        $item = new Item();
+
         $this->assertSame($item, $item->setType($type));
         $this->assertSame($type, $item->getType());
     }
 
     /**
-     * Tests setting and getting the name.
+     * Tests the setting and getting the name.
      * @covers ::getName
      * @covers ::setName
      */
     public function testSetAndGetName(): void
     {
-        $item = new Item('foo', 'bar');
-
         $name = 'abc';
+        $item = new Item();
+
         $this->assertSame($item, $item->setName($name));
         $this->assertSame($name, $item->getName());
     }

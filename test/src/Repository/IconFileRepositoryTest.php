@@ -8,7 +8,7 @@ use BluePsyduck\Common\Test\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use FactorioItemBrowser\Api\Database\Entity\IconFile;
+use FactorioItemBrowser\Api\Database\Entity\IconImage;
 use FactorioItemBrowser\Api\Database\Repository\IconFileRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +48,7 @@ class IconFileRepositoryTest extends TestCase
     {
         $hashes = $withHashes ? ['ab12cd34', '12ab34cd'] : [];
         $expectedHashes = $withHashes ? [hex2bin('ab12cd34'), hex2bin('12ab34cd')] : [];
-        $queryResult = $withHashes ? [$this->createMock(IconFile::class)] : [];
+        $queryResult = $withHashes ? [$this->createMock(IconImage::class)] : [];
 
         /* @var AbstractQuery|MockObject $query */
         $query = $this->getMockBuilder(AbstractQuery::class)
@@ -70,7 +70,7 @@ class IconFileRepositoryTest extends TestCase
                      ->willReturnSelf();
         $queryBuilder->expects($withHashes ? $this->once() : $this->never())
                      ->method('from')
-                     ->with(IconFile::class, 'if')
+                     ->with(IconImage::class, 'if')
                      ->willReturnSelf();
         $queryBuilder->expects($withHashes ? $this->once() : $this->never())
                      ->method('andWhere')
@@ -168,7 +168,7 @@ class IconFileRepositoryTest extends TestCase
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('from')
-                     ->with(IconFile::class, 'if')
+                     ->with(IconImage::class, 'if')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('leftJoin')
@@ -220,7 +220,7 @@ class IconFileRepositoryTest extends TestCase
                              ->getMock();
         $queryBuilder->expects($this->once())
                      ->method('delete')
-                     ->with(IconFile::class, 'if')
+                     ->with(IconImage::class, 'if')
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('andWhere')

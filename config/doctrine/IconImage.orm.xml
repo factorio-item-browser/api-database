@@ -4,20 +4,20 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                         https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
 >
-    <entity name="FactorioItemBrowser\Api\Database\Entity\IconFile">
+    <entity name="FactorioItemBrowser\Api\Database\Entity\IconImage">
         <options>
-            <option name="comment">The table holding the actual file data of the icons.</option>
+            <option name="comment">The table holding the icon image data.</option>
         </options>
 
         <id name="id" type="uuid_binary">
             <options>
-                <option name="comment">The internal id of the icon file.</option>
+                <option name="comment">The internal id of the image.</option>
             </options>
         </id>
 
-        <field name="image" type="blob">
+        <field name="contents" type="blob">
             <options>
-                <option name="comment">The actual image.</option>
+                <option name="comment">The contents of the image.</option>
             </options>
         </field>
 
@@ -28,6 +28,6 @@
             </options>
         </field>
 
-        <one-to-many field="icons" target-entity="Icon" mapped-by="file" />
+        <one-to-many field="icons" target-entity="Icon" mapped-by="image" />
     </entity>
 </doctrine-mapping>
