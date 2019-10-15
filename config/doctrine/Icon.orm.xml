@@ -11,8 +11,9 @@
 
         <id name="combination" association-key="true" />
 
-        <id name="type" type="enum_entity_type">
+        <id name="type" type="enum">
             <options>
+                <option name="values">mod,item,fluid,machine,recipe</option>
                 <option name="comment">The type of the icon's prototype.</option>
             </options>
         </id>

@@ -78,8 +78,9 @@
             </options>
         </field>
 
-        <field name="energyUsageUnit" type="enum_energy_usage_unit">
+        <field name="energyUsageUnit" type="enum">
             <options>
+                <option name="values">W,kW,MW,GW,TW,PW,EW,ZW,YW</option>
                 <option name="comment">The unit of the energy usage.</option>
             </options>
         </field>

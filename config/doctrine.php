@@ -40,10 +40,7 @@ return [
             ],
         ],
         'types' => [
-            Type\EnumEnergyUnit::NAME => Type\EnumEnergyUnit::class,
-            Type\EnumItemType::NAME => Type\EnumItemType::class,
-            Type\EnumRecipeMode::NAME => Type\EnumRecipeMode::class,
-            Type\EnumEntityType::NAME => Type\EnumEntityType::class,
+            Type\EnumType::NAME => Type\EnumType::class,
             Type\TinyIntType::NAME => Type\TinyIntType::class,
 
             UuidBinaryType::NAME => UuidBinaryType::class,

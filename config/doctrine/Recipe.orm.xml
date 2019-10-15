@@ -25,8 +25,9 @@
             </options>
         </field>
 
-        <field name="mode" type="enum_recipe_mode">
+        <field name="mode" type="enum">
             <options>
+                <option name="values">normal,expensive</option>
                 <option name="comment">The mode of the recipe.</option>
             </options>
         </field>

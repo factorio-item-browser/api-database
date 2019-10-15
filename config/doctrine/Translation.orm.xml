@@ -25,8 +25,9 @@
             </options>
         </field>
 
-        <field name="type" type="enum_entity_type">
+        <field name="type" type="enum">
             <options>
+                <option name="values">mod,item,fluid,machine,recipe</option>
                 <option name="comment">The type of the translation.</option>
             </options>
         </field>
