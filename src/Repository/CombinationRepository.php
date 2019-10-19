@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
@@ -16,23 +15,8 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class CombinationRepository
+class CombinationRepository extends AbstractRepository
 {
-    /**
-     * The entity manager.
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
-
-    /**
-     * Initializes the repository.
-     * @param EntityManagerInterface $entityManager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
     /**
      * Finds the combination with the specified id.
      * @param UuidInterface $id

@@ -6,12 +6,15 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The repository class of the crafting category database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @method findByIds(array|UuidInterface[] $ids): array|CraftingCategory[]
  */
 class CraftingCategoryRepository extends AbstractIdRepositoryWithOrphans
 {

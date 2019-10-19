@@ -8,6 +8,7 @@ use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -44,97 +45,74 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
                      ->andWhere('rp.item IS NULL');
     }
 
-
-
-
-
-
     /**
-     * Finds the items with the specified types and names.
-     * @param array|string[][] $namesByTypes
-     * @param array|int[] $modCombinationIds
+     * Finds the items with the specified type and names.
+     * @param UuidInterface $combinationId
+     * @param string $type
+     * @param array|string[] $names
      * @return array|Item[]
      */
-    public function findByTypesAndNames(array $namesByTypes, array $modCombinationIds = []): array
+    public function findByTypeAndNames(UuidInterface $combinationId, string $type, array $names): array
     {
+        if (count($names) === 0) {
+            return [];
+        }
+
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('i')
-                     ->from(Item::class, 'i');
+                     ->from(Item::class, 'i')
+                     ->innerJoin('i.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->andWhere('i.type = :type')
+                     ->andWhere('i.name IN (:names)')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->setParameter('type', $type)
+                     ->setParameter('names', $names);
 
-        $index = 0;
-        $conditions = [];
-        foreach ($namesByTypes as $type => $names) {
-            $conditions[] = '(i.type = :type' . $index . ' AND i.name IN (:names' . $index . '))';
-            $queryBuilder->setParameter('type' . $index, $type)
-                         ->setParameter('names' . $index, array_values($names));
-            ++$index;
-        }
-
-        $result = [];
-        if ($index > 0) {
-            $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
-
-            if (count($modCombinationIds) > 0) {
-                $queryBuilder->innerJoin('i.modCombinations', 'mc')
-                             ->andWhere('mc.id IN (:modCombinationIds)')
-                             ->setParameter('modCombinationIds', array_values($modCombinationIds));
-            }
-            $result = $queryBuilder->getQuery()->getResult();
-        }
-        return $result;
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
      * Finds the items matching the specified keywords.
+     * @param UuidInterface $combinationId
      * @param array|string[] $keywords
-     * @param array|int[] $modCombinationIds
      * @return array|Item[]
      */
-    public function findByKeywords(array $keywords, array $modCombinationIds = []): array
+    public function findByKeywords(UuidInterface $combinationId, array $keywords): array
     {
-        $result = [];
-        if (count($keywords) > 0) {
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->select('i')
-                         ->from(Item::class, 'i');
-
-            $index = 0;
-            foreach ($keywords as $keyword) {
-                $queryBuilder->andWhere('i.name LIKE :keyword' . $index)
-                             ->setParameter('keyword' . $index, '%' . addcslashes($keyword, '\\%_') . '%');
-                ++$index;
-            }
-
-            if (count($modCombinationIds) > 0) {
-                $queryBuilder->innerJoin('i.modCombinations', 'mc')
-                             ->andWhere('mc.id IN (:modCombinationIds)')
-                             ->setParameter('modCombinationIds', array_values($modCombinationIds));
-            }
-
-            $result = $queryBuilder->getQuery()->getResult();
+        if (count($keywords) === 0) {
+            return [];
         }
-        return $result;
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('i')
+                     ->from(Item::class, 'i')
+                     ->innerJoin('i.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
+
+        foreach (array_values($keywords) as $index => $keyword) {
+            $queryBuilder->andWhere("i.name LIKE :keyword{$index}")
+                         ->setParameter("keyword{$index}", '%' . addcslashes($keyword, '\\%_') . '%');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
      * Finds random items.
+     * @param UuidInterface $combinationId
      * @param int $numberOfItems
-     * @param array|int[] $modCombinationIds
      * @return array|Item[]
      */
-    public function findRandom(int $numberOfItems, array $modCombinationIds = []): array
+    public function findRandom(UuidInterface $combinationId, int $numberOfItems): array
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select(['i', 'RAND() AS HIDDEN rand'])
+        $queryBuilder->select('i', 'RAND() AS HIDDEN rand')
                      ->from(Item::class, 'i')
+                     ->innerJoin('i.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->addOrderBy('rand')
                      ->setMaxResults($numberOfItems);
 
-        if (count($modCombinationIds) > 0) {
-            $queryBuilder->innerJoin('i.modCombinations', 'mc')
-                         ->andWhere('mc.id IN (:modCombinationIds)')
-                         ->setParameter('modCombinationIds', array_values($modCombinationIds));
-        }
         return $queryBuilder->getQuery()->getResult();
     }
 }

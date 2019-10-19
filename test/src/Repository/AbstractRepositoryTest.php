@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
-use BluePsyduck\Common\Test\ReflectionTrait;
+use BluePsyduck\TestHelper\ReflectionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use FactorioItemBrowser\Api\Database\Repository\AbstractRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,20 +23,33 @@ class AbstractRepositoryTest extends TestCase
     use ReflectionTrait;
 
     /**
+     * The mocked entity manager.
+     * @var EntityManagerInterface&MockObject
+     */
+    protected $entityManager;
+
+    /**
+     * Sets up the test case.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+    }
+
+    /**
      * Tests the constructing.
      * @covers ::__construct
      * @throws ReflectionException
      */
     public function testConstruct(): void
     {
-        /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-
-        /* @var AbstractRepository|MockObject $repository */
+        /* @var AbstractRepository&MockObject $repository */
         $repository = $this->getMockBuilder(AbstractRepository::class)
-                           ->setConstructorArgs([$entityManager])
+                           ->setConstructorArgs([$this->entityManager])
                            ->getMockForAbstractClass();
 
-        $this->assertSame($entityManager, $this->extractProperty($repository, 'entityManager'));
+        $this->assertSame($this->entityManager, $this->extractProperty($repository, 'entityManager'));
     }
 }

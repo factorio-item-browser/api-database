@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
-use BluePsyduck\Common\Test\ReflectionTrait;
+use BluePsyduck\TestHelper\ReflectionTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\IconImage;
 use PHPUnit\Framework\MockObject\MockObject;

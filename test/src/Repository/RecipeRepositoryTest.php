@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
-use BluePsyduck\Common\Test\ReflectionTrait;
+use BluePsyduck\TestHelper\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
