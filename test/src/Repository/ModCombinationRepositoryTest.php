@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
-use FactorioItemBrowser\Api\Database\Repository\ModCombinationRepository;
+use FactorioItemBrowser\Api\Database\Repository\CombinationRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -19,7 +19,7 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\ModCombinationRepository
+ * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\CombinationRepository
  */
 class ModCombinationRepositoryTest extends TestCase
 {
@@ -93,7 +93,7 @@ class ModCombinationRepositoryTest extends TestCase
                       ->method('createQueryBuilder')
                       ->willReturn($queryBuilder);
 
-        $repository = new ModCombinationRepository($entityManager);
+        $repository = new CombinationRepository($entityManager);
 
         $result = $repository->findByNames($names);
         $this->assertSame($queryResult, $result);
@@ -181,7 +181,7 @@ class ModCombinationRepositoryTest extends TestCase
                       ->method('createQueryBuilder')
                       ->willReturn($queryBuilder);
 
-        $repository = new ModCombinationRepository($entityManager);
+        $repository = new CombinationRepository($entityManager);
 
         $result = $repository->findByModNames($modNames);
         $this->assertSame($queryResult, $result);
@@ -258,7 +258,7 @@ class ModCombinationRepositoryTest extends TestCase
                       ->method('createQueryBuilder')
                       ->willReturn($queryBuilder);
 
-        $repository = new ModCombinationRepository($entityManager);
+        $repository = new CombinationRepository($entityManager);
 
         $result = $repository->findModNamesByIds($modCombinationIds);
         $this->assertSame($expectedResult, $result);
@@ -310,7 +310,7 @@ class ModCombinationRepositoryTest extends TestCase
                       ->method('createQueryBuilder')
                       ->willReturn($queryBuilder);
 
-        $repository = new ModCombinationRepository($entityManager);
+        $repository = new CombinationRepository($entityManager);
 
         $result = $repository->findAll();
         $this->assertSame($queryResult, $result);

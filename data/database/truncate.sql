@@ -2,6 +2,12 @@
 
 SET foreign_key_checks = 0;
   TRUNCATE `CachedSearchResult`;
+  TRUNCATE `Combination`;
+  TRUNCATE `CombinationXItem`;
+  TRUNCATE `CombinationXMachine`;
+  TRUNCATE `CombinationXMod`;
+  TRUNCATE `CombinationXRecipe`;
+  TRUNCATE `CombinationXTranslation`;
   TRUNCATE `CraftingCategory`;
   TRUNCATE `Icon`;
   TRUNCATE `IconFile`;
@@ -9,11 +15,6 @@ SET foreign_key_checks = 0;
   TRUNCATE `Machine`;
   TRUNCATE `MachineXCraftingCategory`;
   TRUNCATE `Mod`;
-  TRUNCATE `ModCombination`;
-  TRUNCATE `ModCombinationXItem`;
-  TRUNCATE `ModCombinationXMachine`;
-  TRUNCATE `ModCombinationXRecipe`;
-  TRUNCATE `ModDependency`;
   TRUNCATE `Recipe`;
   TRUNCATE `RecipeIngredient`;
   TRUNCATE `RecipeProduct`;

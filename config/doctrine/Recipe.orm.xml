@@ -9,9 +9,9 @@
             <option name="comment">The table holding the recipes to craft the items.</option>
         </options>
 
-        <unique-constraints>
-            <unique-constraint columns="name" />
-        </unique-constraints>
+        <indexes>
+            <index columns="name" />
+        </indexes>
 
         <id name="id" type="uuid_binary">
             <options>
@@ -44,12 +44,18 @@
         </many-to-one>
 
         <one-to-many field="ingredients" target-entity="RecipeIngredient" mapped-by="recipe">
+            <cascade>
+                <cascade-all />
+            </cascade>
             <order-by>
                 <order-by-field name="order" />
             </order-by>
         </one-to-many>
 
         <one-to-many field="products" target-entity="RecipeProduct" mapped-by="recipe">
+            <cascade>
+                <cascade-all />
+            </cascade>
             <order-by>
                 <order-by-field name="order" />
             </order-by>

@@ -4,18 +4,51 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The repository class of the item database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @method findByIds(array|UuidInterface[] $ids): array|Item[]
  */
-class ItemRepository extends AbstractRepository implements RepositoryWithOrphansInterface
+class ItemRepository extends AbstractIdRepositoryWithOrphans
 {
+    /**
+     * Returns the entity class this repository manages.
+     * @return string
+     */
+    protected function getEntityClass(): string
+    {
+        return Item::class;
+    }
+
+    /**
+     * Adds the conditions to the query builder for detecting orphans.
+     * @param QueryBuilder $queryBuilder
+     * @param string $alias
+     */
+    protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->leftJoin("{$alias}.combinations", 'c')
+                     ->leftJoin(RecipeIngredient::class, 'ri', 'WITH', "ri.item = {$alias}.id")
+                     ->leftJoin(RecipeProduct::class, 'rp', 'WITH', "rp.item = {$alias}.id")
+                     ->andWhere('c.id IS NULL')
+                     ->andWhere('ri.item IS NULL')
+                     ->andWhere('rp.item IS NULL');
+    }
+
+
+
+
+
+
     /**
      * Finds the items with the specified types and names.
      * @param array|string[][] $namesByTypes
@@ -46,26 +79,6 @@ class ItemRepository extends AbstractRepository implements RepositoryWithOrphans
                              ->andWhere('mc.id IN (:modCombinationIds)')
                              ->setParameter('modCombinationIds', array_values($modCombinationIds));
             }
-            $result = $queryBuilder->getQuery()->getResult();
-        }
-        return $result;
-    }
-
-    /**
-     * Finds the items with the specified ids.
-     * @param array|int[] $ids
-     * @return array|Item[]
-     */
-    public function findByIds(array $ids): array
-    {
-        $result = [];
-        if (count($ids) > 0) {
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->select('i')
-                         ->from(Item::class, 'i')
-                         ->andWhere('i.id IN (:ids)')
-                         ->setParameter('ids', array_values($ids));
-
             $result = $queryBuilder->getQuery()->getResult();
         }
         return $result;
@@ -123,53 +136,5 @@ class ItemRepository extends AbstractRepository implements RepositoryWithOrphans
                          ->setParameter('modCombinationIds', array_values($modCombinationIds));
         }
         return $queryBuilder->getQuery()->getResult();
-    }
-
-    /**
-     * Removes any orphaned items, i.e. items no longer used by any recipe or combination.
-     */
-    public function removeOrphans(): void
-    {
-        $itemIds = $this->findOrphanedIds();
-        if (count($itemIds) > 0) {
-            $this->removeIds($itemIds);
-        }
-    }
-
-    /**
-     * Returns the ids of orphaned machines, which are no longer used by any recipe or combination.
-     * @return array|int[]
-     */
-    protected function findOrphanedIds(): array
-    {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('i.id AS id')
-                     ->from(Item::class, 'i')
-                     ->leftJoin('i.modCombinations', 'mc')
-                     ->leftJoin(RecipeIngredient::class, 'ri', 'WITH', 'ri.item = i.id')
-                     ->leftJoin(RecipeProduct::class, 'rp', 'WITH', 'rp.item = i.id')
-                     ->andWhere('mc.id IS NULL')
-                     ->andWhere('ri.item IS NULL')
-                     ->andWhere('rp.item IS NULL');
-
-        $result = [];
-        foreach ($queryBuilder->getQuery()->getResult() as $data) {
-            $result[] = (int) $data['id'];
-        }
-        return $result;
-    }
-
-    /**
-     * Removes the items with the specified ids from the database.
-     * @param array|int[] $itemIds
-     */
-    protected function removeIds(array $itemIds): void
-    {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete(Item::class, 'i')
-                     ->andWhere('i.id IN (:itemIds)')
-                     ->setParameter('itemIds', array_values($itemIds));
-
-        $queryBuilder->getQuery()->execute();
     }
 }

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
 use FactorioItemBrowser\Api\Database\Constant\TranslationType;
 use FactorioItemBrowser\Api\Database\Data\TranslationData;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
+use FactorioItemBrowser\Api\Database\Entity\Combination;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
 
 /**
@@ -16,8 +19,98 @@ use FactorioItemBrowser\Api\Database\Entity\Translation;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class TranslationRepository extends AbstractRepository
+class TranslationRepository extends AbstractIdRepositoryWithOrphans
 {
+    /**
+     * Returns the entity class this repository manages.
+     * @return string
+     */
+    protected function getEntityClass(): string
+    {
+        return Translation::class;
+    }
+
+    /**
+     * Adds the conditions to the query builder for detecting orphans.
+     * @param QueryBuilder $queryBuilder
+     * @param string $alias
+     */
+    protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->leftJoin("{$alias}.combinations", 'c')
+                     ->andWhere('c.id IS NULL');
+    }
+
+    /**
+     * Persists the translations to the combination, using optimized queries.
+     * @param Combination $combination
+     * @param array|Translation[] $translations
+     * @throws DBALException
+     */
+    public function persistTranslationsToCombination(Combination $combination, array $translations): void
+    {
+        $parameters = [];
+        $parametersCross = [];
+        foreach ($translations as $translation) {
+            $parameters[] = $translation->getId()->getBytes();
+            $parameters[] = $translation->getLocale();
+            $parameters[] = $translation->getType();
+            $parameters[] = $translation->getName();
+            $parameters[] = $translation->getValue();
+            $parameters[] = $translation->getDescription();
+            $parameters[] = $translation->getIsDuplicatedByMachine();
+            $parameters[] = $translation->getIsDuplicatedByRecipe();
+
+            $parametersCross[] = $combination->getId()->getBytes();
+            $parametersCross[] = $translation->getId()->getBytes();
+        }
+
+        $this->executeNativeSql(
+            "INSERT IGNORE INTO `Translation` "
+                . "(`id`,`locale`,`type`,`name`,`value`,`description`,`isDuplicatedByMachine`,`isDuplicatedByRecipe`)"
+                . "VALUES {$this->buildParameterPlaceholders(count($translations), 8)}",
+            $parameters
+        );
+
+        $this->executeNativeSql(
+            "DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?",
+            [$combination->getId()->getBytes()]
+        );
+
+        $this->executeNativeSql(
+            "INSERT INTO `CombinationXTranslation` (`combinationId`, `translationId`) "
+                . "VALUES {$this->buildParameterPlaceholders(count($translations), 2)}",
+            $parametersCross
+        );
+    }
+
+    /**
+     * Builds the placeholders for all the parameters to insert.
+     * @param int $numberOfRows
+     * @param int $numberOfValues
+     * @return string
+     */
+    protected function buildParameterPlaceholders(int $numberOfRows, int $numberOfValues): string
+    {
+        $line = '(' . implode(',', array_fill(0, $numberOfValues, '?')) . ')';
+        return implode(',', array_fill(0, $numberOfRows, $line));
+    }
+
+    /**
+     * Executes a native query on the database.
+     * @param string $query
+     * @param array $parameters
+     * @throws DBALException
+     */
+    protected function executeNativeSql(string $query, array $parameters): void
+    {
+        $statement = $this->entityManager->getConnection()->prepare($query);
+        $statement->execute($parameters);
+    }
+
+
+
+
     /**
      * Finds the translation data with the specified types and names.
      * @param string $locale The locale to prefer in the results.

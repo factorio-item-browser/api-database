@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Data\MachineData;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
 
@@ -13,8 +14,32 @@ use FactorioItemBrowser\Api\Database\Entity\Machine;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class MachineRepository extends AbstractRepository implements RepositoryWithOrphansInterface
+class MachineRepository extends AbstractIdRepositoryWithOrphans
 {
+    /**
+     * Returns the entity class this repository manages.
+     * @return string
+     */
+    protected function getEntityClass(): string
+    {
+        return Machine::class;
+    }
+
+    /**
+     * Adds the conditions to the query builder for detecting orphans.
+     * @param QueryBuilder $queryBuilder
+     * @param string $alias
+     */
+    protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->leftJoin("{$alias}.combinations", 'c')
+                     ->andWhere('c.id IS NULL');
+    }
+
+
+
+
+
     /**
      * Finds the data of the machines with the specified names.
      * @param array|string[] $names
@@ -92,70 +117,5 @@ class MachineRepository extends AbstractRepository implements RepositoryWithOrph
             $result[] = MachineData::createFromArray($data);
         }
         return $result;
-    }
-
-    /**
-     * Finds the machines of the specified IDs, including all details.
-     * @param array|int[] $ids
-     * @return array|Machine[]
-     */
-    public function findByIds(array $ids): array
-    {
-        $result = [];
-        if (count($ids) > 0) {
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->select(['m', 'cc'])
-                         ->from(Machine::class, 'm')
-                         ->leftJoin('m.craftingCategories', 'cc')
-                         ->andWhere('m.id IN (:ids)')
-                         ->setParameter('ids', array_values($ids));
-
-            $result = $queryBuilder->getQuery()->getResult();
-        }
-        return $result;
-    }
-
-    /**
-     * Removes any orphaned machines, i.e. machines no longer used by any combination.
-     */
-    public function removeOrphans(): void
-    {
-        $machineIds = $this->findOrphanedIds();
-        if (count($machineIds) > 0) {
-            $this->removeIds($machineIds);
-        }
-    }
-
-    /**
-     * Returns the ids of orphaned machines, which are no longer used by any combination.
-     * @return array|int[]
-     */
-    protected function findOrphanedIds(): array
-    {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('m.id AS id')
-                     ->from(Machine::class, 'm')
-                     ->leftJoin('m.modCombinations', 'mc')
-                     ->andWhere('mc.id IS NULL');
-
-        $result = [];
-        foreach ($queryBuilder->getQuery()->getResult() as $data) {
-            $result[] = (int) $data['id'];
-        }
-        return $result;
-    }
-
-    /**
-     * Removes the machines with the specified ids from the database.
-     * @param array|int[] $machineIds
-     */
-    protected function removeIds(array $machineIds): void
-    {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete(Machine::class, 'm')
-                     ->andWhere('m.id IN (:machineIds)')
-                     ->setParameter('machineIds', array_values($machineIds));
-
-        $queryBuilder->getQuery()->execute();
     }
 }

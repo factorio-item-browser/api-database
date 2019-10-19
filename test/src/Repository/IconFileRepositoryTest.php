@@ -9,7 +9,7 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\IconImage;
-use FactorioItemBrowser\Api\Database\Repository\IconFileRepository;
+use FactorioItemBrowser\Api\Database\Repository\IconImageRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -19,7 +19,7 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\IconFileRepository
+ * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\IconImageRepository
  */
 class IconFileRepositoryTest extends TestCase
 {
@@ -92,7 +92,7 @@ class IconFileRepositoryTest extends TestCase
                       ->method('createQueryBuilder')
                       ->willReturn($queryBuilder);
 
-        $repository = new IconFileRepository($entityManager);
+        $repository = new IconImageRepository($entityManager);
 
         $result = $repository->findByHashes($hashes);
         $this->assertSame($queryResult, $result);
@@ -120,8 +120,8 @@ class IconFileRepositoryTest extends TestCase
      */
     public function testRemoveOrphans(array $orphanedHashes, bool $expectRemove): void
     {
-        /* @var IconFileRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(IconFileRepository::class)
+        /* @var IconImageRepository|MockObject $repository */
+        $repository = $this->getMockBuilder(IconImageRepository::class)
                            ->setMethods(['findOrphanedHashes', 'removeHashes'])
                            ->disableOriginalConstructor()
                            ->getMock();
@@ -190,7 +190,7 @@ class IconFileRepositoryTest extends TestCase
                       ->method('createQueryBuilder')
                       ->willReturn($queryBuilder);
 
-        $repository = new IconFileRepository($entityManager);
+        $repository = new IconImageRepository($entityManager);
 
         $result = $this->invokeMethod($repository, 'findOrphanedHashes');
         $this->assertEquals($expectedResult, $result);
@@ -242,7 +242,7 @@ class IconFileRepositoryTest extends TestCase
                       ->method('createQueryBuilder')
                       ->willReturn($queryBuilder);
 
-        $repository = new IconFileRepository($entityManager);
+        $repository = new IconImageRepository($entityManager);
 
         $this->invokeMethod($repository, 'removeHashes', $hashes);
     }
