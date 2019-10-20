@@ -31,18 +31,61 @@ class CachedSearchResultTest extends TestCase
     }
 
     /**
-     * Tests the setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
+     * Tests the setting and getting the combination id.
+     * @covers ::getCombinationId
+     * @covers ::setCombinationId
      */
-    public function testSetAndGetId(): void
+    public function testSetAndGetCombinationId(): void
     {
-        /* @var UuidInterface&MockObject $id */
-        $id = $this->createMock(UuidInterface::class);
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
         $cachedSearchResult = new CachedSearchResult();
 
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setId($id));
-        $this->assertSame($id, $cachedSearchResult->getId());
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setCombinationId($combinationId));
+        $this->assertSame($combinationId, $cachedSearchResult->getCombinationId());
+    }
+
+    /**
+     * Tests the setting and getting the locale.
+     * @covers ::getLocale
+     * @covers ::setLocale
+     */
+    public function testSetAndGetLocale(): void
+    {
+        $locale = 'abc';
+        $cachedSearchResult = new CachedSearchResult();
+
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setLocale($locale));
+        $this->assertSame($locale, $cachedSearchResult->getLocale());
+    }
+
+    /**
+     * Tests the setting and getting the search hash.
+     * @covers ::getSearchHash
+     * @covers ::setSearchHash
+     */
+    public function testSetAndGetSearchHash(): void
+    {
+        /* @var UuidInterface&MockObject $searchHash */
+        $searchHash = $this->createMock(UuidInterface::class);
+        $cachedSearchResult = new CachedSearchResult();
+
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setSearchHash($searchHash));
+        $this->assertSame($searchHash, $cachedSearchResult->getSearchHash());
+    }
+
+    /**
+     * Tests the setting and getting the search query.
+     * @covers ::getSearchQuery
+     * @covers ::setSearchQuery
+     */
+    public function testSetAndGetSearchQuery(): void
+    {
+        $searchQuery = 'abc';
+        $cachedSearchResult = new CachedSearchResult();
+
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setSearchQuery($searchQuery));
+        $this->assertSame($searchQuery, $cachedSearchResult->getSearchQuery());
     }
 
     /**

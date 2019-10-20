@@ -9,11 +9,29 @@
             <option name="comment">The table caching the search results.</option>
         </options>
 
-        <id name="id" type="uuid_binary">
+        <id name="combinationId" type="uuid_binary">
             <options>
-                <option name="comment">The internal id of the search.</option>
+                <option name="comment">The id of the combination used for the search..</option>
             </options>
         </id>
+
+        <id name="locale" length="5">
+            <options>
+                <option name="comment">The locale used for the search.</option>
+            </options>
+        </id>
+
+        <id name="searchHash" type="uuid_binary">
+            <options>
+                <option name="comment">The hash of the search.</option>
+            </options>
+        </id>
+
+        <field name="searchQuery" type="text" length="65535">
+            <options>
+                <option name="comment">The raw query string of the search.</option>
+            </options>
+        </field>
 
         <field name="resultData" type="text">
             <options>

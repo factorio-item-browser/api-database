@@ -18,10 +18,28 @@ use Ramsey\Uuid\UuidInterface;
 class CachedSearchResult
 {
     /**
-     * The internal id of the search result.
+     * The id of the combination used for the search.
      * @var UuidInterface
      */
-    protected $id;
+    protected $combinationId;
+
+    /**
+     * The locale used for the search.
+     * @var string
+     */
+    protected $locale = '';
+
+    /**
+     * The hash of the search.
+     * @var UuidInterface
+     */
+    protected $searchHash;
+
+    /**
+     * The raw query string of the search.
+     * @var string
+     */
+    protected $searchQuery = '';
 
     /**
      * The result data of the search.
@@ -45,23 +63,83 @@ class CachedSearchResult
     }
 
     /**
-     * Sets the internal id of the search result.
-     * @param UuidInterface $id
+     * Sets the id of the combination used for the search.
+     * @param UuidInterface $combinationId
      * @return $this
      */
-    public function setId(UuidInterface $id): self
+    public function setCombinationId(UuidInterface $combinationId): self
     {
-        $this->id = $id;
+        $this->combinationId = $combinationId;
         return $this;
     }
 
     /**
-     * Returns the internal id of the search result.
+     * Returns the id of the combination used for the search.
      * @return UuidInterface
      */
-    public function getId(): UuidInterface
+    public function getCombinationId(): UuidInterface
     {
-        return $this->id;
+        return $this->combinationId;
+    }
+
+    /**
+     * Sets the locale used for the search.
+     * @param string $locale
+     * @return $this
+     */
+    public function setLocale(string $locale): self
+    {
+        $this->locale = $locale;
+        return $this;
+    }
+
+    /**
+     * Returns the locale used for the search.
+     * @return string
+     */
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * Sets the hash of the search.
+     * @param UuidInterface $searchHash
+     * @return $this
+     */
+    public function setSearchHash(UuidInterface $searchHash): self
+    {
+        $this->searchHash = $searchHash;
+        return $this;
+    }
+
+    /**
+     * Returns the hash of the search.
+     * @return UuidInterface
+     */
+    public function getSearchHash(): UuidInterface
+    {
+        return $this->searchHash;
+    }
+
+    /**
+     * Sets the raw query string of the search.
+     * @param string $searchQuery
+     * @return $this
+     */
+    public function setSearchQuery(string $searchQuery): self
+    {
+        $this->searchQuery = $searchQuery;
+        return $this;
+    }
+
+    /**
+     * Returns the raw query string of the search.
+     * @return string
+     */
+    public function getSearchQuery(): string
+    {
+        return $this->searchQuery;
     }
 
     /**
