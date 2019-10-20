@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Data;
 
-use BluePsyduck\Common\Data\DataContainer;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The class representing partial machine data.
@@ -12,13 +12,13 @@ use BluePsyduck\Common\Data\DataContainer;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class MachineData implements DataInterface
+class MachineData
 {
     /**
      * The id of the machine.
-     * @var int
+     * @var UuidInterface
      */
-    protected $id = 0;
+    protected $id;
 
     /**
      * The name of the machine.
@@ -27,17 +27,11 @@ class MachineData implements DataInterface
     protected $name = '';
 
     /**
-     * The order of the machine.
-     * @var int
-     */
-    protected $order = 0;
-
-    /**
      * Sets the id of the machine.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -45,9 +39,9 @@ class MachineData implements DataInterface
 
     /**
      * Returns the id of the machine.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -70,52 +64,5 @@ class MachineData implements DataInterface
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * Sets the order of the machine.
-     * @param int $order
-     * @return $this
-     */
-    public function setOrder(int $order): self
-    {
-        $this->order = $order;
-        return $this;
-    }
-
-    /**
-     * Returns the order of the machine.
-     * @return int
-     */
-    public function getOrder(): int
-    {
-        return $this->order;
-    }
-
-    /**
-     * Returns the keys to identify identical data.
-     * @return array|string[]
-     */
-    public function getKeys(): array
-    {
-        return [
-            $this->name,
-        ];
-    }
-
-    /**
-     * Creates a new instance from the specified data array.
-     * @param array $dataArray
-     * @return self
-     */
-    public static function createFromArray(array $dataArray): self
-    {
-        $data = new DataContainer($dataArray);
-
-        $result = new self();
-        $result->setId($data->getInteger('id'))
-               ->setName($data->getString('name'))
-               ->setOrder($data->getInteger('order'));
-        return $result;
     }
 }

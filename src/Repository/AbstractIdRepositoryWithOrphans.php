@@ -20,9 +20,9 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
      */
     public function removeOrphans(): void
     {
-        $itemIds = $this->findOrphanedIds();
-        if (count($itemIds) > 0) {
-            $this->removeIds($itemIds);
+        $ids = $this->findOrphanedIds();
+        if (count($ids) > 0) {
+            $this->removeIds($ids);
         }
     }
 
@@ -58,8 +58,8 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
     protected function removeIds(array $ids): void
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(), 'i')
-                     ->andWhere('i.id IN (:ids)')
+        $queryBuilder->delete($this->getEntityClass(), 'e')
+                     ->andWhere('e.id IN (:ids)')
                      ->setParameter('ids', $this->mapIdsToParameterValues($ids));
         $queryBuilder->getQuery()->execute();
     }

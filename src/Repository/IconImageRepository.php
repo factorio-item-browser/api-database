@@ -32,6 +32,6 @@ class IconImageRepository extends AbstractIdRepositoryWithOrphans
     protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.icons", 'i')
-                     ->andWhere('i.combination IS NULL');
+                     ->andWhere('i.image IS NULL');
     }
 }

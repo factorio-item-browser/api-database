@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Data;
 
-use BluePsyduck\Common\Data\DataContainer;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The class representing partial recipe data.
@@ -12,13 +12,13 @@ use BluePsyduck\Common\Data\DataContainer;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class RecipeData implements DataInterface
+class RecipeData
 {
     /**
      * The id of the recipe.
-     * @var int
+     * @var UuidInterface
      */
-    protected $id = 0;
+    protected $id;
 
     /**
      * The name of the recipe.
@@ -34,22 +34,16 @@ class RecipeData implements DataInterface
 
     /**
      * The item id related to the recipe data.
-     * @var int
+     * @var UuidInterface|null
      */
-    protected $itemId = 0;
-
-    /**
-     * The order of the recipe.
-     * @var int
-     */
-    protected $order = 0;
+    protected $itemId;
 
     /**
      * Sets the id of the recipe.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -57,9 +51,9 @@ class RecipeData implements DataInterface
 
     /**
      * Returns the id of the recipe.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -106,10 +100,10 @@ class RecipeData implements DataInterface
 
     /**
      * Sets the item id related to the recipe data.
-     * @param int $itemId
+     * @param UuidInterface|null $itemId
      * @return $this
      */
-    public function setItemId(int $itemId): self
+    public function setItemId(?UuidInterface $itemId): self
     {
         $this->itemId = $itemId;
         return $this;
@@ -117,61 +111,10 @@ class RecipeData implements DataInterface
 
     /**
      * Returns the item id related to the recipe data.
-     * @return int
+     * @return UuidInterface|null
      */
-    public function getItemId(): int
+    public function getItemId(): ?UuidInterface
     {
         return $this->itemId;
-    }
-
-    /**
-     * Sets the order of the recipe.
-     * @param int $order
-     * @return $this
-     */
-    public function setOrder(int $order): self
-    {
-        $this->order = $order;
-        return $this;
-    }
-
-    /**
-     * Returns the order of the recipe.
-     * @return int
-     */
-    public function getOrder(): int
-    {
-        return $this->order;
-    }
-
-    /**
-     * Returns the keys to identify identical data.
-     * @return array|string[]
-     */
-    public function getKeys(): array
-    {
-        return [
-            $this->name,
-            $this->mode,
-            (string) $this->itemId,
-        ];
-    }
-
-    /**
-     * Creates a new instance from the specified data array.
-     * @param array $dataArray
-     * @return self
-     */
-    public static function createFromArray(array $dataArray): self
-    {
-        $data = new DataContainer($dataArray);
-
-        $result = new self();
-        $result->setId($data->getInteger('id'))
-               ->setName($data->getString('name'))
-               ->setMode($data->getString('mode'))
-               ->setItemId($data->getInteger('itemId'))
-               ->setOrder($data->getInteger('order'));
-        return $result;
     }
 }
