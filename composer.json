@@ -39,8 +39,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "FactorioItemBrowserTest\\Api\\Database\\": "test/src/",
-      "FactorioItemBrowserTestAsset\\Api\\Database\\": "test/asset/"
+      "FactorioItemBrowserTest\\Api\\Database\\": "test/src/"
     }
   },
   "extra": {

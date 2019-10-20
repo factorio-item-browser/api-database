@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use FactorioItemBrowser\Api\Database\Repository\AbstractRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\UuidInterface;
 use ReflectionException;
 
 /**
@@ -51,5 +52,36 @@ class AbstractRepositoryTest extends TestCase
                            ->getMockForAbstractClass();
 
         $this->assertSame($this->entityManager, $this->extractProperty($repository, 'entityManager'));
+    }
+
+    /**
+     * Tests the mapIdsToParameterValues method.
+     * @throws ReflectionException
+     * @covers ::mapIdsToParameterValues
+     */
+    public function testMapIdsToParameterValues(): void
+    {
+        $expectedResult = ['abc', 'def'];
+
+        /* @var UuidInterface&MockObject $id1 */
+        $id1 = $this->createMock(UuidInterface::class);
+        $id1->expects($this->once())
+            ->method('getBytes')
+            ->willReturn('abc');
+
+        /* @var UuidInterface&MockObject $id2 */
+        $id2 = $this->createMock(UuidInterface::class);
+        $id2->expects($this->once())
+            ->method('getBytes')
+            ->willReturn('def');
+
+        /* @var AbstractRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(AbstractRepository::class)
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMockForAbstractClass();
+
+        $result = $this->invokeMethod($repository, 'mapIdsToParameterValues', [$id1, $id2]);
+
+        $this->assertSame($expectedResult, $result);
     }
 }

@@ -6,12 +6,15 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\IconImage;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The repository class of the icon image database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @method array|IconImage[] findByIds(array|UuidInterface[] $ids)
  */
 class IconImageRepository extends AbstractIdRepositoryWithOrphans
 {

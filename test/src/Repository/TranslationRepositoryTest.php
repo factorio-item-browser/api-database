@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use BluePsyduck\TestHelper\ReflectionTrait;
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\Statement;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
-use FactorioItemBrowser\Api\Database\Constant\TranslationType;
-use FactorioItemBrowser\Api\Database\Data\TranslationData;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
 use FactorioItemBrowser\Api\Database\Repository\TranslationRepository;
+use FactorioItemBrowser\Common\Constant\EntityType;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use Ramsey\Uuid\UuidInterface;
 use ReflectionException;
 
 /**
@@ -30,280 +34,390 @@ class TranslationRepositoryTest extends TestCase
     use ReflectionTrait;
 
     /**
-     * Provides the data for the findDataByTypesAndNames test.
-     * @return array
+     * The mocked entity manager.
+     * @var EntityManagerInterface&MockObject
      */
-    public function provideFindDataByTypesAndNames(): array
+    protected $entityManager;
+
+    /**
+     * Sets up the test case.
+     */
+    protected function setUp(): void
     {
-        return [
-            [true, true],
-            [true, false],
-            [false, true],
-            [false, false],
-        ];
+        parent::setUp();
+
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
     /**
-     * Tests the findDataByTypesAndNames method.
-     * @param bool $withNamesByTypes
-     * @param bool $withModCombinationIds
+     * Tests the getEntityClass method.
      * @throws ReflectionException
-     * @covers ::findDataByTypesAndNames
-     * @dataProvider provideFindDataByTypesAndNames
+     * @covers ::getEntityClass
      */
-    public function testFindDataByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds): void
+    public function testGetEntityClass(): void
     {
-        $locale = 'xyz';
-        $namesByTypes = [];
-        $condition = '';
-        $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
-        $queryResult = $withNamesByTypes ? [['locale' => 'def']] : [];
-        $dataResult = $withNamesByTypes ? [$this->createMock(TranslationData::class)] : [];
+        $repository = new TranslationRepository($this->entityManager);
+        $result = $this->invokeMethod($repository, 'getEntityClass');
 
-        if ($withNamesByTypes) {
-            $namesByTypes = [
-                TranslationType::RECIPE => ['abc', 'def'],
-                TranslationType::MACHINE => ['ghi'],
-                TranslationType::ITEM => ['jkl', 'mno']
-            ];
+        $this->assertSame(Translation::class, $result);
+    }
 
-            $condition = '(((t.type = :type0 OR t.isDuplicatedByRecipe = 1) AND t.name IN (:names0))'
-                . ' OR ((t.type = :type1 OR t.isDuplicatedByMachine = 1) AND t.name IN (:names1))'
-                . ' OR (t.type = :type2 AND t.name IN (:names2)))';
-        }
+    /**
+     * Tests the addOrphanConditions method.
+     * @throws ReflectionException
+     * @covers ::addOrphanConditions
+     */
+    public function testAddOrphanConditions(): void
+    {
+        $alias = 'abc';
 
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withNamesByTypes ? $this->once() : $this->never())
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('leftJoin')
+                     ->with($this->identicalTo('abc.combinations'), $this->identicalTo('c'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('c.id IS NULL'))
+                     ->willReturnSelf();
+
+        $repository = new TranslationRepository($this->entityManager);
+        $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
+    }
+
+    /**
+     * Tests the findByTypesAndNames method.
+     * @covers ::findByTypesAndNames
+     */
+    public function testFindByTypesAndNames(): void
+    {
+        $locale = 'abc';
+        $namesByType = [
+            EntityType::RECIPE => ['def', 'ghi'],
+            EntityType::MACHINE => ['jkl'],
+            EntityType::ITEM => ['mno', 'pqr']
+        ];
+
+        $expectedCondition = '(((t.type = :type0 OR t.isDuplicatedByRecipe = 1) AND t.name IN (:names0))'
+            . ' OR ((t.type = :type1 OR t.isDuplicatedByMachine = 1) AND t.name IN (:names1))'
+            . ' OR (t.type = :type2 AND t.name IN (:names2)))';
+
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $queryResult = [
+            $this->createMock(Translation::class),
+            $this->createMock(Translation::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
-                     ->with([
-                         't.locale AS locale',
-                         't.type AS type',
-                         't.name AS name',
-                         't.value AS value',
-                         't.description AS description',
-                         't.isDuplicatedByRecipe AS isDuplicatedByRecipe',
-                         't.isDuplicatedByMachine AS isDuplicatedByMachine',
-                         'mc.order AS order'
-                     ])
+                     ->with($this->identicalTo('t'))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('from')
-                     ->with(Translation::class, 't')
+                     ->with($this->identicalTo(Translation::class), $this->identicalTo('t'))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('innerJoin')
-                     ->with('t.modCombination', 'mc')
+                     ->with(
+                         $this->identicalTo('t.combinations'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withNamesByTypes ? $withModCombinationIds ? 3 : 2 : 1))
+        $queryBuilder->expects($this->exactly(2))
                      ->method('andWhere')
                      ->withConsecutive(
-                         ['t.locale IN (:locales)'],
-                         [$condition],
-                         ['(t.modCombination IN (:modCombinationIds) OR t.type = :typeMod)']
+                         [$this->identicalTo('t.locale IN (:locales)')],
+                         [$this->identicalTo($expectedCondition)]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withNamesByTypes ? $withModCombinationIds ? 9 : 7 : 1))
+        $queryBuilder->expects($this->exactly(8))
                      ->method('setParameter')
                      ->withConsecutive(
-                         ['locales', [$locale, 'en']],
-                         ['type0', TranslationType::RECIPE],
-                         ['names0', ['abc', 'def']],
-                         ['type1', TranslationType::MACHINE],
-                         ['names1', ['ghi']],
-                         ['type2', TranslationType::ITEM],
-                         ['names2', ['jkl', 'mno']],
-                         ['modCombinationIds', $modCombinationIds],
-                         ['typeMod', 'mod']
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME)
+                         ],
+                         [
+                             $this->identicalTo('locales'),
+                             $this->identicalTo([$locale, 'en'])
+                         ],
+                         [
+                             $this->identicalTo('type0'),
+                             $this->identicalTo(EntityType::RECIPE)
+                         ],
+                         [
+                             $this->identicalTo('names0'),
+                             $this->identicalTo(['def', 'ghi'])
+                         ],
+                         [
+                             $this->identicalTo('type1'),
+                             $this->identicalTo(EntityType::MACHINE)
+                         ],
+                         [
+                             $this->identicalTo('names1'),
+                             $this->identicalTo(['jkl'])
+                         ],
+                         [
+                             $this->identicalTo('type2'),
+                             $this->identicalTo(EntityType::ITEM)
+                         ],
+                         [
+                             $this->identicalTo('names2'),
+                             $this->identicalTo(['mno', 'pqr'])
+                         ]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($withNamesByTypes ? $this->once() : $this->never())
+        $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
 
-        /* @var TranslationRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(TranslationRepository::class)
-                           ->setMethods(['mapTranslationDataResult'])
-                           ->setConstructorArgs([$entityManager])
-                           ->getMock();
-        $repository->expects($withNamesByTypes ? $this->once() : $this->never())
-                   ->method('mapTranslationDataResult')
-                   ->with($queryResult)
-                   ->willReturn($dataResult);
+        $repository = new TranslationRepository($this->entityManager);
+        $result = $repository->findByTypesAndNames($combinationId, $locale, $namesByType);
 
-        $result = $repository->findDataByTypesAndNames($locale, $namesByTypes, $modCombinationIds);
-        $this->assertSame($dataResult, $result);
+        $this->assertSame($queryResult, $result);
     }
 
     /**
-     * Tests the mapTranslationDataResult method.
-     * @throws ReflectionException
-     * @covers ::mapTranslationDataResult
+     * Tests the findByTypesAndNames method.
+     * @covers ::findByTypesAndNames
      */
-    public function testMapTranslationDataResult(): void
+    public function testFindByTypesAndNamesWithoutConditions(): void
     {
-        $translationData = [
-            ['locale' => 'abc'],
-            ['locale' => 'def']
-        ];
-        $expectedResult = [
-            (new TranslationData())->setLocale('abc'),
-            (new TranslationData())->setLocale('def'),
+        $locale = 'abc';
+        $namesByType = [
+            EntityType::FLUID => []
         ];
 
-        /* @var TranslationRepository $repository */
-        $repository = $this->createMock(TranslationRepository::class);
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
 
-        $result = $this->invokeMethod($repository, 'mapTranslationDataResult', $translationData);
-        $this->assertEquals($expectedResult, $result);
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo('t'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(Translation::class), $this->identicalTo('t'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('innerJoin')
+                     ->with(
+                         $this->identicalTo('t.combinations'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('t.locale IN (:locales)'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(2))
+                     ->method('setParameter')
+                     ->withConsecutive(
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME)
+                         ],
+                         [
+                             $this->identicalTo('locales'),
+                             $this->identicalTo([$locale, 'en'])
+                         ]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->never())
+                     ->method('getQuery');
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new TranslationRepository($this->entityManager);
+        $result = $repository->findByTypesAndNames($combinationId, $locale, $namesByType);
+
+        $this->assertSame([], $result);
     }
-    
-    /**
-     * Provides the data for the findDataByKeywords test.
-     * @return array
-     */
-    public function provideFindDataByKeywords(): array
-    {
-        return [
-            [true, true],
-            [true, false],
-            [false, true],
-            [false, false],
-        ];
-    }
+
 
     /**
      * Tests the findDataByKeywords method.
-     * @param bool $withKeywords
-     * @param bool $withModCombinationIds
-     * @throws ReflectionException
      * @covers ::findDataByKeywords
-     * @dataProvider provideFindDataByKeywords
      */
-    public function testFindDataByKeywords(bool $withKeywords, bool $withModCombinationIds): void
+    public function testFindDataByKeywords(): void
     {
-        $locale = 'xyz';
-        $keywords = $withKeywords ? ['foo', 'b_a\\r%'] : [];
-        $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
-        $queryResult = $withKeywords ? [['abc' => 'def']] : [];
-        $dataResult = $withKeywords ? [$this->createMock(TranslationPriorityData::class)] : [];
+        $locale = 'abc';
+        $keywords = ['foo', 'b_a\\r%'];
 
         $priorityColumn = 'MIN(CASE WHEN t.locale = :localePrimary THEN :priorityPrimary '
             . 'WHEN t.locale = :localeSecondary THEN :prioritySecondary ELSE :priorityAny END) AS priority';
 
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withKeywords ? $this->once() : $this->never())
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $queryResult = [
+            ['id' => $this->createMock(UuidInterface::class)],
+            ['id' => $this->createMock(UuidInterface::class)],
+        ];
+        $mappedResult = [
+            $this->createMock(TranslationPriorityData::class),
+            $this->createMock(TranslationPriorityData::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods([
-                                 'select',
-                                 'from',
-                                 'andWhere',
-                                 'addGroupBy',
-                                 'setParameter',
-                                 'innerJoin',
-                                 'getQuery'
-                             ])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
                      ->method('select')
-                     ->with([
+                     ->with($this->identicalTo([
                          't.type AS type',
                          't.name AS name',
-                         $priorityColumn
-                     ])
+                         $priorityColumn,
+                     ]))
                      ->willReturnSelf();
-        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+        $queryBuilder->expects($this->once())
                      ->method('from')
-                     ->with(Translation::class, 't')
+                     ->with($this->identicalTo(Translation::class), $this->identicalTo('t'))
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withKeywords ? $withModCombinationIds ? 4 : 3 : 0))
+        $queryBuilder->expects($this->once())
+                     ->method('innerJoin')
+                     ->with(
+                         $this->identicalTo('t.combinations'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(3))
                      ->method('andWhere')
                      ->withConsecutive(
-                         ['t.type IN (:types)'],
-                         ['LOWER(CONCAT(t.type, t.name, t.value, t.description)) LIKE :keyword0'],
-                         ['LOWER(CONCAT(t.type, t.name, t.value, t.description)) LIKE :keyword1'],
-                         ['mc.id IN (:modCombinationIds)']
+                         [$this->identicalTo('t.type IN (:types)')],
+                         [$this->identicalTo('LOWER(CONCAT(t.type, t.name, t.value, t.description)) LIKE :keyword0')],
+                         [$this->identicalTo('LOWER(CONCAT(t.type, t.name, t.value, t.description)) LIKE :keyword1')]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($withKeywords ? $this->exactly(2) : $this->never())
+        $queryBuilder->expects($this->exactly(2))
                      ->method('addGroupBy')
                      ->withConsecutive(
-                         ['t.type'],
-                         ['t.name']
+                         [$this->identicalTo('t.type')],
+                         [$this->identicalTo('t.name')]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withKeywords ? $withModCombinationIds ? 9 : 8 : 0))
+        $queryBuilder->expects($this->exactly(9))
                      ->method('setParameter')
                      ->withConsecutive(
-                         ['localePrimary', $locale],
-                         ['localeSecondary', 'en'],
-                         ['priorityPrimary', SearchResultPriority::PRIMARY_LOCALE_MATCH],
-                         ['prioritySecondary', SearchResultPriority::SECONDARY_LOCALE_MATCH],
-                         ['priorityAny', SearchResultPriority::ANY_MATCH],
-                         ['types', [TranslationType::ITEM, TranslationType::FLUID, TranslationType::RECIPE]],
-                         ['keyword0', '%foo%'],
-                         ['keyword1', '%b\\_a\\\\r\\%%'],
-                         ['modCombinationIds', $modCombinationIds]
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME)
+                         ],
+                         [
+                             $this->identicalTo('localePrimary'),
+                             $this->identicalTo($locale)
+                         ],
+                         [
+                             $this->identicalTo('localeSecondary'),
+                             $this->identicalTo('en')
+                         ],
+                         [
+                             $this->identicalTo('priorityPrimary'),
+                             $this->identicalTo(SearchResultPriority::PRIMARY_LOCALE_MATCH)
+                         ],
+                         [
+                             $this->identicalTo('prioritySecondary'),
+                             $this->identicalTo(SearchResultPriority::SECONDARY_LOCALE_MATCH)
+                         ],
+                         [
+                             $this->identicalTo('priorityAny'),
+                             $this->identicalTo(SearchResultPriority::ANY_MATCH)
+                         ],
+                         [
+                             $this->identicalTo('types'),
+                             $this->identicalTo([EntityType::ITEM, EntityType::FLUID, EntityType::RECIPE])
+                         ],
+                         [
+                             $this->identicalTo('keyword0'),
+                             $this->identicalTo('%foo%')
+                         ],
+                         [
+                             $this->identicalTo('keyword1'),
+                             $this->identicalTo('%b\\_a\\\\r\\%%')
+                         ]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects(($withKeywords && $withModCombinationIds) ? $this->once() : $this->never())
-                     ->method('innerJoin')
-                     ->with('t.modCombination', 'mc')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+        $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($withKeywords ? $this->once() : $this->never())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
 
-
-        /* @var TranslationRepository|MockObject $repository */
+        /* @var TranslationRepository&MockObject $repository */
         $repository = $this->getMockBuilder(TranslationRepository::class)
-                           ->setMethods(['mapTranslationPriorityDataResult'])
-                           ->setConstructorArgs([$entityManager])
+                           ->onlyMethods(['mapTranslationPriorityDataResult'])
+                           ->setConstructorArgs([$this->entityManager])
                            ->getMock();
-        $repository->expects($withKeywords ? $this->once() : $this->never())
+        $repository->expects($this->once())
                    ->method('mapTranslationPriorityDataResult')
-                   ->with($queryResult)
-                   ->willReturn($dataResult);
+                   ->with($this->identicalTo($queryResult))
+                   ->willReturn($mappedResult);
 
-        $result = $repository->findDataByKeywords($locale, $keywords, $modCombinationIds);
-        $this->assertSame($dataResult, $result);
+        $result = $repository->findDataByKeywords($combinationId, $locale, $keywords);
+
+        $this->assertSame($mappedResult, $result);
+    }
+
+    /**
+     * Tests the findDataByKeywords method.
+     * @covers ::findDataByKeywords
+     */
+    public function testFindDataByKeywordsWithoutKeywords(): void
+    {
+        $locale = 'abc';
+
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
+
+        /* @var TranslationRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(TranslationRepository::class)
+                           ->onlyMethods(['mapTranslationPriorityDataResult'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->never())
+                   ->method('mapTranslationPriorityDataResult');
+
+        $result = $repository->findDataByKeywords($combinationId, $locale, []);
+
+        $this->assertSame([], $result);
     }
 
     /**
@@ -314,18 +428,253 @@ class TranslationRepositoryTest extends TestCase
     public function testMapTranslationPriorityDataResult(): void
     {
         $translationPriorityData = [
-            ['type' => 'abc'],
-            ['type' => 'def']
-        ];
-        $expectedResult = [
-            (new TranslationPriorityData())->setType('abc'),
-            (new TranslationPriorityData())->setType('def'),
+            [
+                'type' => 'abc',
+                'name' => 'def',
+                'priority' => '42',
+            ],
+            [
+                'type' => 'ghi',
+                'name' => 'jkl',
+                'priority' => '21',
+            ],
         ];
 
-        /* @var TranslationRepository $repository */
-        $repository = $this->createMock(TranslationRepository::class);
+        $data1 = new TranslationPriorityData();
+        $data1->setType('abc')
+              ->setName('def')
+              ->setPriority(42);
+        $data2 = new TranslationPriorityData();
+        $data2->setType('ghi')
+              ->setName('jkl')
+              ->setPriority(21);
+        $expectedResult = [$data1, $data2];
 
+        $repository = new TranslationRepository($this->entityManager);
         $result = $this->invokeMethod($repository, 'mapTranslationPriorityDataResult', $translationPriorityData);
+
         $this->assertEquals($expectedResult, $result);
+    }
+
+    /**
+     * Tests the persistTranslationsToCombination method.
+     * @covers ::persistTranslationsToCombination
+     * @throws DBALException
+     */
+    public function testPersistTranslationsToCombination(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        $translations = [
+            $this->createMock(Translation::class),
+            $this->createMock(Translation::class),
+        ];
+        
+        /* @var TranslationRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(TranslationRepository::class)
+                           ->onlyMethods(['insertTranslations', 'clearCrossTable', 'insertIntoCrossTable'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('insertTranslations')
+                   ->with($this->identicalTo($translations));
+        $repository->expects($this->once())
+                   ->method('clearCrossTable')
+                   ->with($this->identicalTo($combinationId));
+        $repository->expects($this->once())
+                   ->method('insertIntoCrossTable')
+                   ->with($this->identicalTo($combinationId), $this->identicalTo($translations));
+
+        $repository->persistTranslationsToCombination($combinationId, $translations);
+    }
+
+    /**
+     * Tests the insertTranslations method.
+     * @throws ReflectionException
+     * @covers ::insertTranslations
+     */
+    public function testInsertTranslations(): void
+    {
+        /* @var UuidInterface&MockObject $id1 */
+        $id1 = $this->createMock(UuidInterface::class);
+        $id1->expects($this->once())
+            ->method('getBytes')
+            ->willReturn('abc');
+        /* @var UuidInterface&MockObject $id2 */
+        $id2 = $this->createMock(UuidInterface::class);
+        $id2->expects($this->once())
+            ->method('getBytes')
+            ->willReturn('def');
+
+        $translation1 = new Translation();
+        $translation1->setId($id1)
+                     ->setLocale('ghi')
+                     ->setType('jkl')
+                     ->setName('mno')
+                     ->setValue('pqr')
+                     ->setDescription('stu')
+                     ->setIsDuplicatedByMachine(true)
+                     ->setIsDuplicatedByRecipe(false);
+
+        $translation2 = new Translation();
+        $translation2->setId($id2)
+                     ->setLocale('vwx')
+                     ->setType('yza')
+                     ->setName('bcd')
+                     ->setValue('efg')
+                     ->setDescription('hij')
+                     ->setIsDuplicatedByMachine(false)
+                     ->setIsDuplicatedByRecipe(true);
+
+        $expectedParameters = [
+            'abc', 'ghi', 'jkl', 'mno', 'pqr', 'stu', true, false,
+            'def', 'vwx', 'yza', 'bcd', 'efg', 'hij', false, true,
+        ];
+        $placeholders = 'klm';
+
+        $expectedQuery = 'INSERT IGNORE INTO `Translation` '
+            . '(`id`,`locale`,`type`,`name`,`value`,`description`,`isDuplicatedByMachine`,`isDuplicatedByRecipe`) '
+            . 'VALUES klm';
+        
+        /* @var TranslationRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(TranslationRepository::class)
+                           ->onlyMethods(['buildParameterPlaceholders', 'executeNativeSql'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('buildParameterPlaceholders')
+                   ->with($this->identicalTo(2), $this->identicalTo(8))
+                   ->willReturn($placeholders);
+        $repository->expects($this->once())
+                   ->method('executeNativeSql')
+                   ->with($this->identicalTo($expectedQuery), $this->identicalTo($expectedParameters));
+
+        $this->invokeMethod($repository, 'insertTranslations', [$translation1, $translation2]);
+    }
+
+    /**
+     * Tests the clearCrossTable method.
+     * @throws ReflectionException
+     * @covers ::clearCrossTable
+     */
+    public function testClearCrossTable(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId->expects($this->once())
+                      ->method('getBytes')
+                      ->willReturn('abc');
+
+        $expectedQuery = 'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?';
+        $expectedParameters = ['abc'];
+
+        /* @var TranslationRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(TranslationRepository::class)
+                           ->onlyMethods(['executeNativeSql'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('executeNativeSql')
+                   ->with($this->identicalTo($expectedQuery), $this->identicalTo($expectedParameters));
+
+        $this->invokeMethod($repository, 'clearCrossTable', $combinationId);
+    }
+
+    /**
+     * Tests the insertIntoCrossTable method.
+     * @throws ReflectionException
+     * @covers ::insertIntoCrossTable
+     */
+    public function testInsertIntoCrossTable(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId->expects($this->atLeastOnce())
+                      ->method('getBytes')
+                      ->willReturn('abc');
+
+        /* @var UuidInterface&MockObject $translationId1 */
+        $translationId1 = $this->createMock(UuidInterface::class);
+        $translationId1->expects($this->once())
+                       ->method('getBytes')
+                       ->willReturn('def');
+        /* @var UuidInterface&MockObject $translationId2 */
+        $translationId2 = $this->createMock(UuidInterface::class);
+        $translationId2->expects($this->once())
+                       ->method('getBytes')
+                       ->willReturn('ghi');
+
+        $translation1 = new Translation();
+        $translation1->setId($translationId1);
+        $translation2 = new Translation();
+        $translation2->setId($translationId2);
+
+        $placeholders = 'jkl';
+        $expectedQuery = 'INSERT INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
+            . 'VALUES jkl';
+        $expectedParameters = ['abc', 'def', 'abc', 'ghi'];
+
+        /* @var TranslationRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(TranslationRepository::class)
+                           ->onlyMethods(['buildParameterPlaceholders', 'executeNativeSql'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('buildParameterPlaceholders')
+                   ->with($this->identicalTo(2), $this->identicalTo(2))
+                   ->willReturn($placeholders);
+        $repository->expects($this->once())
+                   ->method('executeNativeSql')
+                   ->with($this->identicalTo($expectedQuery), $this->identicalTo($expectedParameters));
+
+        $this->invokeMethod($repository, 'insertIntoCrossTable', $combinationId, [$translation1, $translation2]);
+    }
+
+    /**
+     * Tests the buildParameterPlaceholders method.
+     * @throws ReflectionException
+     * @covers ::buildParameterPlaceholders
+     */
+    public function testBuildParameterPlaceholders(): void
+    {
+        $numberOfRows = 3;
+        $numberOfValues = 4;
+        $expectedResult = '(?,?,?,?),(?,?,?,?),(?,?,?,?)';
+
+        $repository = new TranslationRepository($this->entityManager);
+        $result = $this->invokeMethod($repository, 'buildParameterPlaceholders', $numberOfRows, $numberOfValues);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * Tests the executeNativeSql method.
+     * @throws ReflectionException
+     * @covers ::executeNativeSql
+     */
+    public function testExecuteNativeSql(): void
+    {
+        $query = 'abc';
+        $parameters = ['def', 'ghi'];
+
+        /* @var Statement&MockObject $statement */
+        $statement = $this->createMock(Statement::class);
+        $statement->expects($this->once())
+                  ->method('execute')
+                  ->with($this->identicalTo($parameters));
+
+        /* @var Connection&MockObject $connection */
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+                   ->method('prepare')
+                   ->with($this->identicalTo($query))
+                   ->willReturn($statement);
+
+        $this->entityManager->expects($this->once())
+                            ->method('getConnection')
+                            ->willReturn($connection);
+
+        $repository = new TranslationRepository($this->entityManager);
+        $this->invokeMethod($repository, 'executeNativeSql', $query, $parameters);
     }
 }

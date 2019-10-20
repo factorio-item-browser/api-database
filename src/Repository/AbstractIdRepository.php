@@ -38,16 +38,4 @@ abstract class AbstractIdRepository extends AbstractRepository
                      ->setParameter('ids', $this->mapIdsToParameterValues($ids));
         return $queryBuilder->getQuery()->getResult();
     }
-
-    /**
-     * Maps the ids to their parameter values.
-     * @param array|UuidInterface[] $ids
-     * @return array|string[]
-     */
-    protected function mapIdsToParameterValues(array $ids): array
-    {
-        return array_map(function (UuidInterface $id): string {
-            return $id->getBytes();
-        }, $ids);
-    }
 }

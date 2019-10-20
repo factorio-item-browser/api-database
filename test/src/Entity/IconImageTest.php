@@ -74,6 +74,9 @@ class IconImageTest extends TestCase
         $contents = 'abc';
 
         $stream = fopen('php://memory', 'r+');
+        if ($stream === false) {
+            $this->fail('unable to open memory stream.');
+        }
         fwrite($stream, $contents);
         fseek($stream, 0);
 

@@ -16,6 +16,8 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @method array|Recipe[] findByIds(array|UuidInterface[] $ids)
  */
 class RecipeRepository extends AbstractIdRepositoryWithOrphans
 {
@@ -70,7 +72,7 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the data of the recipes having the specified items as ingredients.
      * @param UuidInterface $combinationId
-     * @param array|int[] $itemIds
+     * @param array|UuidInterface[] $itemIds
      * @return array|RecipeData[]
      */
     public function findDataByIngredientItemIds(UuidInterface $combinationId, array $itemIds): array
@@ -81,7 +83,7 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the data of the recipes having the specified items as products.
      * @param UuidInterface $combinationId
-     * @param array|int[] $itemIds
+     * @param array|UuidInterface[] $itemIds
      * @return array|RecipeData[]
      */
     public function findDataByProductItemIds(UuidInterface $combinationId, array $itemIds): array

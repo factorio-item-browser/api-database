@@ -7,17 +7,19 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
-use FactorioItemBrowser\Api\Database\Constant\TranslationType;
-use FactorioItemBrowser\Api\Database\Data\TranslationData;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
-use FactorioItemBrowser\Api\Database\Entity\Combination;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
+use FactorioItemBrowser\Common\Constant\EntityType;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The repository of the translation database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @method array|Translation[] findByIds(array|UuidInterface[] $ids)
  */
 class TranslationRepository extends AbstractIdRepositoryWithOrphans
 {
@@ -42,15 +44,147 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     }
 
     /**
+     * Finds translations with the specified types and names.
+     * @param UuidInterface $combinationId
+     * @param string $locale The locale to prefer in the results.
+     * @param array|string[][] $namesByTypes The names to search, grouped by their types.
+     * @return array|Translation[]
+     */
+    public function findByTypesAndNames(UuidInterface $combinationId, string $locale, array $namesByTypes): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('t')
+                     ->from(Translation::class, 't')
+                     ->innerJoin('t.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->andWhere('t.locale IN (:locales)')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->setParameter('locales', [$locale, 'en']);
+
+        $conditions = [];
+        foreach ($namesByTypes as $type => $names) {
+            if (count($names) === 0) {
+                continue;
+            }
+
+            $i = count($conditions);
+            switch ($type) {
+                case EntityType::RECIPE:
+                    // Special case: Recipes may re-use the translations provided by the item with the same name.
+                    $conditions[] = "((t.type = :type{$i} OR t.isDuplicatedByRecipe = 1) AND t.name IN (:names{$i}))";
+                    break;
+
+                case EntityType::MACHINE:
+                    // Special case: Machines may re-use the translations provided by the item with the same name.
+                    $conditions[] = "((t.type = :type{$i} OR t.isDuplicatedByMachine = 1) AND t.name IN (:names{$i}))";
+                    break;
+
+                default:
+                    $conditions[] = "(t.type = :type{$i} AND t.name IN (:names{$i}))";
+                    break;
+            }
+            $queryBuilder->setParameter("type{$i}", $type)
+                         ->setParameter("names{$i}", array_values($names));
+        }
+
+        if (count($conditions) === 0) {
+            return [];
+        }
+
+        $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
+     * Finds the types and names matching the specified keywords.
+     * @param UuidInterface $combinationId
+     * @param string $locale
+     * @param array|string[] $keywords
+     * @return array|TranslationPriorityData[]
+     */
+    public function findDataByKeywords(UuidInterface $combinationId, string $locale, array $keywords): array
+    {
+        if (count($keywords) === 0) {
+            return [];
+        }
+
+        $searchField = 'LOWER(CONCAT(t.type, t.name, t.value, t.description))';
+        $priority = 'CASE WHEN t.locale = :localePrimary THEN :priorityPrimary '
+            . 'WHEN t.locale = :localeSecondary THEN :prioritySecondary ELSE :priorityAny END';
+
+        $columns = [
+            't.type AS type',
+            't.name AS name',
+            "MIN({$priority}) AS priority",
+        ];
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select($columns)
+                     ->from(Translation::class, 't')
+                     ->innerJoin('t.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->andWhere('t.type IN (:types)')
+                     ->addGroupBy('t.type')
+                     ->addGroupBy('t.name')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->setParameter('localePrimary', $locale)
+                     ->setParameter('localeSecondary', 'en')
+                     ->setParameter('priorityPrimary', SearchResultPriority::PRIMARY_LOCALE_MATCH)
+                     ->setParameter('prioritySecondary', SearchResultPriority::SECONDARY_LOCALE_MATCH)
+                     ->setParameter('priorityAny', SearchResultPriority::ANY_MATCH)
+                     ->setParameter('types', [
+                         EntityType::ITEM,
+                         EntityType::FLUID,
+                         EntityType::RECIPE,
+                     ]);
+
+        foreach (array_values($keywords) as $index => $keyword) {
+            $queryBuilder->andWhere("{$searchField} LIKE :keyword{$index}")
+                         ->setParameter("keyword{$index}", '%' . addcslashes(strtolower($keyword), '\\%_') . '%');
+        }
+
+        return $this->mapTranslationPriorityDataResult($queryBuilder->getQuery()->getResult());
+    }
+
+    /**
+     * Maps the query result to instances of TranslationPriorityData.
+     * @param array $translationPriorityData
+     * @return array|TranslationPriorityData[]
+     */
+    protected function mapTranslationPriorityDataResult(array $translationPriorityData): array
+    {
+        $result = [];
+        foreach ($translationPriorityData as $row) {
+            $data = new TranslationPriorityData();
+            $data->setType($row['type'])
+                 ->setName($row['name'])
+                 ->setPriority((int) $row['priority']);
+
+            $result[] = $data;
+        }
+        return $result;
+    }
+
+    /**
      * Persists the translations to the combination, using optimized queries.
-     * @param Combination $combination
+     * @param UuidInterface $combinationId
      * @param array|Translation[] $translations
      * @throws DBALException
      */
-    public function persistTranslationsToCombination(Combination $combination, array $translations): void
+    public function persistTranslationsToCombination(UuidInterface $combinationId, array $translations): void
+    {
+        $this->insertTranslations($translations);
+        $this->clearCrossTable($combinationId);
+        $this->insertIntoCrossTable($combinationId, $translations);
+    }
+
+    /**
+     * Inserts the translations into the database.
+     * @param array|Translation[] $translations
+     * @throws DBALException
+     */
+    protected function insertTranslations(array $translations): void
     {
         $parameters = [];
-        $parametersCross = [];
         foreach ($translations as $translation) {
             $parameters[] = $translation->getId()->getBytes();
             $parameters[] = $translation->getLocale();
@@ -60,27 +194,47 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
             $parameters[] = $translation->getDescription();
             $parameters[] = $translation->getIsDuplicatedByMachine();
             $parameters[] = $translation->getIsDuplicatedByRecipe();
-
-            $parametersCross[] = $combination->getId()->getBytes();
-            $parametersCross[] = $translation->getId()->getBytes();
         }
 
         $this->executeNativeSql(
-            "INSERT IGNORE INTO `Translation` "
-                . "(`id`,`locale`,`type`,`name`,`value`,`description`,`isDuplicatedByMachine`,`isDuplicatedByRecipe`)"
+            'INSERT IGNORE INTO `Translation` '
+                . '(`id`,`locale`,`type`,`name`,`value`,`description`,`isDuplicatedByMachine`,`isDuplicatedByRecipe`) '
                 . "VALUES {$this->buildParameterPlaceholders(count($translations), 8)}",
             $parameters
         );
+    }
 
+    /**
+     * Clears the cross table to the specified combination.
+     * @param UuidInterface $combinationId
+     * @throws DBALException
+     */
+    protected function clearCrossTable(UuidInterface $combinationId): void
+    {
         $this->executeNativeSql(
-            "DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?",
-            [$combination->getId()->getBytes()]
+            'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?',
+            [$combinationId->getBytes()]
         );
+    }
+
+    /**
+     * Inserts the translations into the cross table to the specified combination.
+     * @param UuidInterface $combinationId
+     * @param array $translations
+     * @throws DBALException
+     */
+    protected function insertIntoCrossTable(UuidInterface $combinationId, array $translations): void
+    {
+        $parameters = [];
+        foreach ($translations as $translation) {
+            $parameters[] = $combinationId->getBytes();
+            $parameters[] = $translation->getId()->getBytes();
+        }
 
         $this->executeNativeSql(
-            "INSERT INTO `CombinationXTranslation` (`combinationId`, `translationId`) "
-                . "VALUES {$this->buildParameterPlaceholders(count($translations), 2)}",
-            $parametersCross
+            'INSERT INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
+            . "VALUES {$this->buildParameterPlaceholders(count($translations), 2)}",
+            $parameters
         );
     }
 
@@ -106,160 +260,5 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     {
         $statement = $this->entityManager->getConnection()->prepare($query);
         $statement->execute($parameters);
-    }
-
-
-
-
-    /**
-     * Finds the translation data with the specified types and names.
-     * @param string $locale The locale to prefer in the results.
-     * @param array|string[][] $namesByTypes The names to search, grouped by their types.
-     * @param array|int[] $modCombinationIds The IDs of the mod combinations, or empty to use all translations.
-     * @return array|TranslationData[]
-     */
-    public function findDataByTypesAndNames(string $locale, array $namesByTypes, array $modCombinationIds = []): array
-    {
-        $columns = [
-            't.locale AS locale',
-            't.type AS type',
-            't.name AS name',
-            't.value AS value',
-            't.description AS description',
-            't.isDuplicatedByRecipe AS isDuplicatedByRecipe',
-            't.isDuplicatedByMachine AS isDuplicatedByMachine',
-            'mc.order AS order'
-        ];
-
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select($columns)
-                     ->from(Translation::class, 't')
-                     ->innerJoin('t.modCombination', 'mc')
-                     ->andWhere('t.locale IN (:locales)')
-                     ->setParameter('locales', [$locale, 'en']);
-
-        $conditions = [];
-        foreach ($namesByTypes as $type => $names) {
-            if (count($names) > 0) {
-                $index = count($conditions);
-                switch ($type) {
-                    case TranslationType::RECIPE:
-                        // Special case: Recipes may re-use the translations provided by the item with the same name.
-                        $conditions[] = '((t.type = :type' . $index . ' OR t.isDuplicatedByRecipe = 1) '
-                            . 'AND t.name IN (:names' . $index . '))';
-                        break;
-
-                    case TranslationType::MACHINE:
-                        // Special case: Machines may re-use the translations provided by the item with the same name.
-                        $conditions[] = '((t.type = :type' . $index . ' OR t.isDuplicatedByMachine = 1) '
-                            . 'AND t.name IN (:names' . $index . '))';
-                        break;
-
-                    default:
-                        $conditions[] = '(t.type = :type' . $index . ' AND t.name IN (:names' . $index . '))';
-                        break;
-                }
-                $queryBuilder->setParameter('type' . $index, $type)
-                             ->setParameter('names' . $index, array_values($names));
-            }
-        }
-
-        $result = [];
-        if (count($conditions) > 0) {
-            $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
-
-            if (count($modCombinationIds) > 0) {
-                $queryBuilder->andWhere('(t.modCombination IN (:modCombinationIds) OR t.type = :typeMod)')
-                             ->setParameter('modCombinationIds', array_values($modCombinationIds))
-                             ->setParameter('typeMod', 'mod');
-            }
-
-            $result = $this->mapTranslationDataResult($queryBuilder->getQuery()->getResult());
-        }
-        return $result;
-    }
-
-    /**
-     * Maps the query result to instances of TranslationData.
-     * @param array $translationData
-     * @return array|TranslationData[]
-     */
-    protected function mapTranslationDataResult(array $translationData): array
-    {
-        $result = [];
-        foreach ($translationData as $data) {
-            $result[] = TranslationData::createFromArray($data);
-        }
-        return $result;
-    }
-
-    /**
-     * Finds the types and names matching the specified keywords.
-     * @param string $locale
-     * @param array|string[] $keywords
-     * @param array|int[] $modCombinationIds
-     * @return array|TranslationPriorityData[]
-     */
-    public function findDataByKeywords(string $locale, array $keywords, array $modCombinationIds = []): array
-    {
-        $result = [];
-        if (count($keywords) > 0) {
-            $concat = 'LOWER(CONCAT(t.type, t.name, t.value, t.description))';
-            $priorityCase = 'CASE WHEN t.locale = :localePrimary THEN :priorityPrimary '
-                . 'WHEN t.locale = :localeSecondary THEN :prioritySecondary ELSE :priorityAny END';
-
-            $columns = [
-                't.type AS type',
-                't.name AS name',
-                'MIN(' . $priorityCase . ') AS priority'
-            ];
-
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->select($columns)
-                         ->from(Translation::class, 't')
-                         ->andWhere('t.type IN (:types)')
-                         ->addGroupBy('t.type')
-                         ->addGroupBy('t.name')
-                         ->setParameter('localePrimary', $locale)
-                         ->setParameter('localeSecondary', 'en')
-                         ->setParameter('priorityPrimary', SearchResultPriority::PRIMARY_LOCALE_MATCH)
-                         ->setParameter('prioritySecondary', SearchResultPriority::SECONDARY_LOCALE_MATCH)
-                         ->setParameter('priorityAny', SearchResultPriority::ANY_MATCH)
-                         ->setParameter('types', [
-                             TranslationType::ITEM,
-                             TranslationType::FLUID,
-                             TranslationType::RECIPE
-                         ]);
-
-            $index = 0;
-            foreach ($keywords as $keyword) {
-                $queryBuilder->andWhere($concat . ' LIKE :keyword' . $index)
-                             ->setParameter('keyword' . $index, '%' . addcslashes($keyword, '\\%_') . '%');
-                ++$index;
-            }
-
-            if (count($modCombinationIds) > 0) {
-                $queryBuilder->innerJoin('t.modCombination', 'mc')
-                             ->andWhere('mc.id IN (:modCombinationIds)')
-                             ->setParameter('modCombinationIds', array_values($modCombinationIds));
-            }
-
-            $result = $this->mapTranslationPriorityDataResult($queryBuilder->getQuery()->getResult());
-        }
-        return $result;
-    }
-
-    /**
-     * Maps the query result to instances of TranslationPriorityData.
-     * @param array $translationPriorityData
-     * @return array|TranslationPriorityData[]
-     */
-    protected function mapTranslationPriorityDataResult(array $translationPriorityData): array
-    {
-        $result = [];
-        foreach ($translationPriorityData as $data) {
-            $result[] = TranslationPriorityData::createFromArray($data);
-        }
-        return $result;
     }
 }

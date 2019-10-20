@@ -62,6 +62,6 @@
             </options>
         </field>
 
-        <many-to-many field="combinations" target-entity="Combination" mapped-by="recipes" />
+        <many-to-many field="combinations" target-entity="Combination" mapped-by="translations" />
     </entity>
 </doctrine-mapping>

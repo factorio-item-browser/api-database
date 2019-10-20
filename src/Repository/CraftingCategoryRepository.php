@@ -14,7 +14,7 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @method findByIds(array|UuidInterface[] $ids): array|CraftingCategory[]
+ * @method array|CraftingCategory[] findByIds(array|UuidInterface[] $ids)
  */
 class CraftingCategoryRepository extends AbstractIdRepositoryWithOrphans
 {

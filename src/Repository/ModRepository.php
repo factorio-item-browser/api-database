@@ -6,12 +6,15 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The repository class of the Mod database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @method array|Mod[] findByIds(array|UuidInterface[] $ids)
  */
 class ModRepository extends AbstractIdRepositoryWithOrphans
 {
