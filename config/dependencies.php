@@ -14,13 +14,10 @@ namespace FactorioItemBrowser\Api\Database;
 use BluePsyduck\ZendAutoWireFactory\AutoWireFactory;
 use ContainerInteropDoctrine\EntityManagerFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
 
 return [
     'dependencies' => [
         'factories'  => [
-            Filter\DataFilter::class => InvokableFactory::class,
-
             Repository\CachedSearchResultRepository::class => AutoWireFactory::class,
             Repository\CombinationRepository::class => AutoWireFactory::class,
             Repository\CraftingCategoryRepository::class => AutoWireFactory::class,

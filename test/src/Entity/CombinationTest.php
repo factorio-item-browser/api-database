@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -54,5 +55,33 @@ class CombinationTest extends TestCase
 
         $this->assertSame($combination, $combination->setId($id));
         $this->assertSame($id, $combination->getId());
+    }
+
+    /**
+     * Tests the setting and getting the import time.
+     * @covers ::getImportTime
+     * @covers ::setImportTime
+     */
+    public function testSetAndGetImportTime(): void
+    {
+        $importTime = new DateTime('2038-01-19 03:14:07');
+        $combination = new Combination();
+
+        $this->assertSame($combination, $combination->setImportTime($importTime));
+        $this->assertSame($importTime, $combination->getImportTime());
+    }
+
+    /**
+     * Tests the setting and getting the last usage time.
+     * @covers ::getLastUsageTime
+     * @covers ::setLastUsageTime
+     */
+    public function testSetAndGetLastUsageTime(): void
+    {
+        $lastUsageTime = new DateTime('2038-01-19 03:14:07');
+        $combination = new Combination();
+
+        $this->assertSame($combination, $combination->setLastUsageTime($lastUsageTime));
+        $this->assertSame($lastUsageTime, $combination->getLastUsageTime());
     }
 }

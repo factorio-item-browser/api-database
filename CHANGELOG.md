@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Database structure to be based on combinations, not on mods. Requesting data is now based on exactly one combination
+  and no longer a set of several combinations.
+
 ## 2.1.1 - 2019-08-11
 
 ### Fixed

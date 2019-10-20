@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\UuidInterface;
@@ -21,6 +22,18 @@ class Combination
      * @var UuidInterface
      */
     protected $id;
+
+    /**
+     * The time when the combination was imported.
+     * @var DateTimeInterface
+     */
+    protected $importTime;
+
+    /**
+     * The time when the combination was last used by a visitor.
+     * @var DateTimeInterface
+     */
+    protected $lastUsageTime;
 
     /**
      * The mods added by the combination.
@@ -89,6 +102,46 @@ class Combination
     public function getId(): UuidInterface
     {
         return $this->id;
+    }
+
+    /**
+     * Sets the time when the combination was imported.
+     * @param DateTimeInterface $importTime
+     * @return $this
+     */
+    public function setImportTime(DateTimeInterface $importTime): self
+    {
+        $this->importTime = $importTime;
+        return $this;
+    }
+
+    /**
+     * Returns the time when the combination was imported.
+     * @return DateTimeInterface
+     */
+    public function getImportTime(): DateTimeInterface
+    {
+        return $this->importTime;
+    }
+
+    /**
+     * Sets the time when the combination was last used by a visitor.
+     * @param DateTimeInterface $lastUsageTime
+     * @return $this
+     */
+    public function setLastUsageTime(DateTimeInterface $lastUsageTime): self
+    {
+        $this->lastUsageTime = $lastUsageTime;
+        return $this;
+    }
+
+    /**
+     * Returns the time when the combination was last used by a visitor.
+     * @return DateTimeInterface
+     */
+    public function getLastUsageTime(): DateTimeInterface
+    {
+        return $this->lastUsageTime;
     }
 
     /**

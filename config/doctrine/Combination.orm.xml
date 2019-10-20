@@ -15,6 +15,18 @@
             </options>
         </id>
 
+        <field name="importTime" type="datetime" version="true">
+            <options>
+                <option name="comment">The time when the combination was imported.</option>
+            </options>
+        </field>
+
+        <field name="lastUsageTime" type="datetime" version="true">
+            <options>
+                <option name="comment">The time when the combination was last used by a visitor.</option>
+            </options>
+        </field>
+
         <many-to-many field="mods" target-entity="Mod">
             <join-table name="CombinationXMod">
                 <join-columns>
