@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Type;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
@@ -14,7 +13,7 @@ use Doctrine\DBAL\Types\Type;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class EnumType extends Type
+abstract class AbstractEnumType extends Type
 {
     /**
      * The name of the type.
@@ -22,22 +21,21 @@ class EnumType extends Type
     public const NAME = 'enum';
 
     /**
+     * The values of the enum.
+     */
+    public const VALUES = ['foo', 'bar'];
+
+    /**
      * Returns the SQL declaration snippet for a field of this type.
      * @param mixed[] $fieldDeclaration The field declaration.
      * @param AbstractPlatform $platform The currently used database platform.
      * @return string
-     * @throws DBALException
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        $rawValues = array_filter(explode(',', $fieldDeclaration['values'] ?? ''));
-        if (count($rawValues) === 0) {
-            throw new DBALException('Missing values option for enum type.');
-        }
-
         $quotedValues = implode(',', array_map(function (string $value) use ($platform): string {
             return $platform->quoteStringLiteral(trim($value));
-        }, $rawValues));
+        }, static::VALUES));
 
         return sprintf('ENUM(%s)', $quotedValues);
     }
@@ -48,6 +46,16 @@ class EnumType extends Type
      */
     public function getName()
     {
-        return self::NAME;
+        return static::NAME;
+    }
+
+    /**
+     * Returns whether an SQL comment hint is required.
+     * @param AbstractPlatform $platform
+     * @return boolean
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    {
+        return true;
     }
 }

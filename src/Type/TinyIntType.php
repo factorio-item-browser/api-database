@@ -39,4 +39,14 @@ class TinyIntType extends IntegerType
     {
         return self::NAME;
     }
+
+    /**
+     * Returns whether an SQL comment hint is required.
+     * @param AbstractPlatform $platform
+     * @return boolean
+     */
+    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    {
+        return true;
+    }
 }

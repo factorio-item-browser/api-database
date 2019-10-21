@@ -27,6 +27,7 @@ return [
             'orm_default' => [
                 'doctrine_mapping_types' => [
                     UuidBinaryType::NAME => UuidBinaryType::BINARY,
+                    'enum' => 'string',
                 ],
             ],
         ],
@@ -40,10 +41,12 @@ return [
             ],
         ],
         'types' => [
-            Type\EnumType::NAME => Type\EnumType::class,
+            Type\EnumTypeEnergyUsageUnit::NAME => Type\EnumTypeEnergyUsageUnit::class,
+            Type\EnumTypeEntityType::NAME => Type\EnumTypeEntityType::class,
+            Type\EnumTypeRecipeMode::NAME => Type\EnumTypeRecipeMode::class,
+            Type\EnumTypeItemType::NAME => Type\EnumTypeItemType::class,
             Type\TinyIntType::NAME => Type\TinyIntType::class,
-
             UuidBinaryType::NAME => UuidBinaryType::class,
-        ]
+        ],
     ],
 ];

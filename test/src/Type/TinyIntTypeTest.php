@@ -73,4 +73,18 @@ class TinyIntTypeTest extends TestCase
 
         $this->assertSame($expectedResult, $result);
     }
+
+    /**
+     * Tests the requiresSQLCommentHint method.
+     * @covers ::requiresSQLCommentHint
+     */
+    public function testRequiresSQLCommentHint(): void
+    {
+        /* @var AbstractPlatform&MockObject $platform */
+        $platform = $this->createMock(AbstractPlatform::class);
+
+        $result = self::$type->requiresSQLCommentHint($platform);
+
+        $this->assertTrue($result);
+    }
 }

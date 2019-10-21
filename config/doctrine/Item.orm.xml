@@ -19,9 +19,8 @@
             </options>
         </id>
 
-        <field name="type" type="enum">
+        <field name="type" type="enum_item_type">
             <options>
-                <option name="values">item,fluid</option>
                 <option name="comment">The type of the item.</option>
             </options>
         </field>

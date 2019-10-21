@@ -11,7 +11,7 @@
 
         <id name="combinationId" type="uuid_binary">
             <options>
-                <option name="comment">The id of the combination used for the search..</option>
+                <option name="comment">The id of the combination used for the search.</option>
             </options>
         </id>
 
