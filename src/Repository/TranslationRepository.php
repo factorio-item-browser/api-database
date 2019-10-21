@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
@@ -47,11 +48,15 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      * Finds translations with the specified types and names.
      * @param UuidInterface $combinationId
      * @param string $locale The locale to prefer in the results.
-     * @param array|string[][] $namesByTypes The names to search, grouped by their types.
+     * @param NamesByTypes $namesByTypes The names to search, grouped by their types.
      * @return array|Translation[]
      */
-    public function findByTypesAndNames(UuidInterface $combinationId, string $locale, array $namesByTypes): array
+    public function findByTypesAndNames(UuidInterface $combinationId, string $locale, NamesByTypes $namesByTypes): array
     {
+        if ($namesByTypes->isEmpty()) {
+            return [];
+        }
+
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('t')
                      ->from(Translation::class, 't')
@@ -61,11 +66,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('locales', [$locale, 'en']);
 
         $conditions = [];
-        foreach ($namesByTypes as $type => $names) {
-            if (count($names) === 0) {
-                continue;
-            }
-
+        foreach ($namesByTypes->toArray() as $type => $names) {
             $i = count($conditions);
             switch ($type) {
                 case EntityType::RECIPE:
@@ -85,11 +86,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
             $queryBuilder->setParameter("type{$i}", $type)
                          ->setParameter("names{$i}", array_values($names));
         }
-
-        if (count($conditions) === 0) {
-            return [];
-        }
-
         $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
 
         return $queryBuilder->getQuery()->getResult();

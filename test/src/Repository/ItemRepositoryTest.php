@@ -8,6 +8,7 @@ use BluePsyduck\TestHelper\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
@@ -103,14 +104,24 @@ class ItemRepositoryTest extends TestCase
         $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
     }
 
+
     /**
-     * Tests the findByTypeAndNames method.
-     * @covers ::findByTypeAndNames
+     * Tests the findByTypesAndNames method.
+     * @covers ::findByTypesAndNames
      */
-    public function testFindByTypeAndNames(): void
+    public function testFindByTypesAndNames(): void
     {
-        $type = 'abc';
-        $names = ['def', 'ghi'];
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(false);
+        $namesByTypes->expects($this->once())
+                     ->method('toArray')
+                     ->willReturn([
+                         'abc' => ['def', 'ghi'],
+                         'jkl' => ['mno'],
+                     ]);
 
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
@@ -146,27 +157,35 @@ class ItemRepositoryTest extends TestCase
                      )
                      ->willReturnSelf();
         $queryBuilder->expects($this->exactly(2))
-                     ->method('andWhere')
+                     ->method('orWhere')
                      ->withConsecutive(
-                         [$this->identicalTo('i.type = :type')],
-                         [$this->identicalTo('i.name IN (:names)')]
+                         [$this->identicalTo('i.type = :type0 AND i.name IN (:names0)')],
+                         [$this->identicalTo('i.type = :type1 AND i.name IN (:names1)')]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly(3))
+        $queryBuilder->expects($this->exactly(5))
                      ->method('setParameter')
                      ->withConsecutive(
                          [
                              $this->identicalTo('combinationId'),
                              $this->identicalTo($combinationId),
-                             $this->identicalTo(UuidBinaryType::NAME)
+                             $this->identicalTo(UuidBinaryType::NAME),
                          ],
                          [
-                             $this->identicalTo('type'),
-                             $this->identicalTo($type)
+                             $this->identicalTo('type0'),
+                             $this->identicalTo('abc'),
                          ],
                          [
-                             $this->identicalTo('names'),
-                             $this->identicalTo($names)
+                             $this->identicalTo('names0'),
+                             $this->identicalTo(['def', 'ghi']),
+                         ],
+                         [
+                             $this->identicalTo('type1'),
+                             $this->identicalTo('jkl'),
+                         ],
+                         [
+                             $this->identicalTo('names1'),
+                             $this->identicalTo(['mno']),
                          ]
                      )
                      ->willReturnSelf();
@@ -179,17 +198,23 @@ class ItemRepositoryTest extends TestCase
                             ->willReturn($queryBuilder);
 
         $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findByTypeAndNames($combinationId, $type, $names);
+        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
 
         $this->assertSame($queryResult, $result);
     }
 
     /**
-     * Tests the findByTypeAndNames method.
-     * @covers ::findByTypeAndNames
+     * Tests the findByTypesAndNames method.
+     * @covers ::findByTypesAndNames
      */
-    public function testFindByTypeAndNamesWithoutNames(): void
+    public function testFindByTypesAndNamesWithoutConditions(): void
     {
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(true);
+
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
@@ -197,7 +222,7 @@ class ItemRepositoryTest extends TestCase
                             ->method('createQueryBuilder');
 
         $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findByTypeAndNames($combinationId, 'abc', []);
+        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
 
         $this->assertSame([], $result);
     }

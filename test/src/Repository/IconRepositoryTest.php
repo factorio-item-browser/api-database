@@ -7,6 +7,7 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 use FactorioItemBrowser\Api\Database\Repository\IconRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -45,10 +46,17 @@ class IconRepositoryTest extends TestCase
      */
     public function testFindByTypesAndNames(): void
     {
-        $namesByTypes = [
-            'abc' => ['def', 'ghi'],
-            'jkl' => ['mno'],
-        ];
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(false);
+        $namesByTypes->expects($this->once())
+                     ->method('toArray')
+                     ->willReturn([
+                         'abc' => ['def', 'ghi'],
+                         'jkl' => ['mno'],
+                     ]);
 
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
@@ -136,46 +144,17 @@ class IconRepositoryTest extends TestCase
      */
     public function testFindByTypesAndNamesWithoutConditions(): void
     {
-        $namesByTypes = [
-            'abc' => [],
-        ];
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(true);
 
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
-        $queryBuilder = $this->createMock(QueryBuilder::class);
-        $queryBuilder->expects($this->once())
-                     ->method('select')
-                     ->with($this->identicalTo('i'))
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('from')
-                     ->with($this->identicalTo(Icon::class), $this->identicalTo('i'))
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('innerJoin')
-                     ->with(
-                         $this->identicalTo('i.combination'),
-                         $this->identicalTo('c'),
-                         $this->identicalTo('WITH'),
-                         $this->identicalTo('c.id = :combinationId')
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('setParameter')
-                     ->with(
-                         $this->identicalTo('combinationId'),
-                         $this->identicalTo($combinationId),
-                         $this->identicalTo(UuidBinaryType::NAME)
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->never())
-                     ->method('getQuery');
-
-        $this->entityManager->expects($this->once())
-                            ->method('createQueryBuilder')
-                            ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
 
         $repository = new IconRepository($this->entityManager);
         $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);

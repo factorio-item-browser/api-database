@@ -11,6 +11,7 @@ use Doctrine\DBAL\Driver\Statement;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
@@ -93,11 +94,19 @@ class TranslationRepositoryTest extends TestCase
     public function testFindByTypesAndNames(): void
     {
         $locale = 'abc';
-        $namesByType = [
-            EntityType::RECIPE => ['def', 'ghi'],
-            EntityType::MACHINE => ['jkl'],
-            EntityType::ITEM => ['mno', 'pqr']
-        ];
+
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(false);
+        $namesByTypes->expects($this->once())
+                     ->method('toArray')
+                     ->willReturn([
+                         EntityType::RECIPE => ['def', 'ghi'],
+                         EntityType::MACHINE => ['jkl'],
+                         EntityType::ITEM => ['mno', 'pqr']
+                     ]);
 
         $expectedCondition = '(((t.type = :type0 OR t.isDuplicatedByRecipe = 1) AND t.name IN (:names0))'
             . ' OR ((t.type = :type1 OR t.isDuplicatedByMachine = 1) AND t.name IN (:names1))'
@@ -190,7 +199,7 @@ class TranslationRepositoryTest extends TestCase
                             ->willReturn($queryBuilder);
 
         $repository = new TranslationRepository($this->entityManager);
-        $result = $repository->findByTypesAndNames($combinationId, $locale, $namesByType);
+        $result = $repository->findByTypesAndNames($combinationId, $locale, $namesByTypes);
 
         $this->assertSame($queryResult, $result);
     }
@@ -202,63 +211,24 @@ class TranslationRepositoryTest extends TestCase
     public function testFindByTypesAndNamesWithoutConditions(): void
     {
         $locale = 'abc';
-        $namesByType = [
-            EntityType::FLUID => []
-        ];
+
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(true);
 
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
-        $queryBuilder = $this->createMock(QueryBuilder::class);
-        $queryBuilder->expects($this->once())
-                     ->method('select')
-                     ->with($this->identicalTo('t'))
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('from')
-                     ->with($this->identicalTo(Translation::class), $this->identicalTo('t'))
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('innerJoin')
-                     ->with(
-                         $this->identicalTo('t.combinations'),
-                         $this->identicalTo('c'),
-                         $this->identicalTo('WITH'),
-                         $this->identicalTo('c.id = :combinationId')
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('andWhere')
-                     ->with($this->identicalTo('t.locale IN (:locales)'))
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->exactly(2))
-                     ->method('setParameter')
-                     ->withConsecutive(
-                         [
-                             $this->identicalTo('combinationId'),
-                             $this->identicalTo($combinationId),
-                             $this->identicalTo(UuidBinaryType::NAME)
-                         ],
-                         [
-                             $this->identicalTo('locales'),
-                             $this->identicalTo([$locale, 'en'])
-                         ]
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->never())
-                     ->method('getQuery');
-
-        $this->entityManager->expects($this->once())
-                            ->method('createQueryBuilder')
-                            ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
 
         $repository = new TranslationRepository($this->entityManager);
-        $result = $repository->findByTypesAndNames($combinationId, $locale, $namesByType);
+        $result = $repository->findByTypesAndNames($combinationId, $locale, $namesByTypes);
 
         $this->assertSame([], $result);
     }
-
 
     /**
      * Tests the findDataByKeywords method.

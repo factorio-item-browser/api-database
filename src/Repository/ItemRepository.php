@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
@@ -46,15 +47,14 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
     }
 
     /**
-     * Finds the items with the specified type and names.
+     * Finds the items with the specified types and names.
      * @param UuidInterface $combinationId
-     * @param string $type
-     * @param array|string[] $names
+     * @param NamesByTypes $namesByTypes
      * @return array|Item[]
      */
-    public function findByTypeAndNames(UuidInterface $combinationId, string $type, array $names): array
+    public function findByTypesAndNames(UuidInterface $combinationId, NamesByTypes $namesByTypes): array
     {
-        if (count($names) === 0) {
+        if ($namesByTypes->isEmpty()) {
             return [];
         }
 
@@ -62,11 +62,15 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
         $queryBuilder->select('i')
                      ->from(Item::class, 'i')
                      ->innerJoin('i.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->andWhere('i.type = :type')
-                     ->andWhere('i.name IN (:names)')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-                     ->setParameter('type', $type)
-                     ->setParameter('names', $names);
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
+
+        $index = 0;
+        foreach ($namesByTypes->toArray() as $type => $names) {
+            $queryBuilder->orWhere("i.type = :type{$index} AND i.name IN (:names{$index})")
+                         ->setParameter("type{$index}", $type)
+                         ->setParameter("names{$index}", array_values($names));
+            ++$index;
+        }
 
         return $queryBuilder->getQuery()->getResult();
     }

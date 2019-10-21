@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
@@ -19,11 +20,15 @@ class IconRepository extends AbstractRepository
     /**
      * Finds the icons of the specified types and names.
      * @param UuidInterface $combinationId
-     * @param array|string[][] $namesByTypes
+     * @param NamesByTypes $namesByTypes
      * @return array|Icon[]
      */
-    public function findByTypesAndNames(UuidInterface $combinationId, array $namesByTypes): array
+    public function findByTypesAndNames(UuidInterface $combinationId, NamesByTypes $namesByTypes): array
     {
+        if ($namesByTypes->isEmpty()) {
+            return [];
+        }
+
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('i')
                      ->from(Icon::class, 'i')
@@ -31,19 +36,11 @@ class IconRepository extends AbstractRepository
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
 
         $index = 0;
-        foreach ($namesByTypes as $type => $names) {
-            if (count($names) === 0) {
-                continue;
-            }
-
+        foreach ($namesByTypes->toArray() as $type => $names) {
             $queryBuilder->orWhere("i.type = :type{$index} AND i.name IN (:names{$index})")
                          ->setParameter("type{$index}", $type)
                          ->setParameter("names{$index}", array_values($names));
             ++$index;
-        }
-
-        if ($index === 0) {
-            return [];
         }
 
         return $queryBuilder->getQuery()->getResult();
