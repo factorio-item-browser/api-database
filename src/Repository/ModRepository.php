@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -36,5 +37,22 @@ class ModRepository extends AbstractIdRepositoryWithOrphans
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
                      ->andWhere('c.id IS NULL');
+    }
+
+    /**
+     * Returns all mods used by the specified combination.
+     * @param UuidInterface $combinationId
+     * @return array|Mod[]
+     */
+    public function findByCombinationId(UuidInterface $combinationId): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('m')
+                     ->from(Mod::class, 'm')
+                     ->innerJoin('m.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->orderBy('m.name', 'ASC');
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
-use FactorioItemBrowser\Api\Database\Data\MachineData;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
@@ -41,6 +40,29 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
     }
 
     /**
+     * Finds the data of the machines with the specified names.
+     * @param UuidInterface $combinationId
+     * @param array|string[] $names
+     * @return array|Machine[]
+     */
+    public function findByNames(UuidInterface $combinationId, array $names): array
+    {
+        if (count($names) === 0) {
+            return [];
+        }
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('m')
+            ->from(Machine::class, 'm')
+            ->innerJoin('m.combinations', 'c', 'WITH', 'c.id = :combinationId')
+            ->andWhere('m.name IN (:names)')
+            ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+            ->setParameter('names', array_values($names));
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
      * Finds the machines supporting the specified crafting categories.
      * @param UuidInterface $combinationId
      * @param string $craftingCategoryName
@@ -57,49 +79,5 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('craftingCategoryName', $craftingCategoryName);
 
         return $queryBuilder->getQuery()->getResult();
-    }
-
-    /**
-     * Finds the data of the machines with the specified names.
-     * @param UuidInterface $combinationId
-     * @param array|string[] $names
-     * @return array|MachineData[]
-     */
-    public function findDataByNames(UuidInterface $combinationId, array $names): array
-    {
-        if (count($names) === 0) {
-            return [];
-        }
-
-        $columns = [
-            'm.id AS id',
-            'm.name AS name'
-        ];
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select($columns)
-                     ->from(Machine::class, 'm')
-                     ->innerJoin('m.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->andWhere('m.name IN (:names)')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-                     ->setParameter('names', array_values($names));
-
-        return $this->mapMachineDataResult($queryBuilder->getQuery()->getResult());
-    }
-
-    /**
-     * Maps the query result to instances of MachineData.
-     * @param array $machineData
-     * @return array|MachineData[]
-     */
-    protected function mapMachineDataResult(array $machineData): array
-    {
-        $result = [];
-        foreach ($machineData as $row) {
-            $data = new MachineData();
-            $data->setId($row['id'])
-                 ->setName($row['name']);
-            $result[] = $data;
-        }
-        return $result;
     }
 }
