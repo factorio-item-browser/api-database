@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use BluePsyduck\TestHelper\ReflectionTrait;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -80,6 +81,63 @@ class MachineRepositoryTest extends TestCase
         $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
     }
 
+    /**
+     * Tests the removeIds method.
+     * @throws ReflectionException
+     * @covers ::removeIds
+     */
+    public function testRemoveIds(): void
+    {
+        $ids = [
+            $this->createMock(UuidInterface::class),
+            $this->createMock(UuidInterface::class),
+        ];
+
+        /* @var Collection&MockObject $craftingCategories1 */
+        $craftingCategories1 = $this->createMock(Collection::class);
+        $craftingCategories1->expects($this->once())
+                            ->method('clear');
+
+        /* @var Collection&MockObject $craftingCategories2 */
+        $craftingCategories2 = $this->createMock(Collection::class);
+        $craftingCategories2->expects($this->once())
+                            ->method('clear');
+
+        /* @var Machine&MockObject $machine1 */
+        $machine1 = $this->createMock(Machine::class);
+        $machine1->expects($this->once())
+                 ->method('getCraftingCategories')
+                 ->willReturn($craftingCategories1);
+
+        /* @var Machine&MockObject $machine2 */
+        $machine2 = $this->createMock(Machine::class);
+        $machine2->expects($this->once())
+                 ->method('getCraftingCategories')
+                 ->willReturn($craftingCategories2);
+
+        $machines = [$machine1, $machine2];
+
+        $this->entityManager->expects($this->exactly(2))
+                            ->method('remove')
+                            ->withConsecutive(
+                                [$this->identicalTo($machine1)],
+                                [$this->identicalTo($machine2)]
+                            );
+        $this->entityManager->expects($this->once())
+                            ->method('flush');
+
+        /* @var MachineRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(MachineRepository::class)
+                           ->onlyMethods(['findByIds'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('findByIds')
+                   ->with($this->identicalTo($ids))
+                   ->willReturn($machines);
+
+        $this->invokeMethod($repository, 'removeIds', $ids);
+    }
 
     /**
      * Tests the findByNames method.

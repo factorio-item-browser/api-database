@@ -7,6 +7,8 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Data\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
+use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
+use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -39,6 +41,27 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
                      ->andWhere('c.id IS NULL');
+    }
+
+    /**
+     * Removes the entities with the specified ids from the database.
+     * @param array|UuidInterface[] $ids
+     */
+    protected function removeIds(array $ids): void
+    {
+        $entityClasses = [
+            RecipeIngredient::class => 'recipe',
+            RecipeProduct::class => 'recipe',
+            Recipe::class => 'id',
+        ];
+
+        foreach ($entityClasses as $entityClass => $property) {
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder->delete($entityClass, 'e')
+                         ->andWhere("e.{$property} IN (:ids)")
+                         ->setParameter('ids', $this->mapIdsToParameterValues($ids));
+            $queryBuilder->getQuery()->execute();
+        }
     }
 
     /**

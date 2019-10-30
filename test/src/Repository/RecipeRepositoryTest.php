@@ -10,6 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Data\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
+use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
+use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
 use FactorioItemBrowser\Api\Database\Repository\RecipeRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -80,6 +82,109 @@ class RecipeRepositoryTest extends TestCase
 
         $repository = new RecipeRepository($this->entityManager);
         $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
+    }
+
+    /**
+     * Tests the removeIds method.
+     * @throws ReflectionException
+     * @covers ::removeIds
+     */
+    public function testRemoveIds(): void
+    {
+        $ids = [
+            $this->createMock(UuidInterface::class),
+            $this->createMock(UuidInterface::class),
+        ];
+        $mappedIds = ['abc', 'def'];
+
+        /* @var AbstractQuery&MockObject $query1 */
+        $query1 = $this->createMock(AbstractQuery::class);
+        $query1->expects($this->once())
+               ->method('execute');
+
+        /* @var AbstractQuery&MockObject $query2 */
+        $query2 = $this->createMock(AbstractQuery::class);
+        $query2->expects($this->once())
+               ->method('execute');
+        
+        /* @var AbstractQuery&MockObject $query3 */
+        $query3 = $this->createMock(AbstractQuery::class);
+        $query3->expects($this->once())
+               ->method('execute');
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder1 = $this->createMock(QueryBuilder::class);
+        $queryBuilder1->expects($this->once())
+                      ->method('delete')
+                      ->with($this->identicalTo(RecipeIngredient::class), $this->identicalTo('e'))
+                      ->willReturnSelf();
+        $queryBuilder1->expects($this->once())
+                      ->method('andWhere')
+                      ->with($this->identicalTo('e.recipe IN (:ids)'))
+                      ->willReturnSelf();
+        $queryBuilder1->expects($this->once())
+                      ->method('setParameter')
+                      ->with($this->identicalTo('ids'), $this->identicalTo($mappedIds))
+                      ->willReturnSelf();
+        $queryBuilder1->expects($this->once())
+                      ->method('getQuery')
+                      ->willReturn($query1);
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder2 = $this->createMock(QueryBuilder::class);
+        $queryBuilder2->expects($this->once())
+                      ->method('delete')
+                      ->with($this->identicalTo(RecipeProduct::class), $this->identicalTo('e'))
+                      ->willReturnSelf();
+        $queryBuilder2->expects($this->once())
+                      ->method('andWhere')
+                      ->with($this->identicalTo('e.recipe IN (:ids)'))
+                      ->willReturnSelf();
+        $queryBuilder2->expects($this->once())
+                      ->method('setParameter')
+                      ->with($this->identicalTo('ids'), $this->identicalTo($mappedIds))
+                      ->willReturnSelf();
+        $queryBuilder2->expects($this->once())
+                      ->method('getQuery')
+                      ->willReturn($query2);
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder3 = $this->createMock(QueryBuilder::class);
+        $queryBuilder3->expects($this->once())
+                      ->method('delete')
+                      ->with($this->identicalTo(Recipe::class), $this->identicalTo('e'))
+                      ->willReturnSelf();
+        $queryBuilder3->expects($this->once())
+                      ->method('andWhere')
+                      ->with($this->identicalTo('e.id IN (:ids)'))
+                      ->willReturnSelf();
+        $queryBuilder3->expects($this->once())
+                      ->method('setParameter')
+                      ->with($this->identicalTo('ids'), $this->identicalTo($mappedIds))
+                      ->willReturnSelf();
+        $queryBuilder3->expects($this->once())
+                      ->method('getQuery')
+                      ->willReturn($query3);
+
+        $this->entityManager->expects($this->exactly(3))
+                            ->method('createQueryBuilder')
+                            ->willReturnOnConsecutiveCalls(
+                                $queryBuilder1,
+                                $queryBuilder2,
+                                $queryBuilder3
+                            );
+
+        /* @var RecipeRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(RecipeRepository::class)
+                           ->onlyMethods([ 'mapIdsToParameterValues'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->exactly(3))
+                   ->method('mapIdsToParameterValues')
+                   ->with($this->identicalTo($ids))
+                   ->willReturn($mappedIds);
+
+        $this->invokeMethod($repository, 'removeIds', $ids);
     }
 
     /**

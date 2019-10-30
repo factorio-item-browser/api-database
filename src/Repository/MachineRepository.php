@@ -40,6 +40,20 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
     }
 
     /**
+     * Removes the entities with the specified ids from the database.
+     * @param array|UuidInterface[] $ids
+     */
+    protected function removeIds(array $ids): void
+    {
+        // We have to clear the cross-table by reading the machines and clearing the collection first.
+        foreach ($this->findByIds($ids) as $machine) {
+            $machine->getCraftingCategories()->clear();
+            $this->entityManager->remove($machine);
+        }
+        $this->entityManager->flush();
+    }
+
+    /**
      * Finds the data of the machines with the specified names.
      * @param UuidInterface $combinationId
      * @param array|string[] $names
@@ -53,11 +67,11 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('m')
-            ->from(Machine::class, 'm')
-            ->innerJoin('m.combinations', 'c', 'WITH', 'c.id = :combinationId')
-            ->andWhere('m.name IN (:names)')
-            ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-            ->setParameter('names', array_values($names));
+                     ->from(Machine::class, 'm')
+                     ->innerJoin('m.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->andWhere('m.name IN (:names)')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->setParameter('names', array_values($names));
 
         return $queryBuilder->getQuery()->getResult();
     }
