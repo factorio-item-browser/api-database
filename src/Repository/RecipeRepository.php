@@ -18,11 +18,32 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @method array|Recipe[] findByIds(array|UuidInterface[] $ids)
  */
 class RecipeRepository extends AbstractIdRepositoryWithOrphans
 {
+    /**
+     * Returns the entities with the specified ids.
+     * @param array|UuidInterface[] $ids
+     * @return array|Recipe[]
+     */
+    public function findByIds(array $ids): array
+    {
+        if (count($ids) === 0) {
+            return [];
+        }
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('r', 'ri', 'rii', 'rp', 'rpi')
+                     ->from(Recipe::class, 'r')
+                     ->leftJoin('r.ingredients', 'ri')
+                     ->leftJoin('ri.item', 'rii')
+                     ->leftJoin('r.products', 'rp')
+                     ->leftJoin('rp.item', 'rpi')
+                     ->andWhere('r.id IN (:ids)')
+                     ->setParameter('ids', $this->mapIdsToParameterValues($ids));
+        return $queryBuilder->getQuery()->getResult();
+    }
+
     /**
      * Returns the entity class this repository manages.
      * @return string

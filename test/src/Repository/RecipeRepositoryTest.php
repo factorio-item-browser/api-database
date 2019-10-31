@@ -47,6 +47,110 @@ class RecipeRepositoryTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
+
+    /**
+     * Tests the findByIds method.
+     * @covers ::findByIds
+     */
+    public function testFindByIds(): void
+    {
+        $ids = [
+            $this->createMock(UuidInterface::class),
+            $this->createMock(UuidInterface::class),
+        ];
+        $mappedIds = ['def', 'ghi'];
+        $queryResult = [
+            $this->createMock(Recipe::class),
+            $this->createMock(Recipe::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with(
+                         $this->identicalTo('r'),
+                         $this->identicalTo('ri'),
+                         $this->identicalTo('rii'),
+                         $this->identicalTo('rp'),
+                         $this->identicalTo('rpi')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(Recipe::class), $this->identicalTo('r'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(4))
+                     ->method('leftJoin')
+                     ->withConsecutive(
+                         [$this->identicalTo('r.ingredients'), $this->identicalTo('ri')],
+                         [$this->identicalTo('ri.item'), $this->identicalTo('rii')],
+                         [$this->identicalTo('r.products'), $this->identicalTo('rp')],
+                         [$this->identicalTo('rp.item'), $this->identicalTo('rpi')]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('r.id IN (:ids)'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('ids'),
+                         $this->identicalTo($mappedIds)
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        /* @var RecipeRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(RecipeRepository::class)
+                           ->onlyMethods(['mapIdsToParameterValues'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('mapIdsToParameterValues')
+                   ->with($this->identicalTo($ids))
+                   ->willReturn($mappedIds);
+
+        $result = $repository->findByIds($ids);
+
+        $this->assertSame($queryResult, $result);
+    }
+
+    /**
+     * Tests the findByIds method.
+     * @covers ::findByIds
+     */
+    public function testFindByIdsWithoutIds(): void
+    {
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
+
+        /* @var RecipeRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(RecipeRepository::class)
+                           ->onlyMethods(['getEntityClass', 'mapIdsToParameterValues'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->never())
+                   ->method('mapIdsToParameterValues');
+
+        $result = $repository->findByIds([]);
+
+        $this->assertSame([], $result);
+    }
+
     /**
      * Tests the getEntityClass method.
      * @throws ReflectionException

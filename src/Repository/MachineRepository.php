@@ -14,11 +14,29 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- *
- * @method array|Machine[] findByIds(array|UuidInterface[] $ids)
  */
 class MachineRepository extends AbstractIdRepositoryWithOrphans
 {
+    /**
+     * Returns the entities with the specified ids.
+     * @param array|UuidInterface[] $ids
+     * @return array|Machine[]
+     */
+    public function findByIds(array $ids): array
+    {
+        if (count($ids) === 0) {
+            return [];
+        }
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('m', 'cc')
+                     ->from(Machine::class, 'm')
+                     ->leftJoin('m.craftingCategories', 'cc')
+                     ->andWhere('m.id IN (:ids)')
+                     ->setParameter('ids', $this->mapIdsToParameterValues($ids));
+        return $queryBuilder->getQuery()->getResult();
+    }
+
     /**
      * Returns the entity class this repository manages.
      * @return string

@@ -45,6 +45,98 @@ class MachineRepositoryTest extends TestCase
     }
 
     /**
+     * Tests the findByIds method.
+     * @covers ::findByIds
+     */
+    public function testFindByIds(): void
+    {
+        $ids = [
+            $this->createMock(UuidInterface::class),
+            $this->createMock(UuidInterface::class),
+        ];
+        $mappedIds = ['def', 'ghi'];
+        $queryResult = [
+            $this->createMock(Machine::class),
+            $this->createMock(Machine::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo('m'), $this->identicalTo('cc'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(Machine::class), $this->identicalTo('m'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('leftJoin')
+                     ->with($this->identicalTo('m.craftingCategories'), $this->identicalTo('cc'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('m.id IN (:ids)'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('ids'),
+                         $this->identicalTo($mappedIds)
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        /* @var MachineRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(MachineRepository::class)
+                           ->onlyMethods(['mapIdsToParameterValues'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('mapIdsToParameterValues')
+                   ->with($this->identicalTo($ids))
+                   ->willReturn($mappedIds);
+
+        $result = $repository->findByIds($ids);
+
+        $this->assertSame($queryResult, $result);
+    }
+
+    /**
+     * Tests the findByIds method.
+     * @covers ::findByIds
+     */
+    public function testFindByIdsWithoutIds(): void
+    {
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
+
+        /* @var MachineRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(MachineRepository::class)
+                           ->onlyMethods(['getEntityClass', 'mapIdsToParameterValues'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->never())
+                   ->method('mapIdsToParameterValues');
+
+        $result = $repository->findByIds([]);
+
+        $this->assertSame([], $result);
+    }
+
+    /**
      * Tests the getEntityClass method.
      * @throws ReflectionException
      * @covers ::getEntityClass
