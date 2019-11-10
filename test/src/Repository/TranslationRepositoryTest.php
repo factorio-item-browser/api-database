@@ -523,6 +523,26 @@ class TranslationRepositoryTest extends TestCase
     }
 
     /**
+     * Tests the insertTranslations method.
+     * @throws ReflectionException
+     * @covers ::insertTranslations
+     */
+    public function testInsertTranslationsWithoutTranslations(): void
+    {
+        /* @var TranslationRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(TranslationRepository::class)
+                           ->onlyMethods(['buildParameterPlaceholders', 'executeNativeSql'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->never())
+                   ->method('buildParameterPlaceholders');
+        $repository->expects($this->never())
+                   ->method('executeNativeSql');
+
+        $this->invokeMethod($repository, 'insertTranslations', []);
+    }
+
+    /**
      * Tests the clearCrossTable method.
      * @throws ReflectionException
      * @covers ::clearCrossTable
@@ -598,6 +618,29 @@ class TranslationRepositoryTest extends TestCase
                    ->with($this->identicalTo($expectedQuery), $this->identicalTo($expectedParameters));
 
         $this->invokeMethod($repository, 'insertIntoCrossTable', $combinationId, [$translation1, $translation2]);
+    }
+
+    /**
+     * Tests the insertIntoCrossTable method.
+     * @throws ReflectionException
+     * @covers ::insertIntoCrossTable
+     */
+    public function testInsertIntoCrossTableWithoutTranslations(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        /* @var TranslationRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(TranslationRepository::class)
+                           ->onlyMethods(['buildParameterPlaceholders', 'executeNativeSql'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->never())
+                   ->method('buildParameterPlaceholders');
+        $repository->expects($this->never())
+                   ->method('executeNativeSql');
+
+        $this->invokeMethod($repository, 'insertIntoCrossTable', $combinationId, []);
     }
 
     /**

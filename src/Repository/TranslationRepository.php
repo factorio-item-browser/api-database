@@ -180,6 +180,10 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      */
     protected function insertTranslations(array $translations): void
     {
+        if (count($translations) === 0) {
+            return;
+        }
+
         $parameters = [];
         foreach ($translations as $translation) {
             $parameters[] = $translation->getId()->getBytes();
@@ -221,6 +225,10 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      */
     protected function insertIntoCrossTable(UuidInterface $combinationId, array $translations): void
     {
+        if (count($translations) === 0) {
+            return;
+        }
+
         $parameters = [];
         foreach ($translations as $translation) {
             $parameters[] = $combinationId->getBytes();
