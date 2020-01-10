@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database;
 
-use BluePsyduck\ZendAutoWireFactory\AutoWireFactory;
+use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
 use ContainerInteropDoctrine\EntityManagerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 

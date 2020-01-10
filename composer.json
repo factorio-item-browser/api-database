@@ -14,13 +14,12 @@
   "require": {
     "php": "^7.2",
     "ext-pdo": "*",
-    "bluepsyduck/zend-autowire-factory": "^1.0",
+    "bluepsyduck/laminas-autowire-factory": "^1.0",
     "dasprid/container-interop-doctrine": "^1.1",
     "doctrine/orm": "^2.6",
     "factorio-item-browser/common": "^1.0",
     "psr/container": "^1.0",
-    "ramsey/uuid-doctrine": "^1.5",
-    "zendframework/zend-servicemanager": "^3.0"
+    "ramsey/uuid-doctrine": "^1.5"
   },
   "require-dev": {
     "bluepsyduck/test-helper": "^1.0",
@@ -40,11 +39,6 @@
   "autoload-dev": {
     "psr-4": {
       "FactorioItemBrowserTest\\Api\\Database\\": "test/src/"
-    }
-  },
-  "extra": {
-    "zf": {
-      "config-provider": "FactorioItemBrowser\\Api\\Database\\ConfigProvider"
     }
   },
   "scripts": {
