@@ -42,7 +42,7 @@ class Mod
 
     /**
      * The combinations this mod is the part of.
-     * @var Collection|Combination[]
+     * @var Collection<int,Combination>
      */
     protected $combinations;
 
@@ -136,7 +136,7 @@ class Mod
 
     /**
      * Returns the combinations this mod is part of.
-     * @return Collection|Combination[]
+     * @return Collection<int,Combination>
      */
     public function getCombinations(): Collection
     {

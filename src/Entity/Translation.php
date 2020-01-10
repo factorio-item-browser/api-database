@@ -66,7 +66,7 @@ class Translation
 
     /**
      * The combinations which are adding the translation.
-     * @var Collection|Combination[]
+     * @var Collection<int,Combination>
      */
     protected $combinations;
 
@@ -240,7 +240,7 @@ class Translation
 
     /**
      * Returns the combinations which are adding the translation.
-     * @return Collection|Combination[]
+     * @return Collection<int,Combination>
      */
     public function getCombinations(): Collection
     {

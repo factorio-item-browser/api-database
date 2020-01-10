@@ -201,7 +201,7 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Maps the query result to instances of RecipeData.
-     * @param array $recipeData
+     * @param array<mixed> $recipeData
      * @return array|RecipeData[]
      */
     protected function mapRecipeDataResult(array $recipeData): array

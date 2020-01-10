@@ -37,37 +37,37 @@ class Combination
 
     /**
      * The mods added by the combination.
-     * @var Collection|Mod[]
+     * @var Collection<int,Mod>
      */
     protected $mods;
     
     /**
      * The items added by the combination.
-     * @var Collection|Item[]
+     * @var Collection<int,Item>
      */
     protected $items;
 
     /**
      * The recipes added by the combination.
-     * @var Collection|Recipe[]
+     * @var Collection<int,Recipe>
      */
     protected $recipes;
 
     /**
      * The machines added by the combination.
-     * @var Collection|Machine[]
+     * @var Collection<int,Machine>
      */
     protected $machines;
 
     /**
      * The translations added by the combination.
-     * @var Collection|Translation[]
+     * @var Collection<int,Translation>
      */
     protected $translations;
 
     /**
      * The icons used by the combination.
-     * @var Collection|Icon[]
+     * @var Collection<int,Icon>
      */
     protected $icons;
 
@@ -146,7 +146,7 @@ class Combination
 
     /**
      * Returns the mods added by the combination.
-     * @return Collection|Mod[]
+     * @return Collection<int,Mod>
      */
     public function getMods(): Collection
     {
@@ -155,7 +155,7 @@ class Combination
 
     /**
      * Returns the items added by the combination.
-     * @return Collection|Item[]
+     * @return Collection<int,Item>
      */
     public function getItems(): Collection
     {
@@ -164,7 +164,7 @@ class Combination
 
     /**
      * Returns the recipes added by the combination.
-     * @return Collection|Recipe[]
+     * @return Collection<int,Recipe>
      */
     public function getRecipes(): Collection
     {
@@ -173,7 +173,7 @@ class Combination
 
     /**
      * Returns the machines added by the combination.
-     * @return Collection|Machine[]
+     * @return Collection<int,Machine>
      */
     public function getMachines(): Collection
     {
@@ -182,7 +182,7 @@ class Combination
 
     /**
      * Returns the translations added by the combination.
-     * @return Collection|Translation[]
+     * @return Collection<int,Translation>
      */
     public function getTranslations(): Collection
     {
@@ -191,7 +191,7 @@ class Combination
 
     /**
      * Returns the icons used by the combination.
-     * @return Collection|Icon[]
+     * @return Collection<int,Icon>
      */
     public function getIcons(): Collection
     {

@@ -143,7 +143,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Maps the query result to instances of TranslationPriorityData.
-     * @param array $translationPriorityData
+     * @param array<mixed> $translationPriorityData
      * @return array|TranslationPriorityData[]
      */
     protected function mapTranslationPriorityDataResult(array $translationPriorityData): array
@@ -220,7 +220,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Inserts the translations into the cross table to the specified combination.
      * @param UuidInterface $combinationId
-     * @param array $translations
+     * @param array|Translation[] $translations
      * @throws DBALException
      */
     protected function insertIntoCrossTable(UuidInterface $combinationId, array $translations): void
@@ -257,7 +257,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Executes a native query on the database.
      * @param string $query
-     * @param array $parameters
+     * @param array<mixed> $parameters
      * @throws DBALException
      */
     protected function executeNativeSql(string $query, array $parameters): void

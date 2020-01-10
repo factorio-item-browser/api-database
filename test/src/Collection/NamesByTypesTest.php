@@ -151,7 +151,7 @@ class NamesByTypesTest extends TestCase
 
     /**
      * Provides the data for the isEmpty test.
-     * @return array
+     * @return array<mixed>
      */
     public function provideIsEmpty(): array
     {
@@ -163,7 +163,7 @@ class NamesByTypesTest extends TestCase
 
     /**
      * Tests the isEmpty method.
-     * @param array $values
+     * @param array<mixed> $values
      * @param bool $expectedResult
      * @throws ReflectionException
      * @covers ::isEmpty

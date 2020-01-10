@@ -53,19 +53,19 @@ class Recipe
 
     /**
      * The ingredients of the recipe.
-     * @var Collection|RecipeIngredient[]
+     * @var Collection<int,RecipeIngredient>
      */
     protected $ingredients;
 
     /**
      * The products of the recipe.
-     * @var Collection|RecipeProduct[]
+     * @var Collection<int,RecipeProduct>
      */
     protected $products;
 
     /**
      * The combinations which are adding the recipe.
-     * @var Collection|Combination[]
+     * @var Collection<int,Combination>
      */
     protected $combinations;
 
@@ -181,7 +181,7 @@ class Recipe
 
     /**
      * Returns the ingredients of the recipe.
-     * @return Collection|RecipeIngredient[]
+     * @return Collection<int,RecipeIngredient>
      */
     public function getIngredients(): Collection
     {
@@ -190,7 +190,7 @@ class Recipe
 
     /**
      * Returns the products of the recipe.
-     * @return Collection|RecipeProduct[]
+     * @return Collection<int,RecipeProduct>
      */
     public function getProducts(): Collection
     {
@@ -199,7 +199,7 @@ class Recipe
 
     /**
      * Returns the combinations adding the recipe.
-     * @return Collection|Combination[]
+     * @return Collection<int,Combination>
      */
     public function getCombinations(): Collection
     {
