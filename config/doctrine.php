@@ -36,7 +36,7 @@ return [
                 'class' => SimplifiedXmlDriver::class,
                 'cache' => 'array',
                 'paths' => [
-                    __DIR__ . '/../config/doctrine' => 'FactorioItemBrowser\Api\Database\Entity',
+                    'vendor/factorio-item-browser/api-database/config/doctrine' => 'FactorioItemBrowser\Api\Database\Entity',
                 ],
             ],
         ],
