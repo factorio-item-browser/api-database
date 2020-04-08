@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
@@ -35,6 +37,21 @@ class CombinationRepository extends AbstractRepository
         } catch (NonUniqueResultException $e) {
             // Will never happen, we are searching for the primary key.
             return null;
+        }
+    }
+
+    /**
+     * Updates the last usage time of the specified combination.
+     * @param Combination $combination
+     */
+    public function updateLastUsageTime(Combination $combination): void
+    {
+        try {
+            $combination->setLastUsageTime(new DateTime());
+            $this->entityManager->persist($combination);
+            $this->entityManager->flush();
+        } catch (Exception $e) {
+            // Nothing to do.
         }
     }
 }

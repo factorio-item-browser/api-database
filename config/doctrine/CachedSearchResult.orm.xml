@@ -39,7 +39,7 @@
             </options>
         </field>
 
-        <field name="lastSearchTime" type="datetime" version="true">
+        <field name="lastSearchTime" type="timestamp">
             <options>
                 <option name="comment">The time when the search result was last used.</option>
             </options>

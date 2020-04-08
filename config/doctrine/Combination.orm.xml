@@ -15,13 +15,13 @@
             </options>
         </id>
 
-        <field name="importTime" type="datetime" version="true">
+        <field name="importTime" type="timestamp">
             <options>
                 <option name="comment">The time when the combination was imported.</option>
             </options>
         </field>
 
-        <field name="lastUsageTime" type="datetime" version="true">
+        <field name="lastUsageTime" type="timestamp">
             <options>
                 <option name="comment">The time when the combination was last used by a visitor.</option>
             </options>

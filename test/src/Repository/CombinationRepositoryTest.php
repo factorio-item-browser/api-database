@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
+use DateTime;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
+use Exception;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
 use FactorioItemBrowser\Api\Database\Repository\CombinationRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -142,5 +144,50 @@ class CombinationRepositoryTest extends TestCase
         $result = $repository->findById($combinationId);
 
         $this->assertNull($result);
+    }
+
+    /**
+     * Tests the updateLastUsageTime method.
+     * @covers ::updateLastUsageTime
+     */
+    public function testUpdateLastUsageTime(): void
+    {
+        /* @var Combination&MockObject $combination */
+        $combination = $this->createMock(Combination::class);
+        $combination->expects($this->once())
+                    ->method('setLastUsageTime')
+                    ->with($this->isInstanceOf(DateTime::class));
+
+        $this->entityManager->expects($this->once())
+                            ->method('persist')
+                            ->with($this->identicalTo($combination));
+        $this->entityManager->expects($this->once())
+                            ->method('flush');
+
+        $repository = new CombinationRepository($this->entityManager);
+        $repository->updateLastUsageTime($combination);
+    }
+
+    /**
+     * Tests the updateLastUsageTime method.
+     * @covers ::updateLastUsageTime
+     */
+    public function testUpdateLastUsageTimeWithException(): void
+    {
+        /* @var Combination&MockObject $combination */
+        $combination = $this->createMock(Combination::class);
+        $combination->expects($this->once())
+                    ->method('setLastUsageTime')
+                    ->with($this->isInstanceOf(DateTime::class));
+
+        $this->entityManager->expects($this->once())
+                            ->method('persist')
+                            ->with($this->identicalTo($combination))
+                            ->willThrowException($this->createMock(Exception::class));
+        $this->entityManager->expects($this->never())
+                            ->method('flush');
+
+        $repository = new CombinationRepository($this->entityManager);
+        $repository->updateLastUsageTime($combination);
     }
 }

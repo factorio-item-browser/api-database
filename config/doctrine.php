@@ -45,6 +45,7 @@ return [
             Type\EnumTypeEntityType::NAME => Type\EnumTypeEntityType::class,
             Type\EnumTypeRecipeMode::NAME => Type\EnumTypeRecipeMode::class,
             Type\EnumTypeItemType::NAME => Type\EnumTypeItemType::class,
+            Type\TimestampType::NAME => Type\TimestampType::class,
             Type\TinyIntType::NAME => Type\TinyIntType::class,
             UuidBinaryType::NAME => UuidBinaryType::class,
         ],
