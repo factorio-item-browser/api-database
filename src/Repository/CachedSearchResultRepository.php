@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
@@ -58,7 +59,7 @@ class CachedSearchResultRepository extends AbstractRepository
         );
 
         if ($persistedEntity instanceof CachedSearchResult) {
-            $persistedEntity->setLastSearchTime($cachedSearchResult->getLastSearchTime());
+            $persistedEntity->setLastSearchTime(new DateTime());
         } else {
             $persistedEntity = $cachedSearchResult;
             $this->entityManager->persist($persistedEntity);

@@ -243,8 +243,6 @@ class CachedSearchResultRepositoryTest extends TestCase
         $combinationId = $this->createMock(UuidInterface::class);
         /* @var UuidInterface&MockObject $searchHash */
         $searchHash = $this->createMock(UuidInterface::class);
-        /* @var DateTime&MockObject $lastSearchTime */
-        $lastSearchTime = $this->createMock(DateTime::class);
 
         /* @var CachedSearchResult&MockObject $cachedSearchResult */
         $cachedSearchResult = $this->createMock(CachedSearchResult::class);
@@ -257,15 +255,12 @@ class CachedSearchResultRepositoryTest extends TestCase
         $cachedSearchResult->expects($this->once())
                            ->method('getSearchHash')
                            ->willReturn($searchHash);
-        $cachedSearchResult->expects($this->once())
-                           ->method('getLastSearchTime')
-                           ->willReturn($lastSearchTime);
 
         /* @var CachedSearchResult&MockObject $persistedEntity */
         $persistedEntity = $this->createMock(CachedSearchResult::class);
         $persistedEntity->expects($this->once())
                         ->method('setLastSearchTime')
-                        ->with($this->identicalTo($lastSearchTime))
+                        ->with($this->isInstanceOf(DateTime::class))
                         ->willReturnSelf();
 
         $this->entityManager->expects($this->never())
