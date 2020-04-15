@@ -51,8 +51,18 @@ class CachedSearchResultRepository extends AbstractRepository
      */
     public function persist(CachedSearchResult $cachedSearchResult): void
     {
-        $cachedSearchResult = $this->entityManager->merge($cachedSearchResult);
-        $this->entityManager->persist($cachedSearchResult);
+        $persistedEntity = $this->find(
+            $cachedSearchResult->getCombinationId(),
+            $cachedSearchResult->getLocale(),
+            $cachedSearchResult->getSearchHash()
+        );
+
+        if ($persistedEntity instanceof CachedSearchResult) {
+            $persistedEntity->setLastSearchTime($cachedSearchResult->getLastSearchTime());
+        } else {
+            $persistedEntity = $cachedSearchResult;
+            $this->entityManager->persist($persistedEntity);
+        }
         $this->entityManager->flush();
     }
 

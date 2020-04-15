@@ -189,23 +189,105 @@ class CachedSearchResultRepositoryTest extends TestCase
      */
     public function testPersist(): void
     {
-        /* @var CachedSearchResult&MockObject $cachedSearchResult1 */
-        $cachedSearchResult1 = $this->createMock(CachedSearchResult::class);
-        /* @var CachedSearchResult&MockObject $cachedSearchResult2 */
-        $cachedSearchResult2 = $this->createMock(CachedSearchResult::class);
+        $locale = 'abc';
+
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        /* @var UuidInterface&MockObject $searchHash */
+        $searchHash = $this->createMock(UuidInterface::class);
+
+        /* @var CachedSearchResult&MockObject $cachedSearchResult */
+        $cachedSearchResult = $this->createMock(CachedSearchResult::class);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getCombinationId')
+                           ->willReturn($combinationId);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getLocale')
+                           ->willReturn($locale);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getSearchHash')
+                           ->willReturn($searchHash);
 
         $this->entityManager->expects($this->once())
-                            ->method('merge')
-                            ->with($this->identicalTo($cachedSearchResult1))
-                            ->willReturn($cachedSearchResult2);
-        $this->entityManager->expects($this->once())
                             ->method('persist')
-                            ->with($this->identicalTo($cachedSearchResult2));
+                            ->with($this->identicalTo($cachedSearchResult));
         $this->entityManager->expects($this->once())
                             ->method('flush');
 
-        $repository = new CachedSearchResultRepository($this->entityManager);
-        $repository->persist($cachedSearchResult1);
+        /* @var CachedSearchResultRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
+                           ->onlyMethods(['find'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('find')
+                   ->with(
+                       $this->identicalTo($combinationId),
+                       $this->identicalTo($locale),
+                       $this->identicalTo($searchHash)
+                   )
+                   ->willReturn(null);
+
+        $repository->persist($cachedSearchResult);
+    }
+
+    /**
+     * Tests the persist method.
+     * @covers ::persist
+     */
+    public function testPersistWithPersistedEntity(): void
+    {
+        $locale = 'abc';
+
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        /* @var UuidInterface&MockObject $searchHash */
+        $searchHash = $this->createMock(UuidInterface::class);
+        /* @var DateTime&MockObject $lastSearchTime */
+        $lastSearchTime = $this->createMock(DateTime::class);
+
+        /* @var CachedSearchResult&MockObject $cachedSearchResult */
+        $cachedSearchResult = $this->createMock(CachedSearchResult::class);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getCombinationId')
+                           ->willReturn($combinationId);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getLocale')
+                           ->willReturn($locale);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getSearchHash')
+                           ->willReturn($searchHash);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getLastSearchTime')
+                           ->willReturn($lastSearchTime);
+
+        /* @var CachedSearchResult&MockObject $persistedEntity */
+        $persistedEntity = $this->createMock(CachedSearchResult::class);
+        $persistedEntity->expects($this->once())
+                        ->method('setLastSearchTime')
+                        ->with($this->identicalTo($lastSearchTime))
+                        ->willReturnSelf();
+
+        $this->entityManager->expects($this->never())
+                            ->method('persist');
+        $this->entityManager->expects($this->once())
+                            ->method('flush');
+
+        /* @var CachedSearchResultRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
+                           ->onlyMethods(['find'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('find')
+                   ->with(
+                       $this->identicalTo($combinationId),
+                       $this->identicalTo($locale),
+                       $this->identicalTo($searchHash)
+                   )
+                   ->willReturn($persistedEntity);
+
+        $repository->persist($cachedSearchResult);
     }
 
     /**

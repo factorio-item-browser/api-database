@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 
@@ -26,7 +27,7 @@ return [
         'connection' => [
             'orm_default' => [
                 'doctrine_mapping_types' => [
-                    UuidBinaryType::NAME => UuidBinaryType::BINARY,
+                    UuidBinaryType::NAME => Types::BINARY,
                     'enum' => 'string',
                 ],
             ],
