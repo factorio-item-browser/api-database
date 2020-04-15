@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
-use BluePsyduck\Common\Test\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use FactorioItemBrowser\Api\Database\Data\IconData;
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 use FactorioItemBrowser\Api\Database\Repository\IconRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the IconRepository class.
@@ -24,308 +24,251 @@ use ReflectionException;
  */
 class IconRepositoryTest extends TestCase
 {
-    use ReflectionTrait;
-    
     /**
-     * Provides the data for the findDataByTypesAndNames test.
-     * @return array
+     * The entity manager.
+     * @var EntityManagerInterface&MockObject
      */
-    public function provideFindDataByTypesAndNames(): array
+    protected $entityManager;
+
+    /**
+     * Sets up the test case.
+     */
+    protected function setUp(): void
     {
-        return [
-            [true, true],
-            [true, false],
-            [false, true],
-            [false, false],
-        ];
+        parent::setUp();
+
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
     /**
-     * Tests the findDataByTypesAndNames method.
-     * @param bool $withNamesByTypes
-     * @param bool $withModCombinationIds
-     * @throws ReflectionException
-     * @covers ::findDataByTypesAndNames
-     * @dataProvider provideFindDataByTypesAndNames
+     * Tests the findByTypesAndNames method.
+     * @covers ::findByTypesAndNames
      */
-    public function testFindDataByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds): void
+    public function testFindByTypesAndNames(): void
     {
-        $namesByTypes = $withNamesByTypes ? ['foo' => ['abc', 'def'], 'bar' => ['ghi']] : [];
-        $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
-        $queryResult = $withNamesByTypes ? [['id' => 42]] : [];
-        $dataResult = $withNamesByTypes ? [$this->createMock(IconData::class)] : [];
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(false);
+        $namesByTypes->expects($this->once())
+                     ->method('toArray')
+                     ->willReturn([
+                         'abc' => ['def', 'ghi'],
+                         'jkl' => ['mno'],
+                     ]);
 
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withNamesByTypes ? $this->once() : $this->never())
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $queryResult = [
+            $this->createMock(Icon::class),
+            $this->createMock(Icon::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
-                     ->with([
-                         'i.id AS id',
-                         'IDENTITY(i.file) AS hash',
-                         'i.type AS type',
-                         'i.name AS name',
-                         'mc.order AS order',
-                     ])
+                     ->with($this->identicalTo('i'))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('from')
-                     ->with(Icon::class, 'i')
+                     ->with($this->identicalTo(Icon::class), $this->identicalTo('i'))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('innerJoin')
-                     ->with('i.modCombination', 'mc')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withNamesByTypes ? $withModCombinationIds ? 2 : 1 : 0))
-                     ->method('andWhere')
-                     ->withConsecutive(
-                         ['((i.type = :type0 AND i.name IN (:names0)) OR (i.type = :type1 AND i.name IN (:names1)))'],
-                         ['mc.id IN (:modCombinationIds)']
+                     ->with(
+                         $this->identicalTo('i.combination'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withNamesByTypes ? $withModCombinationIds ? 5 : 4 : 0))
+        $queryBuilder->expects($this->exactly(2))
+                     ->method('orWhere')
+                     ->withConsecutive(
+                         [$this->identicalTo('i.type = :type0 AND i.name IN (:names0)')],
+                         [$this->identicalTo('i.type = :type1 AND i.name IN (:names1)')]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(5))
                      ->method('setParameter')
                      ->withConsecutive(
-                         ['type0', 'foo'],
-                         ['names0', ['abc', 'def']],
-                         ['type1', 'bar'],
-                         ['names1', ['ghi']],
-                         ['modCombinationIds', $modCombinationIds]
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME),
+                         ],
+                         [
+                             $this->identicalTo('type0'),
+                             $this->identicalTo('abc'),
+                         ],
+                         [
+                             $this->identicalTo('names0'),
+                             $this->identicalTo(['def', 'ghi']),
+                         ],
+                         [
+                             $this->identicalTo('type1'),
+                             $this->identicalTo('jkl'),
+                         ],
+                         [
+                             $this->identicalTo('names1'),
+                             $this->identicalTo(['mno']),
+                         ]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($withNamesByTypes ? $this->once() : $this->never())
+        $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
 
-        /* @var IconRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(IconRepository::class)
-                           ->setMethods(['mapIconDataResult'])
-                           ->setConstructorArgs([$entityManager])
-                           ->getMock();
-        $repository->expects($withNamesByTypes ? $this->once() : $this->never())
-                   ->method('mapIconDataResult')
-                   ->with($queryResult)
-                   ->willReturn($dataResult);
+        $repository = new IconRepository($this->entityManager);
+        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
 
-        $result = $repository->findDataByTypesAndNames($namesByTypes, $modCombinationIds);
-        $this->assertSame($dataResult, $result);
-    }
-
-    /**
-     * Provides the data for the findDataByHashes test.
-     * @return array
-     */
-    public function provideFindDataByHashes(): array
-    {
-        return [
-            [true, true],
-            [true, false],
-            [false, true],
-            [false, false],
-        ];
-    }
-
-    /**
-     * Tests the findDataByHashes method.
-     * @param bool $withHashes
-     * @param bool $withModCombinationIds
-     * @throws ReflectionException
-     * @covers ::findDataByHashes
-     * @dataProvider provideFindDataByHashes
-     */
-    public function testFindDataByHashes(bool $withHashes, bool $withModCombinationIds): void
-    {
-        $hashes = $withHashes ? ['ab12cd34', '12ab34cd'] : [];
-        $expectedHashes = $withHashes ? [hex2bin('ab12cd34'), hex2bin('12ab34cd')] : [];
-        $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
-        $queryResult = $withHashes ? [['id' => 42]] : [];
-        $dataResult = $withHashes ? [$this->createMock(IconData::class)] : [];
-
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withHashes ? $this->once() : $this->never())
-              ->method('getResult')
-              ->willReturn($queryResult);
-
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
-                     ->method('select')
-                     ->with([
-                         'i.id AS id',
-                         'IDENTITY(i.file) AS hash',
-                         'i.type AS type',
-                         'i.name AS name',
-                         'mc.order AS order',
-                     ])
-                     ->willReturnSelf();
-        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
-                     ->method('from')
-                     ->with(Icon::class, 'i')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
-                     ->method('innerJoin')
-                     ->with('i.modCombination', 'mc')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withHashes ? $withModCombinationIds ? 2 : 1 : 0))
-                     ->method('andWhere')
-                     ->withConsecutive(
-                         ['i.file IN (:hashes)'],
-                         ['mc.id IN (:modCombinationIds)']
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withHashes ? $withModCombinationIds ? 2 : 1 : 0))
-                     ->method('setParameter')
-                     ->withConsecutive(
-                         ['hashes', $expectedHashes],
-                         ['modCombinationIds', $modCombinationIds]
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
-                     ->method('getQuery')
-                     ->willReturn($query);
-
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($withHashes ? $this->once() : $this->never())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
-
-        /* @var IconRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(IconRepository::class)
-                           ->setMethods(['mapIconDataResult'])
-                           ->setConstructorArgs([$entityManager])
-                           ->getMock();
-        $repository->expects($withHashes ? $this->once() : $this->never())
-                   ->method('mapIconDataResult')
-                   ->with($queryResult)
-                   ->willReturn($dataResult);
-
-        $result = $repository->findDataByHashes($hashes, $modCombinationIds);
-        $this->assertSame($dataResult, $result);
-    }
-    
-    /**
-     * Tests the mapIconDataResult method.
-     * @throws ReflectionException
-     * @covers ::mapIconDataResult
-     */
-    public function testMapIconDataResult(): void
-    {
-        $iconData = [
-            ['id' => 42],
-            ['id' => 1337]
-        ];
-        $expectedResult = [
-            (new IconData())->setId(42),
-            (new IconData())->setId(1337),
-        ];
-
-        /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-
-        $repository = new IconRepository($entityManager);
-
-        $result = $this->invokeMethod($repository, 'mapIconDataResult', $iconData);
-        $this->assertEquals($expectedResult, $result);
-    }
-
-    /**
-     * Provides the data for the findByIds test.
-     * @return array
-     */
-    public function provideFindByIds(): array
-    {
-        return [
-            [true],
-            [false],
-        ];
-    }
-
-    /**
-     * Tests the findByIds method.
-     * @param bool $withIds
-     * @throws ReflectionException
-     * @covers ::findByIds
-     * @dataProvider provideFindByIds
-     */
-    public function testFindByIds(bool $withIds): void
-    {
-        $ids = $withIds ? [42, 1337] : [];
-        $queryResult = $withIds ? [$this->createMock(Icon::class)] : [];
-
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withIds ? $this->once() : $this->never())
-              ->method('getResult')
-              ->willReturn($queryResult);
-
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('select')
-                     ->with('i')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('from')
-                     ->with(Icon::class, 'i')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('andWhere')
-                     ->with('i.id IN (:ids)')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('setParameter')
-                     ->with('ids', $ids)
-                     ->willReturnSelf();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('getQuery')
-                     ->willReturn($query);
-
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($withIds ? $this->once() : $this->never())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
-
-        $repository = new IconRepository($entityManager);
-
-        $result = $repository->findByIds($ids);
         $this->assertSame($queryResult, $result);
+    }
+
+    /**
+     * Tests the findByTypesAndNames method.
+     * @covers ::findByTypesAndNames
+     */
+    public function testFindByTypesAndNamesWithoutConditions(): void
+    {
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(true);
+
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
+
+        $repository = new IconRepository($this->entityManager);
+        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
+
+        $this->assertSame([], $result);
+    }
+
+    /**
+     * Tests the findByImageIds method.
+     * @covers ::findByImageIds
+     */
+    public function testFindByImageIds(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        
+        $imageIds = [
+            $this->createMock(UuidInterface::class),
+            $this->createMock(UuidInterface::class),
+        ];
+        $mappedImageIds = ['abc', 'def'];
+        $queryResult = [
+            $this->createMock(Icon::class),
+            $this->createMock(Icon::class),
+        ];
+        
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+        
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(Icon::class), $this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('innerJoin')
+                     ->with(
+                         $this->identicalTo('i.combination'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('i.image IN (:imageIds)'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(2))
+                     ->method('setParameter')
+                     ->withConsecutive(
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME),
+                         ],
+                         [
+                             $this->identicalTo('imageIds'),
+                             $this->identicalTo($mappedImageIds),
+                         ]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        /* @var IconRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(IconRepository::class)
+                           ->onlyMethods(['mapIdsToParameterValues'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('mapIdsToParameterValues')
+                   ->with($this->identicalTo($imageIds))
+                   ->willReturn($mappedImageIds);
+
+        $result = $repository->findByImageIds($combinationId, $imageIds);
+        
+        $this->assertSame($queryResult, $result);
+    }
+
+    /**
+     * Tests the findByImageIds method.
+     * @covers ::findByImageIds
+     */
+    public function testFindByImageIdsWithoutImageIds(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
+
+        /* @var IconRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(IconRepository::class)
+                           ->onlyMethods(['mapIdsToParameterValues'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->never())
+                   ->method('mapIdsToParameterValues');
+
+        $result = $repository->findByImageIds($combinationId, []);
+
+        $this->assertSame([], $result);
     }
 }

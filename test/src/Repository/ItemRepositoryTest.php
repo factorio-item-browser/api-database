@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
-use BluePsyduck\Common\Test\ReflectionTrait;
+use BluePsyduck\TestHelper\ReflectionTrait;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
 use FactorioItemBrowser\Api\Database\Repository\ItemRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use Ramsey\Uuid\UuidInterface;
 use ReflectionException;
 
 /**
@@ -28,504 +31,368 @@ class ItemRepositoryTest extends TestCase
     use ReflectionTrait;
 
     /**
-     * Provides the data for the findByTypesAndNames test.
-     * @return array
+     * The mocked entity manager.
+     * @var EntityManagerInterface&MockObject
      */
-    public function provideFindByTypesAndNames(): array
+    protected $entityManager;
+
+    /**
+     * Sets up the test case.
+     */
+    protected function setUp(): void
     {
-        return [
-            [true, true],
-            [true, false],
-            [false, true],
-            [false, false],
+        parent::setUp();
+
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+    }
+
+    /**
+     * Tests the getEntityClass method.
+     * @throws ReflectionException
+     * @covers ::getEntityClass
+     */
+    public function testGetEntityClass(): void
+    {
+        $repository = new ItemRepository($this->entityManager);
+        $result = $this->invokeMethod($repository, 'getEntityClass');
+
+        $this->assertSame(Item::class, $result);
+    }
+
+    /**
+     * Tests the addOrphanConditions method.
+     * @throws ReflectionException
+     * @covers ::addOrphanConditions
+     */
+    public function testAddOrphanConditions(): void
+    {
+        $alias = 'abc';
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->exactly(3))
+                     ->method('leftJoin')
+                     ->withConsecutive(
+                         [
+                             $this->identicalTo('abc.combinations'),
+                             $this->identicalTo('c'),
+                         ],
+                         [
+                             $this->identicalTo(RecipeIngredient::class),
+                             $this->identicalTo('ri'),
+                             $this->identicalTo('WITH'),
+                             $this->identicalTo('ri.item = abc.id'),
+                         ],
+                         [
+                             $this->identicalTo(RecipeProduct::class),
+                             $this->identicalTo('rp'),
+                             $this->identicalTo('WITH'),
+                             $this->identicalTo('rp.item = abc.id'),
+                         ]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(3))
+                     ->method('andWhere')
+                     ->withConsecutive(
+                         [$this->identicalTo('c.id IS NULL')],
+                         [$this->identicalTo('ri.item IS NULL')],
+                         [$this->identicalTo('rp.item IS NULL')]
+                     )
+                     ->willReturnSelf();
+
+        $repository = new ItemRepository($this->entityManager);
+        $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
+    }
+
+
+    /**
+     * Tests the findByTypesAndNames method.
+     * @covers ::findByTypesAndNames
+     */
+    public function testFindByTypesAndNames(): void
+    {
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(false);
+        $namesByTypes->expects($this->once())
+                     ->method('toArray')
+                     ->willReturn([
+                         'abc' => ['def', 'ghi'],
+                         'jkl' => ['mno'],
+                     ]);
+
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $queryResult = [
+            $this->createMock(Item::class),
+            $this->createMock(Item::class),
         ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(Item::class), $this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('innerJoin')
+                     ->with(
+                         $this->identicalTo('i.combinations'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(2))
+                     ->method('orWhere')
+                     ->withConsecutive(
+                         [$this->identicalTo('i.type = :type0 AND i.name IN (:names0)')],
+                         [$this->identicalTo('i.type = :type1 AND i.name IN (:names1)')]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(5))
+                     ->method('setParameter')
+                     ->withConsecutive(
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME),
+                         ],
+                         [
+                             $this->identicalTo('type0'),
+                             $this->identicalTo('abc'),
+                         ],
+                         [
+                             $this->identicalTo('names0'),
+                             $this->identicalTo(['def', 'ghi']),
+                         ],
+                         [
+                             $this->identicalTo('type1'),
+                             $this->identicalTo('jkl'),
+                         ],
+                         [
+                             $this->identicalTo('names1'),
+                             $this->identicalTo(['mno']),
+                         ]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new ItemRepository($this->entityManager);
+        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
+
+        $this->assertSame($queryResult, $result);
     }
 
     /**
      * Tests the findByTypesAndNames method.
-     * @param bool $withNamesByTypes
-     * @param bool $withModCombinationIds
-     * @throws ReflectionException
      * @covers ::findByTypesAndNames
-     * @dataProvider provideFindByTypesAndNames
      */
-    public function testFindByTypesAndNames(bool $withNamesByTypes, bool $withModCombinationIds): void
+    public function testFindByTypesAndNamesWithoutConditions(): void
     {
-        $namesByTypes = $withNamesByTypes ? ['foo' => ['abc', 'def'], 'bar' => ['ghi']] : [];
-        $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
-        $queryResult = [$this->createMock(Item::class)];
-        $expectedResult = $withNamesByTypes ? $queryResult : [];
+        /* @var NamesByTypes&MockObject $namesByTypes */
+        $namesByTypes = $this->createMock(NamesByTypes::class);
+        $namesByTypes->expects($this->once())
+                     ->method('isEmpty')
+                     ->willReturn(true);
 
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withNamesByTypes ? $this->once() : $this->never())
-              ->method('getResult')
-              ->willReturn($queryResult);
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
 
-                /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'innerJoin', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($this->once())
-                     ->method('select')
-                     ->with('i')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('from')
-                     ->with(Item::class, 'i')
-                     ->willReturnSelf();
-        $queryBuilder->expects(($withNamesByTypes && $withModCombinationIds) ? $this->once() : $this->never())
-                     ->method('innerJoin')
-                     ->with('i.modCombinations', 'mc')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withNamesByTypes ? $withModCombinationIds ? 2 : 1 : 0))
-                     ->method('andWhere')
-                     ->withConsecutive(
-                         ['((i.type = :type0 AND i.name IN (:names0)) OR (i.type = :type1 AND i.name IN (:names1)))'],
-                         ['mc.id IN (:modCombinationIds)']
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withNamesByTypes ? $withModCombinationIds ? 5 : 4 : 0))
-                     ->method('setParameter')
-                     ->withConsecutive(
-                         ['type0', 'foo'],
-                         ['names0', ['abc', 'def']],
-                         ['type1', 'bar'],
-                         ['names1', ['ghi']],
-                         ['modCombinationIds', $modCombinationIds]
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($withNamesByTypes ? $this->once() : $this->never())
-                     ->method('getQuery')
-                     ->willReturn($query);
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        $repository = new ItemRepository($this->entityManager);
+        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
 
-        $repository = new ItemRepository($entityManager);
-
-        $result = $repository->findByTypesAndNames($namesByTypes, $modCombinationIds);
-        $this->assertSame($expectedResult, $result);
-    }
-    
-    /**
-     * Provides the data for the findByIds test.
-     * @return array
-     */
-    public function provideFindByIds(): array
-    {
-        return [
-            [true],
-            [false],
-        ];
-    }
-
-    /**
-     * Tests the findByIds method.
-     * @param bool $withIds
-     * @throws ReflectionException
-     * @covers ::findByIds
-     * @dataProvider provideFindByIds
-     */
-    public function testFindByIds(bool $withIds): void
-    {
-        $ids = $withIds ? [42, 1337] : [];
-        $queryResult = $withIds ? [$this->createMock(Item::class)] : [];
-
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withIds ? $this->once() : $this->never())
-              ->method('getResult')
-              ->willReturn($queryResult);
-
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('select')
-                     ->with('i')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('from')
-                     ->with(Item::class, 'i')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('andWhere')
-                     ->with('i.id IN (:ids)')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('setParameter')
-                     ->with('ids', $ids)
-                     ->willReturnSelf();
-        $queryBuilder->expects($withIds ? $this->once() : $this->never())
-                     ->method('getQuery')
-                     ->willReturn($query);
-
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($withIds ? $this->once() : $this->never())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
-
-        $repository = new ItemRepository($entityManager);
-
-        $result = $repository->findByIds($ids);
-        $this->assertSame($queryResult, $result);
-    }
-    
-    /**
-     * Provides the data for the findByKeywords test.
-     * @return array
-     */
-    public function provideFindByKeywords(): array
-    {
-        return [
-            [true, true],
-            [true, false],
-            [false, true],
-            [false, false],
-        ];
+        $this->assertSame([], $result);
     }
 
     /**
      * Tests the findByKeywords method.
-     * @param bool $withKeywords
-     * @param bool $withModCombinationIds
-     * @throws ReflectionException
      * @covers ::findByKeywords
-     * @dataProvider provideFindByKeywords
      */
-    public function testFindByKeywords(bool $withKeywords, bool $withModCombinationIds): void
+    public function testFindByKeywords(): void
     {
-        $keywords = $withKeywords ? ['foo', 'b_a\\r%'] : [];
-        $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
-        $queryResult = [$this->createMock(Item::class)];
-        $expectedResult = $withKeywords ? $queryResult : [];
+        $keywords = ['foo', 'b_a\\r%'];
 
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withKeywords ? $this->once() : $this->never())
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $queryResult = [
+            $this->createMock(Item::class),
+            $this->createMock(Item::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'innerJoin', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
                      ->method('select')
-                     ->with('i')
+                     ->with($this->identicalTo('i'))
                      ->willReturnSelf();
-        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+        $queryBuilder->expects($this->once())
                      ->method('from')
-                     ->with(Item::class, 'i')
+                     ->with($this->identicalTo(Item::class), $this->identicalTo('i'))
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withKeywords ? $withModCombinationIds ? 3 : 2 : 0))
+        $queryBuilder->expects($this->once())
+                     ->method('innerJoin')
+                     ->with(
+                         $this->identicalTo('i.combinations'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(2))
                      ->method('andWhere')
                      ->withConsecutive(
-                         ['i.name LIKE :keyword0'],
-                         ['i.name LIKE :keyword1'],
-                         ['mc.id IN (:modCombinationIds)']
+                         [$this->identicalTo('i.name LIKE :keyword0')],
+                         [$this->identicalTo('i.name LIKE :keyword1')]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly($withKeywords ? $withModCombinationIds ? 3 : 2 : 0))
+        $queryBuilder->expects($this->exactly(3))
                      ->method('setParameter')
                      ->withConsecutive(
-                         ['keyword0', '%foo%'],
-                         ['keyword1', '%b\\_a\\\\r\\%%'],
-                         ['modCombinationIds', $modCombinationIds]
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME)
+                         ],
+                         [
+                             $this->identicalTo('keyword0'),
+                             $this->identicalTo('%foo%')
+                         ],
+                         [
+                             $this->identicalTo('keyword1'),
+                             $this->identicalTo('%b\\_a\\\\r\\%%')
+                         ]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects(($withKeywords && $withModCombinationIds) ? $this->once() : $this->never())
-                     ->method('innerJoin')
-                     ->with('i.modCombinations', 'mc')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withKeywords ? $this->once() : $this->never())
+        $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($withKeywords ? $this->once() : $this->never())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
 
-        $repository = new ItemRepository($entityManager);
+        $repository = new ItemRepository($this->entityManager);
+        $result = $repository->findByKeywords($combinationId, $keywords);
 
-        $result = $repository->findByKeywords($keywords, $modCombinationIds);
-        $this->assertEquals($expectedResult, $result);
+        $this->assertSame($queryResult, $result);
     }
 
     /**
-     * Provides the data for the findRandom test.
-     * @return array
+     * Tests the findByKeywords method.
+     * @covers ::findByKeywords
      */
-    public function provideFindRandom(): array
+    public function testFindByKeywordsWithoutKeywords(): void
     {
-        return [
-            [true],
-            [false],
-        ];
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
+
+        $repository = new ItemRepository($this->entityManager);
+        $result = $repository->findByKeywords($combinationId, []);
+
+        $this->assertSame([], $result);
     }
 
     /**
      * Tests the findRandom method.
-     * @param bool $withModCombinationIds
-     * @throws ReflectionException
      * @covers ::findRandom
-     * @dataProvider provideFindRandom
      */
-    public function testFindRandom(bool $withModCombinationIds): void
+    public function testFindRandom(): void
     {
-        $modCombinationIds = $withModCombinationIds ? [42, 1337] : [];
-        $numberOfItems = 21;
-        $queryResult = [$this->createMock(Item::class)];
+        $numberOfItems = 42;
 
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $queryResult = [
+            $this->createMock(Item::class),
+            $this->createMock(Item::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods([
-                                 'select',
-                                 'from',
-                                 'addOrderBy',
-                                 'setMaxResults',
-                                 'innerJoin',
-                                 'andWhere',
-                                 'setParameter',
-                                 'getQuery'
-                             ])
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
-                     ->with(['i', 'RAND() AS HIDDEN rand'])
+                     ->with($this->identicalTo('i'), $this->identicalTo('RAND() AS HIDDEN rand'))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('from')
-                     ->with(Item::class, 'i')
+                     ->with($this->identicalTo(Item::class), $this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('innerJoin')
+                     ->with(
+                         $this->identicalTo('i.combinations'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('combinationId'),
+                         $this->identicalTo($combinationId),
+                         $this->identicalTo(UuidBinaryType::NAME)
+                     )
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('addOrderBy')
-                     ->with('rand')
+                     ->with($this->identicalTo('rand'))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('setMaxResults')
-                     ->with($numberOfItems)
-                     ->willReturnSelf();
-        $queryBuilder->expects($withModCombinationIds ? $this->once() : $this->never())
-                     ->method('innerJoin')
-                     ->with('i.modCombinations', 'mc')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withModCombinationIds ? $this->once() : $this->never())
-                     ->method('andWhere')
-                     ->with('mc.id IN (:modCombinationIds)')
-                     ->willReturnSelf();
-        $queryBuilder->expects($withModCombinationIds ? $this->once() : $this->never())
-                     ->method('setParameter')
-                     ->with('modCombinationIds', $modCombinationIds)
+                     ->with($this->identicalTo($numberOfItems))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
 
-        $repository = new ItemRepository($entityManager);
+        $repository = new ItemRepository($this->entityManager);
+        $result = $repository->findRandom($combinationId, $numberOfItems);
 
-        $result = $repository->findRandom($numberOfItems, $modCombinationIds);
-        $this->assertEquals($queryResult, $result);
-    }
-
-    /**
-     * Provides the data for the removeOrphans test.
-     * @return array
-     */
-    public function provideRemoveOrphans(): array
-    {
-        return [
-            [[42, 1337], true],
-            [[], false],
-        ];
-    }
-
-    /**
-     * Tests the removeOrphans method.
-     * @param array $orphanedIds
-     * @param bool $expectRemove
-     * @throws ReflectionException
-     * @covers ::removeOrphans
-     * @dataProvider provideRemoveOrphans
-     */
-    public function testRemoveOrphans(array $orphanedIds, bool $expectRemove): void
-    {
-        /* @var ItemRepository|MockObject $repository */
-        $repository = $this->getMockBuilder(ItemRepository::class)
-                           ->setMethods(['findOrphanedIds', 'removeIds'])
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('findOrphanedIds')
-                   ->willReturn($orphanedIds);
-        $repository->expects($expectRemove ? $this->once() : $this->never())
-                   ->method('removeIds')
-                   ->with($orphanedIds);
-
-        $repository->removeOrphans();
-    }
-
-    /**
-     * Tests the findOrphanedIds method.
-     * @throws ReflectionException
-     * @covers ::findOrphanedIds
-     */
-    public function testFindOrphanedIds(): void
-    {
-        $queryResult = [
-            ['id' => '42'],
-            ['id' => '1337']
-        ];
-        $expectedResult = [42, 1337];
-
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($this->once())
-              ->method('getResult')
-              ->willReturn($queryResult);
-
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'leftJoin', 'andWhere', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($this->once())
-                     ->method('select')
-                     ->with('i.id AS id')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('from')
-                     ->with(Item::class, 'i')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->exactly(3))
-                     ->method('leftJoin')
-                     ->withConsecutive(
-                         ['i.modCombinations', 'mc'],
-                         [RecipeIngredient::class, 'ri'],
-                         [RecipeProduct::class, 'rp']
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->exactly(3))
-                     ->method('andWhere')
-                     ->withConsecutive(
-                         ['mc.id IS NULL'],
-                         ['ri.item IS NULL'],
-                         ['rp.item IS NULL']
-                     )
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('getQuery')
-                     ->willReturn($query);
-
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
-
-        $repository = new ItemRepository($entityManager);
-
-        $result = $this->invokeMethod($repository, 'findOrphanedIds');
-        $this->assertEquals($expectedResult, $result);
-    }
-    
-    /**
-     * Tests the removeIds method.
-     * @throws ReflectionException
-     * @covers ::removeIds
-     */
-    public function testRemoveIds(): void
-    {
-        $itemIds = [42, 1337];
-
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['execute'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($this->once())
-              ->method('execute');
-
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['delete', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($this->once())
-                     ->method('delete')
-                     ->with(Item::class, 'i')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('andWhere')
-                     ->with('i.id IN (:itemIds)')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('setParameter')
-                     ->with('itemIds', $itemIds)
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('getQuery')
-                     ->willReturn($query);
-
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
-
-        $repository = new ItemRepository($entityManager);
-
-        $this->invokeMethod($repository, 'removeIds', $itemIds);
+        $this->assertSame($queryResult, $result);
     }
 }

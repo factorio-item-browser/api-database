@@ -13,17 +13,11 @@
             <index columns="locale,type,name" />
         </indexes>
         
-        <id name="id" type="integer">
-            <generator />
+        <id name="id" type="uuid_binary">
             <options>
-                <option name="unsigned">true</option>
                 <option name="comment">The internal id of the translation.</option>
             </options>
         </id>
-        
-        <many-to-one field="modCombination" target-entity="ModCombination" inversed-by="translations">
-            <join-column name="modCombinationId" />
-        </many-to-one>
         
         <field name="locale" length="5">
             <options>
@@ -31,7 +25,7 @@
             </options>
         </field>
 
-        <field name="type" length="32">
+        <field name="type" type="enum_entity_type">
             <options>
                 <option name="comment">The type of the translation.</option>
             </options>
@@ -43,13 +37,13 @@
             </options>
         </field>
 
-        <field name="value">
+        <field name="value" type="text" length="65535">
             <options>
                 <option name="comment">The actual translation.</option>
             </options>
         </field>
 
-        <field name="description">
+        <field name="description" type="text" length="65535">
             <options>
                 <option name="comment">The translated description.</option>
             </options>
@@ -66,5 +60,7 @@
                 <option name="comment">Whether this translation is duplicated by the machine.</option>
             </options>
         </field>
+
+        <many-to-many field="combinations" target-entity="Combination" mapped-by="translations" />
     </entity>
 </doctrine-mapping>

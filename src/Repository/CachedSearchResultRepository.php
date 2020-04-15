@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use DateTime;
 use DateTimeInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The repository class of the cached search result database table.
@@ -16,26 +20,30 @@ use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 class CachedSearchResultRepository extends AbstractRepository
 {
     /**
-     * Finds the search results with the specified hashes.
-     * @param array|string[] $hashes
-     * @param DateTimeInterface $maxAge
-     * @return array|CachedSearchResult[]
+     * Finds the cached search result. The returned may already be expired though.
+     * @param UuidInterface $combinationId
+     * @param string $locale
+     * @param UuidInterface $searchHash
+     * @return CachedSearchResult|null
      */
-    public function findByHashes(array $hashes, DateTimeInterface $maxAge): array
+    public function find(UuidInterface $combinationId, string $locale, UuidInterface $searchHash): ?CachedSearchResult
     {
-        $result = [];
-        if (count($hashes) > 0) {
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->select('r')
-                         ->from(CachedSearchResult::class, 'r')
-                         ->andWhere('r.hash IN (:hashes)')
-                         ->andWhere('r.lastSearchTime > :maxAge')
-                         ->setParameter('hashes', array_values(array_map('hex2bin', $hashes)))
-                         ->setParameter('maxAge', $maxAge);
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('csr')
+                     ->from(CachedSearchResult::class, 'csr')
+                     ->andWhere('csr.combinationId = :combinationId')
+                     ->andWhere('csr.locale = :locale')
+                     ->andWhere('csr.searchHash = :searchHash')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->setParameter('locale', $locale)
+                     ->setParameter('searchHash', $searchHash, UuidBinaryType::NAME);
 
-            $result = $queryBuilder->getQuery()->getResult();
+        try {
+            return $queryBuilder->getQuery()->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            // Can never happen, we are searching for the primary keys.
+            return null;
         }
-        return $result;
     }
 
     /**
@@ -44,32 +52,56 @@ class CachedSearchResultRepository extends AbstractRepository
      */
     public function persist(CachedSearchResult $cachedSearchResult): void
     {
-        $cachedSearchResult = $this->entityManager->merge($cachedSearchResult);
-        $this->entityManager->persist($cachedSearchResult);
+        $persistedEntity = $this->find(
+            $cachedSearchResult->getCombinationId(),
+            $cachedSearchResult->getLocale(),
+            $cachedSearchResult->getSearchHash()
+        );
+
+        if ($persistedEntity instanceof CachedSearchResult) {
+            $persistedEntity->setLastSearchTime(new DateTime());
+        } else {
+            $persistedEntity = $cachedSearchResult;
+            $this->entityManager->persist($persistedEntity);
+        }
         $this->entityManager->flush();
     }
 
     /**
-     * Cleans up no longer needed data.
+     * Clears already expired search results from the database.
      * @param DateTimeInterface $maxAge
      */
-    public function cleanup(DateTimeInterface $maxAge): void
+    public function clearExpiredResults(DateTimeInterface $maxAge): void
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete(CachedSearchResult::class, 'r')
-                     ->andWhere('r.lastSearchTime < :maxAge')
+        $queryBuilder->delete(CachedSearchResult::class, 'csr')
+                     ->andWhere('csr.lastSearchTime < :maxAge')
                      ->setParameter('maxAge', $maxAge);
 
         $queryBuilder->getQuery()->execute();
     }
 
     /**
-     * Clears the database table, emptying the cache.
+     * Clears all search results of the specified combination, e.g. because it just got updated.
+     * @param UuidInterface $combinationId
      */
-    public function clear(): void
+    public function clearResultsOfCombination(UuidInterface $combinationId): void
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete(CachedSearchResult::class, 'r');
+        $queryBuilder->delete(CachedSearchResult::class, 'csr')
+                     ->andWhere('csr.combinationId = :combinationId')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
+
+        $queryBuilder->getQuery()->execute();
+    }
+
+    /**
+     * Clears ALL search results from the database.
+     */
+    public function clearAll(): void
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(CachedSearchResult::class, 'csr');
 
         $queryBuilder->getQuery()->execute();
     }

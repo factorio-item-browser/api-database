@@ -9,36 +9,26 @@
             <option name="comment">The table holding the icons of the items and recipes.</option>
         </options>
 
-        <indexes>
-            <index columns="type,name" />
-        </indexes>
+        <id name="combination" association-key="true" />
 
-        <id name="id" type="integer">
-            <generator />
-            <options>
-                <option name="unsigned">true</option>
-                <option name="comment">The internal id of the icon.</option>
-            </options>
-        </id>
-
-        <many-to-one field="modCombination" target-entity="ModCombination">
-            <join-column name="modCombinationId" />
-        </many-to-one>
-
-        <many-to-one field="file" target-entity="IconFile">
-            <join-column name="iconFileHash" referenced-column-name="hash" />
-        </many-to-one>
-
-        <field name="type" length="32" unique="true">
+        <id name="type" type="enum_entity_type">
             <options>
                 <option name="comment">The type of the icon's prototype.</option>
             </options>
-        </field>
+        </id>
 
-        <field name="name" length="255" unique="true">
+        <id name="name" length="255">
             <options>
                 <option name="comment">The name of the icon's prototype.</option>
             </options>
-        </field>
+        </id>
+
+        <many-to-one field="combination" target-entity="Combination">
+            <join-column name="combinationId" nullable="false" />
+        </many-to-one>
+
+        <many-to-one field="image" target-entity="IconImage">
+            <join-column name="imageId" nullable="false" />
+        </many-to-one>
     </entity>
 </doctrine-mapping>

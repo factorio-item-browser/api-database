@@ -7,6 +7,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 use DateTime;
 use DateTimeInterface;
 use Exception;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity of the cached search result database table.
@@ -17,10 +18,28 @@ use Exception;
 class CachedSearchResult
 {
     /**
-     * The hash of the search result.
+     * The id of the combination used for the search.
+     * @var UuidInterface
+     */
+    protected $combinationId;
+
+    /**
+     * The locale used for the search.
      * @var string
      */
-    protected $hash;
+    protected $locale = '';
+
+    /**
+     * The hash of the search.
+     * @var UuidInterface
+     */
+    protected $searchHash;
+
+    /**
+     * The raw query string of the search.
+     * @var string
+     */
+    protected $searchQuery = '';
 
     /**
      * The result data of the search.
@@ -36,33 +55,91 @@ class CachedSearchResult
 
     /**
      * Initializes the entity.
-     * @param string $hash
      * @throws Exception
      */
-    public function __construct(string $hash)
+    public function __construct()
     {
-        $this->setHash($hash);
         $this->lastSearchTime = new DateTime();
     }
 
     /**
-     * Sets the hash of the search result.
-     * @param string $hash
+     * Sets the id of the combination used for the search.
+     * @param UuidInterface $combinationId
      * @return $this
      */
-    public function setHash(string $hash): self
+    public function setCombinationId(UuidInterface $combinationId): self
     {
-        $this->hash = (string) hex2bin($hash);
+        $this->combinationId = $combinationId;
         return $this;
     }
 
     /**
-     * Returns the hash of the search result.
+     * Returns the id of the combination used for the search.
+     * @return UuidInterface
+     */
+    public function getCombinationId(): UuidInterface
+    {
+        return $this->combinationId;
+    }
+
+    /**
+     * Sets the locale used for the search.
+     * @param string $locale
+     * @return $this
+     */
+    public function setLocale(string $locale): self
+    {
+        $this->locale = $locale;
+        return $this;
+    }
+
+    /**
+     * Returns the locale used for the search.
      * @return string
      */
-    public function getHash(): string
+    public function getLocale(): string
     {
-        return bin2hex($this->hash);
+        return $this->locale;
+    }
+
+    /**
+     * Sets the hash of the search.
+     * @param UuidInterface $searchHash
+     * @return $this
+     */
+    public function setSearchHash(UuidInterface $searchHash): self
+    {
+        $this->searchHash = $searchHash;
+        return $this;
+    }
+
+    /**
+     * Returns the hash of the search.
+     * @return UuidInterface
+     */
+    public function getSearchHash(): UuidInterface
+    {
+        return $this->searchHash;
+    }
+
+    /**
+     * Sets the raw query string of the search.
+     * @param string $searchQuery
+     * @return $this
+     */
+    public function setSearchQuery(string $searchQuery): self
+    {
+        $this->searchQuery = $searchQuery;
+        return $this;
+    }
+
+    /**
+     * Returns the raw query string of the search.
+     * @return string
+     */
+    public function getSearchQuery(): string
+    {
+        return $this->searchQuery;
     }
 
     /**

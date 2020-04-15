@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity of the machine database table.
@@ -32,7 +33,7 @@ class Machine
 
     /**
      * The internal id of the machine.
-     * @var int|null
+     * @var UuidInterface
      */
     protected $id;
 
@@ -43,14 +44,8 @@ class Machine
     protected $name;
 
     /**
-     * The mod combinations which are adding the machine.
-     * @var Collection|ModCombination[]
-     */
-    protected $modCombinations;
-
-    /**
      * The crafting categories supported by the machine.
-     * @var Collection|CraftingCategory[]
+     * @var Collection<int,CraftingCategory>
      */
     protected $craftingCategories;
 
@@ -97,22 +92,26 @@ class Machine
     protected $energyUsageUnit = '';
 
     /**
-     * Initializes the entity.
-     * @param string $name
+     * The combinations which are adding the machine.
+     * @var Collection<int,Combination>
      */
-    public function __construct(string $name)
+    protected $combinations;
+
+    /**
+     * Initializes the entity.
+     */
+    public function __construct()
     {
-        $this->name = $name;
-        $this->modCombinations = new ArrayCollection();
         $this->craftingCategories = new ArrayCollection();
+        $this->combinations = new ArrayCollection();
     }
 
     /**
      * Sets the internal id of the machine.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -120,11 +119,11 @@ class Machine
 
     /**
      * Returns the internal id of the machine.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
-        return (int) $this->id;
+        return $this->id;
     }
 
     /**
@@ -148,17 +147,8 @@ class Machine
     }
 
     /**
-     * Returns the mod combinations which are adding the machine.
-     * @return Collection|ModCombination[]
-     */
-    public function getModCombinations(): Collection
-    {
-        return $this->modCombinations;
-    }
-
-    /**
      * Returns the crafting categories supported by the machine.
-     * @return Collection|CraftingCategory[]
+     * @return Collection<int,CraftingCategory>
      */
     public function getCraftingCategories(): Collection
     {
@@ -303,5 +293,14 @@ class Machine
     public function getEnergyUsageUnit(): string
     {
         return $this->energyUsageUnit;
+    }
+
+    /**
+     * Returns the combinations which are adding the machine.
+     * @return Collection<int,Combination>
+     */
+    public function getCombinations(): Collection
+    {
+        return $this->combinations;
     }
 }

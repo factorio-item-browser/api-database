@@ -13,15 +13,13 @@
             <unique-constraint columns="type,name" />
         </unique-constraints>
 
-        <id name="id" type="integer">
-            <generator />
+        <id name="id" type="uuid_binary">
             <options>
-                <option name="unsigned">true</option>
                 <option name="comment">The internal id of the item.</option>
             </options>
         </id>
 
-        <field name="type" column-definition="ENUM('item', 'fluid')">
+        <field name="type" type="enum_item_type">
             <options>
                 <option name="comment">The type of the item.</option>
             </options>
@@ -33,6 +31,6 @@
             </options>
         </field>
 
-        <many-to-many field="modCombinations" target-entity="ModCombination" mapped-by="items" />
+        <many-to-many field="combinations" target-entity="Combination" mapped-by="items" />
     </entity>
 </doctrine-mapping>

@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.0 - 2020-04-15
+
+### Changed
+
+- Database structure to be based on combinations, not on mods. Requesting data is now based on exactly one combination
+  and no longer a set of several combinations.
+- `TranslationRepository->findDataByKeywords()` now will only search for the specified locale and "en", ignoring all
+  other locales, to get more relevant search results.
+
 ## 2.1.1 - 2019-08-11
 
 ### Fixed

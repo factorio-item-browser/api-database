@@ -6,7 +6,9 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the Mod class.
@@ -20,20 +22,12 @@ class ModTest extends TestCase
     /**
      * Tests the constructing.
      * @covers ::__construct
-     * @covers ::getDependencies
      * @covers ::getCombinations
      */
     public function testConstruct(): void
     {
-        $name = 'abc';
-        $mod = new Mod($name);
+        $mod = new Mod();
 
-        $this->assertSame(0, $mod->getId());
-        $this->assertSame($name, $mod->getName());
-        $this->assertSame('', $mod->getAuthor());
-        $this->assertSame('', $mod->getCurrentVersion());
-        $this->assertSame(0, $mod->getOrder());
-        $this->assertInstanceOf(ArrayCollection::class, $mod->getDependencies());
         $this->assertInstanceOf(ArrayCollection::class, $mod->getCombinations());
     }
 
@@ -44,9 +38,10 @@ class ModTest extends TestCase
      */
     public function testSetAndGetId(): void
     {
-        $mod = new Mod('foo');
+        /* @var UuidInterface&MockObject $id */
+        $id = $this->createMock(UuidInterface::class);
+        $mod = new Mod();
 
-        $id = 42;
         $this->assertSame($mod, $mod->setId($id));
         $this->assertSame($id, $mod->getId());
     }
@@ -58,11 +53,25 @@ class ModTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $mod = new Mod('foo');
-
         $name = 'abc';
+        $mod = new Mod();
+
         $this->assertSame($mod, $mod->setName($name));
         $this->assertSame($name, $mod->getName());
+    }
+
+    /**
+     * Tests setting and getting the Version.
+     * @covers ::getVersion
+     * @covers ::setVersion
+     */
+    public function testSetAndGetVersion(): void
+    {
+        $mod = new Mod();
+
+        $version = '1.2.3';
+        $this->assertSame($mod, $mod->setVersion($version));
+        $this->assertSame($version, $mod->getVersion());
     }
 
     /**
@@ -72,38 +81,10 @@ class ModTest extends TestCase
      */
     public function testSetAndGetAuthor(): void
     {
-        $mod = new Mod('foo');
-
         $author = 'abc';
+        $mod = new Mod();
+
         $this->assertSame($mod, $mod->setAuthor($author));
         $this->assertSame($author, $mod->getAuthor());
-    }
-
-    /**
-     * Tests setting and getting the currentVersion.
-     * @covers ::getCurrentVersion
-     * @covers ::setCurrentVersion
-     */
-    public function testSetAndGetCurrentVersion(): void
-    {
-        $mod = new Mod('foo');
-
-        $currentVersion = '1.2.3';
-        $this->assertSame($mod, $mod->setCurrentVersion($currentVersion));
-        $this->assertSame($currentVersion, $mod->getCurrentVersion());
-    }
-
-    /**
-     * Tests setting and getting the order.
-     * @covers ::getOrder
-     * @covers ::setOrder
-     */
-    public function testSetAndGetOrder(): void
-    {
-        $mod = new Mod('foo');
-
-        $order = 42;
-        $this->assertSame($mod, $mod->setOrder($order));
-        $this->assertSame($order, $mod->getOrder());
     }
 }

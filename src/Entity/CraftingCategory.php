@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity of the crafting category database table.
@@ -17,7 +18,7 @@ class CraftingCategory
 {
     /**
      * The internal id of the crafting category.
-     * @var int|null
+     * @var UuidInterface
      */
     protected $id;
 
@@ -25,37 +26,35 @@ class CraftingCategory
      * The name of the crafting category.
      * @var string
      */
-    protected $name;
+    protected $name = '';
 
     /**
      * The machines supporting the crafting category.
-     * @var Collection|ModCombination[]
+     * @var Collection<int,Machine>
      */
     protected $machines;
 
     /**
      * The recipes using the crafting category.
-     * @var Collection|Recipe[]
+     * @var Collection<int,Recipe>
      */
     protected $recipes;
 
     /**
      * Initializes the entity.
-     * @param string $name
      */
-    public function __construct(string $name)
+    public function __construct()
     {
-        $this->name = $name;
         $this->machines = new ArrayCollection();
         $this->recipes = new ArrayCollection();
     }
 
     /**
      * Sets the internal id of the crafting category.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -63,11 +62,11 @@ class CraftingCategory
 
     /**
      * Returns the internal id of the crafting category.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
-        return (int) $this->id;
+        return $this->id;
     }
 
     /**
@@ -92,7 +91,7 @@ class CraftingCategory
 
     /**
      * Returns the machines supporting the crafting category.
-     * @return Collection|ModCombination[]
+     * @return Collection<int,Machine>
      */
     public function getMachines(): Collection
     {
@@ -101,7 +100,7 @@ class CraftingCategory
 
     /**
      * Returns the recipes using the crafting category.
-     * @return Collection|Recipe[]
+     * @return Collection<int,Recipe>
      */
     public function getRecipes(): Collection
     {

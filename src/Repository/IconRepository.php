@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use FactorioItemBrowser\Api\Database\Data\IconData;
+use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The repository class of the icon database table.
@@ -16,115 +18,54 @@ use FactorioItemBrowser\Api\Database\Entity\Icon;
 class IconRepository extends AbstractRepository
 {
     /**
-     * Finds the data of the specified entities.
-     * @param array|string[][] $namesByTypes
-     * @param array|int[] $modCombinationIds
-     * @return array|IconData[]
+     * Finds the icons of the specified types and names.
+     * @param UuidInterface $combinationId
+     * @param NamesByTypes $namesByTypes
+     * @return array|Icon[]
      */
-    public function findDataByTypesAndNames(array $namesByTypes, array $modCombinationIds = []): array
+    public function findByTypesAndNames(UuidInterface $combinationId, NamesByTypes $namesByTypes): array
     {
-        $columns = [
-            'i.id AS id',
-            'IDENTITY(i.file) AS hash',
-            'i.type AS type',
-            'i.name AS name',
-            'mc.order AS order'
-        ];
+        if ($namesByTypes->isEmpty()) {
+            return [];
+        }
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select($columns)
+        $queryBuilder->select('i')
                      ->from(Icon::class, 'i')
-                     ->innerJoin('i.modCombination', 'mc');
+                     ->innerJoin('i.combination', 'c', 'WITH', 'c.id = :combinationId')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
 
         $index = 0;
-        $conditions = [];
-        foreach ($namesByTypes as $type => $names) {
-            $conditions[] = '(i.type = :type' . $index . ' AND i.name IN (:names' . $index . '))';
-            $queryBuilder->setParameter('type' . $index, $type)
-                         ->setParameter('names' . $index, array_values($names));
+        foreach ($namesByTypes->toArray() as $type => $names) {
+            $queryBuilder->orWhere("i.type = :type{$index} AND i.name IN (:names{$index})")
+                         ->setParameter("type{$index}", $type)
+                         ->setParameter("names{$index}", array_values($names));
             ++$index;
         }
 
-        $result = [];
-        if ($index > 0) {
-            $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
-
-            if (count($modCombinationIds) > 0) {
-                $queryBuilder->andWhere('mc.id IN (:modCombinationIds)')
-                             ->setParameter('modCombinationIds', array_values($modCombinationIds));
-            }
-
-            $result = $this->mapIconDataResult($queryBuilder->getQuery()->getResult());
-        }
-        return $result;
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
-     * Finds the data of the icons with the specified hashes.
-     * @param array|string[] $hashes
-     * @param array|int[] $modCombinationIds
-     * @return array|IconData[]
-     */
-    public function findDataByHashes(array $hashes, array $modCombinationIds = []): array
-    {
-        $result = [];
-        if (count($hashes) > 0) {
-            $columns = [
-                'i.id AS id',
-                'IDENTITY(i.file) AS hash',
-                'i.type AS type',
-                'i.name AS name',
-                'mc.order AS order'
-            ];
-
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->select($columns)
-                         ->from(Icon::class, 'i')
-                         ->innerJoin('i.modCombination', 'mc')
-                         ->andWhere('i.file IN (:hashes)')
-                         ->setParameter('hashes', array_map('hex2bin', array_values($hashes)));
-
-            if (count($modCombinationIds) > 0) {
-                $queryBuilder->andWhere('mc.id IN (:modCombinationIds)')
-                             ->setParameter('modCombinationIds', array_values($modCombinationIds));
-            }
-
-            $result = $this->mapIconDataResult($queryBuilder->getQuery()->getResult());
-        }
-        return $result;
-    }
-
-    /**
-     * Maps the query result to instances of IconData.
-     * @param array $iconData
-     * @return array|IconData[]
-     */
-    protected function mapIconDataResult(array $iconData): array
-    {
-        $result = [];
-        foreach ($iconData as $data) {
-            $result[] = IconData::createFromArray($data);
-        }
-        return $result;
-    }
-
-    /**
-     * Finds the icons by their id.
-     * @param array|int[] $ids
+     * Finds the icons using one of the image ids.
+     * @param UuidInterface $combinationId
+     * @param array|UuidInterface[] $imageIds
      * @return array|Icon[]
      */
-    public function findByIds(array $ids): array
+    public function findByImageIds(UuidInterface $combinationId, array $imageIds): array
     {
-        $result = [];
-        if (count($ids) > 0) {
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->select('i')
-                         ->from(Icon::class, 'i')
-                         ->andWhere('i.id IN (:ids)')
-                         ->setParameter('ids', array_values($ids));
-
-            $result = $queryBuilder->getQuery()->getResult();
+        if (count($imageIds) === 0) {
+            return [];
         }
-        return $result;
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('i')
+                     ->from(Icon::class, 'i')
+                     ->innerJoin('i.combination', 'c', 'WITH', 'c.id = :combinationId')
+                     ->andWhere('i.image IN (:imageIds)')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->setParameter('imageIds', $this->mapIdsToParameterValues($imageIds));
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }

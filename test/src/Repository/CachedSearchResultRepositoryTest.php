@@ -7,13 +7,14 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 use DateTime;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
-use Exception;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 use FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the CachedSearchResultRepository class.
@@ -25,203 +26,378 @@ use ReflectionException;
 class CachedSearchResultRepositoryTest extends TestCase
 {
     /**
-     * Provides the data for the findByHashes test.
-     * @return array
+     * The mocked entity manager.
+     * @var EntityManagerInterface&MockObject
      */
-    public function provideFindByHashes(): array
+    protected $entityManager;
+
+    /**
+     * Sets up the test case.
+     */
+    protected function setUp(): void
     {
-        return [
-            [true],
-            [false],
-        ];
+        parent::setUp();
+
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
     /**
-     * Tests the findByHashes method.
-     * @param bool $withHashes
-     * @throws Exception
-     * @covers ::findByHashes
-     * @dataProvider provideFindByHashes
+     * Tests the find method.
+     * @covers ::find
      */
-    public function testFindByHashes(bool $withHashes): void
+    public function testFind(): void
     {
-        $hashes = $withHashes ? ['ab12cd34', '12ab34cd'] : [];
-        $expectedHashes = $withHashes ? [hex2bin('ab12cd34'), hex2bin('12ab34cd')] : [];
-        $queryResult = $withHashes ? [$this->createMock(CachedSearchResult::class)] : [];
-        $maxAge = new DateTime('2038-01-19 03:14:07');
+        $locale = 'abc';
 
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['getResult'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($withHashes ? $this->once() : $this->never())
-              ->method('getResult')
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        /* @var UuidInterface&MockObject $searchHash */
+        $searchHash = $this->createMock(UuidInterface::class);
+        /* @var CachedSearchResult&MockObject $queryResult */
+        $queryResult = $this->createMock(CachedSearchResult::class);
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getOneOrNullResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['select', 'from', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
                      ->method('select')
-                     ->with('r')
+                     ->with('csr')
                      ->willReturnSelf();
-        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
+        $queryBuilder->expects($this->once())
                      ->method('from')
-                     ->with(CachedSearchResult::class, 'r')
+                     ->with($this->identicalTo(CachedSearchResult::class), $this->identicalTo('csr'))
                      ->willReturnSelf();
-        $queryBuilder->expects($withHashes ? $this->exactly(2) : $this->never())
+        $queryBuilder->expects($this->exactly(3))
                      ->method('andWhere')
                      ->withConsecutive(
-                         ['r.hash IN (:hashes)'],
-                         ['r.lastSearchTime > :maxAge']
+                         [$this->identicalTo('csr.combinationId = :combinationId')],
+                         [$this->identicalTo('csr.locale = :locale')],
+                         [$this->identicalTo('csr.searchHash = :searchHash')]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($withHashes ? $this->exactly(2) : $this->never())
+        $queryBuilder->expects($this->exactly(3))
                      ->method('setParameter')
                      ->withConsecutive(
-                         ['hashes', $expectedHashes],
-                         ['maxAge', $maxAge]
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME),
+                         ],
+                         [
+                             $this->identicalTo('locale'),
+                             $this->identicalTo($locale),
+                         ],
+                         [
+                             $this->identicalTo('searchHash'),
+                             $this->identicalTo($searchHash),
+                             $this->identicalTo(UuidBinaryType::NAME),
+                         ]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($withHashes ? $this->once() : $this->never())
+        $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($withHashes ? $this->once() : $this->never())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
 
-        $repository = new CachedSearchResultRepository($entityManager);
+        $repository = new CachedSearchResultRepository($this->entityManager);
+        $result = $repository->find($combinationId, $locale, $searchHash);
 
-        $result = $repository->findByHashes($hashes, $maxAge);
         $this->assertSame($queryResult, $result);
     }
 
     /**
+     * Tests the find method.
+     * @covers ::find
+     */
+    public function testFindWithException(): void
+    {
+        $locale = 'abc';
+
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        /* @var UuidInterface&MockObject $searchHash */
+        $searchHash = $this->createMock(UuidInterface::class);
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getOneOrNullResult')
+              ->willThrowException($this->createMock(NonUniqueResultException::class));
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with('csr')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(CachedSearchResult::class), $this->identicalTo('csr'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(3))
+                     ->method('andWhere')
+                     ->withConsecutive(
+                         [$this->identicalTo('csr.combinationId = :combinationId')],
+                         [$this->identicalTo('csr.locale = :locale')],
+                         [$this->identicalTo('csr.searchHash = :searchHash')]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(3))
+                     ->method('setParameter')
+                     ->withConsecutive(
+                         [
+                             $this->identicalTo('combinationId'),
+                             $this->identicalTo($combinationId),
+                             $this->identicalTo(UuidBinaryType::NAME),
+                         ],
+                         [
+                             $this->identicalTo('locale'),
+                             $this->identicalTo($locale),
+                         ],
+                         [
+                             $this->identicalTo('searchHash'),
+                             $this->identicalTo($searchHash),
+                             $this->identicalTo(UuidBinaryType::NAME),
+                         ]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new CachedSearchResultRepository($this->entityManager);
+        $result = $repository->find($combinationId, $locale, $searchHash);
+
+        $this->assertNull($result);
+    }
+
+    /**
      * Tests the persist method.
-     * @throws ReflectionException
-     * @throws Exception
      * @covers ::persist
      */
     public function testPersist(): void
     {
-        $cachedSearchResult = new CachedSearchResult('ab12cd34');
-        $mergedCachedSearchResult = new CachedSearchResult('12ab34cd');
+        $locale = 'abc';
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['merge', 'persist', 'flush'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('merge')
-                      ->with($cachedSearchResult)
-                      ->willReturn($mergedCachedSearchResult);
-        $entityManager->expects($this->once())
-                      ->method('persist')
-                      ->with($mergedCachedSearchResult);
-        $entityManager->expects($this->once())
-                      ->method('flush');
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        /* @var UuidInterface&MockObject $searchHash */
+        $searchHash = $this->createMock(UuidInterface::class);
 
-        $repository = new CachedSearchResultRepository($entityManager);
+        /* @var CachedSearchResult&MockObject $cachedSearchResult */
+        $cachedSearchResult = $this->createMock(CachedSearchResult::class);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getCombinationId')
+                           ->willReturn($combinationId);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getLocale')
+                           ->willReturn($locale);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getSearchHash')
+                           ->willReturn($searchHash);
+
+        $this->entityManager->expects($this->once())
+                            ->method('persist')
+                            ->with($this->identicalTo($cachedSearchResult));
+        $this->entityManager->expects($this->once())
+                            ->method('flush');
+
+        /* @var CachedSearchResultRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
+                           ->onlyMethods(['find'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('find')
+                   ->with(
+                       $this->identicalTo($combinationId),
+                       $this->identicalTo($locale),
+                       $this->identicalTo($searchHash)
+                   )
+                   ->willReturn(null);
 
         $repository->persist($cachedSearchResult);
     }
 
     /**
-     * Tests the cleanup method.
-     * @throws Exception
-     * @covers ::cleanup
+     * Tests the persist method.
+     * @covers ::persist
      */
-    public function testCleanup(): void
+    public function testPersistWithPersistedEntity(): void
     {
-        $maxAge = new DateTime('2038-01-19 03:14:07');
+        $locale = 'abc';
 
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['execute'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
-        $query->expects($this->once())
-              ->method('execute');
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        /* @var UuidInterface&MockObject $searchHash */
+        $searchHash = $this->createMock(UuidInterface::class);
 
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['delete', 'andWhere', 'setParameter', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $queryBuilder->expects($this->once())
-                     ->method('delete')
-                     ->with(CachedSearchResult::class, 'r')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('andWhere')
-                     ->with('r.lastSearchTime < :maxAge')
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('setParameter')
-                     ->with('maxAge', $maxAge)
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('getQuery')
-                     ->willReturn($query);
+        /* @var CachedSearchResult&MockObject $cachedSearchResult */
+        $cachedSearchResult = $this->createMock(CachedSearchResult::class);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getCombinationId')
+                           ->willReturn($combinationId);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getLocale')
+                           ->willReturn($locale);
+        $cachedSearchResult->expects($this->once())
+                           ->method('getSearchHash')
+                           ->willReturn($searchHash);
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        /* @var CachedSearchResult&MockObject $persistedEntity */
+        $persistedEntity = $this->createMock(CachedSearchResult::class);
+        $persistedEntity->expects($this->once())
+                        ->method('setLastSearchTime')
+                        ->with($this->isInstanceOf(DateTime::class))
+                        ->willReturnSelf();
 
-        $repository = new CachedSearchResultRepository($entityManager);
+        $this->entityManager->expects($this->never())
+                            ->method('persist');
+        $this->entityManager->expects($this->once())
+                            ->method('flush');
 
-        $repository->cleanup($maxAge);
+        /* @var CachedSearchResultRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
+                           ->onlyMethods(['find'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('find')
+                   ->with(
+                       $this->identicalTo($combinationId),
+                       $this->identicalTo($locale),
+                       $this->identicalTo($searchHash)
+                   )
+                   ->willReturn($persistedEntity);
+
+        $repository->persist($cachedSearchResult);
     }
 
     /**
-     * Tests the clear method.
-     * @throws ReflectionException
-     * @covers ::clear
+     * Tests the clearExpiredResults method.
+     * @covers ::clearExpiredResults
      */
-    public function testClear(): void
+    public function testClearExpiredResults(): void
     {
-        /* @var AbstractQuery|MockObject $query */
-        $query = $this->getMockBuilder(AbstractQuery::class)
-                      ->setMethods(['execute'])
-                      ->disableOriginalConstructor()
-                      ->getMockForAbstractClass();
+        /* @var DateTime&MockObject $maxAge */
+        $maxAge = $this->createMock(DateTime::class);
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('execute');
 
-        /* @var QueryBuilder|MockObject $queryBuilder */
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-                             ->setMethods(['delete', 'getQuery'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('delete')
-                     ->with(CachedSearchResult::class, 'r')
+                     ->with($this->identicalTo(CachedSearchResult::class), $this->identicalTo('csr'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('csr.lastSearchTime < :maxAge'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('maxAge'),
+                         $this->identicalTo($maxAge)
+                     )
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
-        /* @var EntityManagerInterface|MockObject $entityManager */
-        $entityManager = $this->getMockBuilder(EntityManagerInterface::class)
-                              ->setMethods(['createQueryBuilder'])
-                              ->getMockForAbstractClass();
-        $entityManager->expects($this->once())
-                      ->method('createQueryBuilder')
-                      ->willReturn($queryBuilder);
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
 
-        $repository = new CachedSearchResultRepository($entityManager);
-        $repository->clear();
+        $repository = new CachedSearchResultRepository($this->entityManager);
+        $repository->clearExpiredResults($maxAge);
+    }
+
+    /**
+     * Tests the clearResultsOfCombination method.
+     * @covers ::clearResultsOfCombination
+     */
+    public function testClearResultsOfCombination(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('execute');
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('delete')
+                     ->with($this->identicalTo(CachedSearchResult::class), $this->identicalTo('csr'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('csr.combinationId = :combinationId'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('combinationId'),
+                         $this->identicalTo($combinationId),
+                         $this->identicalTo(UuidBinaryType::NAME)
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new CachedSearchResultRepository($this->entityManager);
+        $repository->clearResultsOfCombination($combinationId);
+    }
+
+    /**
+     * Tests the clearAll method.
+     * @covers ::clearAll
+     */
+    public function testClearAll(): void
+    {
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('execute');
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('delete')
+                     ->with($this->identicalTo(CachedSearchResult::class), $this->identicalTo('csr'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new CachedSearchResultRepository($this->entityManager);
+        $repository->clearAll();
     }
 }

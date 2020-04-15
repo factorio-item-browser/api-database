@@ -6,44 +6,37 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\Mod" table="`Mod`">
         <options>
-            <option name="comment">The table holding the imported mods.</option>
+            <option name="comment">The table holding the mods.</option>
         </options>
 
-        <id name="id" type="integer">
-            <generator />
+        <unique-constraints>
+            <unique-constraint columns="name,version" />
+        </unique-constraints>
+
+        <id name="id" type="uuid_binary">
             <options>
-                <option name="unsigned">true</option>
                 <option name="comment">The internal id of the mod.</option>
             </options>
         </id>
 
-        <field name="name" length="255" unique="true">
+        <field name="name" length="255">
             <options>
                 <option name="comment">The name of the mod.</option>
             </options>
         </field>
-        
-        <field name="author">
+
+        <field name="version" length="16">
             <options>
-                <option name="author">The author of the mod.</option>
+                <option name="comment">The version of the mod.</option>
             </options>
         </field>
 
-        <field name="currentVersion" length="16">
+        <field name="author" length="255">
             <options>
-                <option name="comment">The current version of the mod that has been imported.</option>
+                <option name="comment">The author of the mod.</option>
             </options>
         </field>
 
-        <field name="order" column="`order`" type="integer">
-            <options>
-                <option name="unsigned">true</option>
-                <option name="comment">The order position of the mod, 1 being the base mod.</option>
-            </options>
-        </field>
-
-        <one-to-many field="dependencies" target-entity="ModDependency" mapped-by="mod" />
-
-        <one-to-many field="combinations" target-entity="ModCombination" mapped-by="mod" />
+        <many-to-many field="combinations" target-entity="Combination" mapped-by="mods" />
     </entity>
 </doctrine-mapping>

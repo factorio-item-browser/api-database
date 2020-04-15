@@ -6,7 +6,9 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the Machine class.
@@ -20,25 +22,15 @@ class MachineTest extends TestCase
     /**
      * Tests the constructing.
      * @covers ::__construct
-     * @covers ::getModCombinations
+     * @covers ::getCombinations
      * @covers ::getCraftingCategories
      */
     public function testConstruct(): void
     {
-        $name = 'abc';
-        $machine = new Machine($name);
+        $machine = new Machine();
 
-        $this->assertSame(0, $machine->getId());
-        $this->assertSame($name, $machine->getName());
-        $this->assertInstanceOf(ArrayCollection::class, $machine->getModCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $machine->getCombinations());
         $this->assertInstanceOf(ArrayCollection::class, $machine->getCraftingCategories());
-        $this->assertSame(1., $machine->getCraftingSpeed());
-        $this->assertSame(0, $machine->getNumberOfItemSlots());
-        $this->assertSame(0, $machine->getNumberOfFluidInputSlots());
-        $this->assertSame(0, $machine->getNumberOfFluidOutputSlots());
-        $this->assertSame(0, $machine->getNumberOfModuleSlots());
-        $this->assertSame(0., $machine->getEnergyUsage());
-        $this->assertSame('', $machine->getEnergyUsageUnit());
     }
 
     /**
@@ -48,9 +40,10 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetId(): void
     {
-        $machine = new Machine('foo');
+        /* @var UuidInterface&MockObject $id */
+        $id = $this->createMock(UuidInterface::class);
+        $machine = new Machine();
 
-        $id = 42;
         $this->assertSame($machine, $machine->setId($id));
         $this->assertSame($id, $machine->getId());
     }
@@ -62,9 +55,9 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $machine = new Machine('foo');
-
         $name = 'abc';
+        $machine = new Machine();
+
         $this->assertSame($machine, $machine->setName($name));
         $this->assertSame($name, $machine->getName());
     }
@@ -76,9 +69,9 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetCraftingSpeed(): void
     {
-        $machine = new Machine('foo');
-
         $craftingSpeed = 13.37;
+        $machine = new Machine();
+
         $this->assertSame($machine, $machine->setCraftingSpeed($craftingSpeed));
         $this->assertSame($craftingSpeed, $machine->getCraftingSpeed());
     }
@@ -91,9 +84,9 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetNumberOfItemSlots(): void
     {
-        $machine = new Machine('foo');
-
         $numberOfItemSlots = 42;
+        $machine = new Machine();
+
         $this->assertSame($machine, $machine->setNumberOfItemSlots($numberOfItemSlots));
         $this->assertSame($numberOfItemSlots, $machine->getNumberOfItemSlots());
     }
@@ -105,9 +98,9 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetNumberOfFluidInputSlots(): void
     {
-        $machine = new Machine('foo');
-
         $numberOfFluidInputSlots = 42;
+        $machine = new Machine();
+
         $this->assertSame($machine, $machine->setNumberOfFluidInputSlots($numberOfFluidInputSlots));
         $this->assertSame($numberOfFluidInputSlots, $machine->getNumberOfFluidInputSlots());
     }
@@ -119,9 +112,9 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetNumberOfFluidOutputSlots(): void
     {
-        $machine = new Machine('foo');
-
         $numberOfFluidOutputSlots = 42;
+        $machine = new Machine();
+
         $this->assertSame($machine, $machine->setNumberOfFluidOutputSlots($numberOfFluidOutputSlots));
         $this->assertSame($numberOfFluidOutputSlots, $machine->getNumberOfFluidOutputSlots());
     }
@@ -133,9 +126,9 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetNumberOfModuleSlots(): void
     {
-        $machine = new Machine('foo');
-
         $numberOfModuleSlots = 42;
+        $machine = new Machine();
+
         $this->assertSame($machine, $machine->setNumberOfModuleSlots($numberOfModuleSlots));
         $this->assertSame($numberOfModuleSlots, $machine->getNumberOfModuleSlots());
     }
@@ -147,9 +140,9 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetEnergyUsage(): void
     {
-        $machine = new Machine('foo');
-
         $energyUsage = 13.37;
+        $machine = new Machine();
+
         $this->assertSame($machine, $machine->setEnergyUsage($energyUsage));
         $this->assertSame($energyUsage, $machine->getEnergyUsage());
     }
@@ -161,9 +154,9 @@ class MachineTest extends TestCase
      */
     public function testSetAndGetEnergyUsageUnit(): void
     {
-        $machine = new Machine('foo');
-
         $energyUsageUnit = 'abc';
+        $machine = new Machine();
+
         $this->assertSame($machine, $machine->setEnergyUsageUnit($energyUsageUnit));
         $this->assertSame($energyUsageUnit, $machine->getEnergyUsageUnit());
     }

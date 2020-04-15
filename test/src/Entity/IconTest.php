@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use FactorioItemBrowser\Api\Database\Entity\Icon;
-use FactorioItemBrowser\Api\Database\Entity\IconFile;
-use FactorioItemBrowser\Api\Database\Entity\Mod;
-use FactorioItemBrowser\Api\Database\Entity\ModCombination;
+use FactorioItemBrowser\Api\Database\Entity\IconImage;
+use FactorioItemBrowser\Api\Database\Entity\Combination;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,89 +20,60 @@ use PHPUnit\Framework\TestCase;
 class IconTest extends TestCase
 {
     /**
-     * Tests the constructing.
-     * @covers ::__construct
+     * Tests the setting and getting the combination.
+     * @covers ::getCombination
+     * @covers ::setCombination
      */
-    public function testConstruct(): void
+    public function testSetAndGetCombination(): void
     {
-        $modCombination = new ModCombination(new Mod('abc'), 'def');
-        $file = new IconFile('12ab34cd');
+        /* @var Combination&MockObject $combination */
+        $combination = $this->createMock(Combination::class);
+        $icon = new Icon();
 
-        $icon = new Icon($modCombination, $file);
-        $this->assertSame(0, $icon->getId());
-        $this->assertSame($modCombination, $icon->getModCombination());
-        $this->assertSame($file, $icon->getFile());
-        $this->assertSame('', $icon->getType());
-        $this->assertSame('', $icon->getName());
+        $this->assertSame($icon, $icon->setCombination($combination));
+        $this->assertSame($combination, $icon->getCombination());
     }
 
     /**
-     * Tests setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
-     */
-    public function testSetAndGetId(): void
-    {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
-
-        $id = 42;
-        $this->assertSame($icon, $icon->setId($id));
-        $this->assertSame($id, $icon->getId());
-    }
-
-    /**
-     * Tests setting and getting the modCombination.
-     * @covers ::getModCombination
-     * @covers ::setModCombination
-     */
-    public function testSetAndGetModCombination(): void
-    {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
-
-        $modCombination = new ModCombination(new Mod('abc'), 'def');
-        $this->assertSame($icon, $icon->setModCombination($modCombination));
-        $this->assertSame($modCombination, $icon->getModCombination());
-    }
-
-    /**
-     * Tests setting and getting the file.
-     * @covers ::getFile
-     * @covers ::setFile
-     */
-    public function testSetAndGetFile(): void
-    {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
-
-        $file = new IconFile('12ab34cd');
-        $this->assertSame($icon, $icon->setFile($file));
-        $this->assertSame($file, $icon->getFile());
-    }
-
-    /**
-     * Tests setting and getting the type.
+     * Tests the setting and getting the type.
      * @covers ::getType
      * @covers ::setType
      */
     public function testSetAndGetType(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
-
         $type = 'abc';
+        $icon = new Icon();
+
         $this->assertSame($icon, $icon->setType($type));
         $this->assertSame($type, $icon->getType());
     }
 
     /**
-     * Tests setting and getting the name.
+     * Tests the setting and getting the name.
      * @covers ::getName
      * @covers ::setName
      */
     public function testSetAndGetName(): void
     {
-        $icon = new Icon(new ModCombination(new Mod('foo'), 'bar'), new IconFile('ab12cd34'));
-
         $name = 'abc';
+        $icon = new Icon();
+
         $this->assertSame($icon, $icon->setName($name));
         $this->assertSame($name, $icon->getName());
+    }
+
+    /**
+     * Tests the setting and getting the image.
+     * @covers ::getImage
+     * @covers ::setImage
+     */
+    public function testSetAndGetImage(): void
+    {
+        /* @var IconImage&MockObject $image */
+        $image = $this->createMock(IconImage::class);
+        $icon = new Icon();
+
+        $this->assertSame($icon, $icon->setImage($image));
+        $this->assertSame($image, $icon->getImage());
     }
 }

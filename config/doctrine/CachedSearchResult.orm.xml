@@ -9,20 +9,37 @@
             <option name="comment">The table caching the search results.</option>
         </options>
 
-        <id name="hash" length="8" column-definition="BINARY(8)">
+        <id name="combinationId" type="uuid_binary">
             <options>
-                <option name="fixed">true</option>
+                <option name="comment">The id of the combination used for the search.</option>
+            </options>
+        </id>
+
+        <id name="locale" length="5">
+            <options>
+                <option name="comment">The locale used for the search.</option>
+            </options>
+        </id>
+
+        <id name="searchHash" type="uuid_binary">
+            <options>
                 <option name="comment">The hash of the search.</option>
             </options>
         </id>
 
-        <field name="resultData">
+        <field name="searchQuery" type="text" length="65535">
+            <options>
+                <option name="comment">The raw query string of the search.</option>
+            </options>
+        </field>
+
+        <field name="resultData" type="text">
             <options>
                 <option name="comment">The result data of the search.</option>
             </options>
         </field>
 
-        <field name="lastSearchTime" type="datetime">
+        <field name="lastSearchTime" type="timestamp">
             <options>
                 <option name="comment">The time when the search result was last used.</option>
             </options>

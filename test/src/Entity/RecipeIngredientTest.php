@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
-use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,86 +20,60 @@ use PHPUnit\Framework\TestCase;
 class RecipeIngredientTest extends TestCase
 {
     /**
-     * Tests the constructing.
-     * @covers ::__construct
-     */
-    public function testConstruct(): void
-    {
-        $recipe = new Recipe('abc', 'def', new CraftingCategory('ghi'));
-        $item = new Item('jkl', 'mno');
-        $recipeIngredient = new RecipeIngredient($recipe, $item);
-
-        $this->assertSame($recipe, $recipeIngredient->getRecipe());
-        $this->assertSame($item, $recipeIngredient->getItem());
-        $this->assertSame(0., $recipeIngredient->getAmount());
-        $this->assertSame(0, $recipeIngredient->getOrder());
-    }
-
-    /**
-     * Tests setting and getting the recipe.
+     * Tests the setting and getting the recipe.
      * @covers ::getRecipe
      * @covers ::setRecipe
      */
     public function testSetAndGetRecipe(): void
     {
-        $recipeIngredient = new RecipeIngredient(
-            new Recipe('foo', 'bar', new CraftingCategory('baz')),
-            new Item('bar', 'foo')
-        );
+        /* @var Recipe&MockObject $recipe */
+        $recipe = $this->createMock(Recipe::class);
+        $ingredient = new RecipeIngredient();
 
-        $recipe = new Recipe('abc', 'def', new CraftingCategory('ghi'));
-        $this->assertSame($recipeIngredient, $recipeIngredient->setRecipe($recipe));
-        $this->assertSame($recipe, $recipeIngredient->getRecipe());
+        $this->assertSame($ingredient, $ingredient->setRecipe($recipe));
+        $this->assertSame($recipe, $ingredient->getRecipe());
     }
 
     /**
-     * Tests setting and getting the item.
-     * @covers ::getItem
-     * @covers ::setItem
-     */
-    public function testSetAndGetItem(): void
-    {
-        $recipeIngredient = new RecipeIngredient(
-            new Recipe('foo', 'bar', new CraftingCategory('baz')),
-            new Item('bar', 'foo')
-        );
-
-        $item = new Item('abc', 'def');
-        $this->assertSame($recipeIngredient, $recipeIngredient->setItem($item));
-        $this->assertSame($item, $recipeIngredient->getItem());
-    }
-
-    /**
-     * Tests setting and getting the amount.
-     * @covers ::getAmount
-     * @covers ::setAmount
-     */
-    public function testSetAndGetAmount(): void
-    {
-        $recipeIngredient = new RecipeIngredient(
-            new Recipe('foo', 'bar', new CraftingCategory('baz')),
-            new Item('bar', 'foo')
-        );
-
-        $amount = 13.37;
-        $this->assertSame($recipeIngredient, $recipeIngredient->setAmount($amount));
-        $this->assertSame($amount, $recipeIngredient->getAmount());
-    }
-
-    /**
-     * Tests setting and getting the order.
+     * Tests the setting and getting the order.
      * @covers ::getOrder
      * @covers ::setOrder
      */
     public function testSetAndGetOrder(): void
     {
-        $recipeIngredient = new RecipeIngredient(
-            new Recipe('foo', 'bar', new CraftingCategory('baz')),
-            new Item('bar', 'foo')
-        );
-
         $order = 42;
-        $this->assertSame($recipeIngredient, $recipeIngredient->setOrder($order));
-        $this->assertSame($order, $recipeIngredient->getOrder());
+        $ingredient = new RecipeIngredient();
+
+        $this->assertSame($ingredient, $ingredient->setOrder($order));
+        $this->assertSame($order, $ingredient->getOrder());
+    }
+
+    /**
+     * Tests the setting and getting the item.
+     * @covers ::getItem
+     * @covers ::setItem
+     */
+    public function testSetAndGetItem(): void
+    {
+        /* @var Item&MockObject $item */
+        $item = $this->createMock(Item::class);
+        $ingredient = new RecipeIngredient();
+
+        $this->assertSame($ingredient, $ingredient->setItem($item));
+        $this->assertSame($item, $ingredient->getItem());
+    }
+
+    /**
+     * Tests the setting and getting the amount.
+     * @covers ::getAmount
+     * @covers ::setAmount
+     */
+    public function testSetAndGetAmount(): void
+    {
+        $amount = 13.37;
+        $ingredient = new RecipeIngredient();
+
+        $this->assertSame($ingredient, $ingredient->setAmount($amount));
+        $this->assertSame($amount, $ingredient->getAmount());
     }
 }

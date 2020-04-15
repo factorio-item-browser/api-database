@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity class if the item database table.
@@ -17,7 +18,7 @@ class Item
 {
     /**
      * The internal id of the item.
-     * @var int|null
+     * @var UuidInterface
      */
     protected $id;
 
@@ -34,29 +35,25 @@ class Item
     protected $name = '';
 
     /**
-     * The mod combinations which are adding the item.
-     * @var Collection|ModCombination[]
+     * The combinations which are adding the item.
+     * @var Collection<int,Combination>
      */
-    protected $modCombinations;
+    protected $combinations;
 
     /**
      * Initializes the entity.
-     * @param string $type
-     * @param string $name
      */
-    public function __construct(string $type, string $name)
+    public function __construct()
     {
-        $this->type = $type;
-        $this->name = $name;
-        $this->modCombinations = new ArrayCollection();
+        $this->combinations = new ArrayCollection();
     }
 
     /**
      * Sets the internal id of the item.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -64,11 +61,11 @@ class Item
 
     /**
      * Returns the internal id of the item.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
-        return (int) $this->id;
+        return $this->id;
     }
 
     /**
@@ -112,11 +109,11 @@ class Item
     }
 
     /**
-     * Returns the mod combinations which are adding the item.
-     * @return Collection|ModCombination[]
+     * Returns the combinations which are adding the item.
+     * @return Collection<int,Combination>
      */
-    public function getModCombinations(): Collection
+    public function getCombinations(): Collection
     {
-        return $this->modCombinations;
+        return $this->combinations;
     }
 }

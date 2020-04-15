@@ -11,7 +11,6 @@ use Doctrine\ORM\Query\SqlWalker;
 use FactorioItemBrowser\Api\Database\Functions\RandFunction;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 
 /**
  * The PHPUnit test of the RandFunction class.
@@ -25,22 +24,18 @@ class RandFunctionTest extends TestCase
     /**
      * Tests the parse method.
      * @throws QueryException
-     * @throws ReflectionException
      * @covers ::parse
      */
     public function testParse(): void
     {
-        /* @var Parser|MockObject $parser */
-        $parser = $this->getMockBuilder(Parser::class)
-                       ->setMethods(['match'])
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        /* @var Parser&MockObject $parser */
+        $parser = $this->createMock(Parser::class);
         $parser->expects($this->exactly(3))
                ->method('match')
                ->withConsecutive(
-                   [Lexer::T_IDENTIFIER],
-                   [Lexer::T_OPEN_PARENTHESIS],
-                   [Lexer::T_CLOSE_PARENTHESIS]
+                   [$this->identicalTo(Lexer::T_IDENTIFIER)],
+                   [$this->identicalTo(Lexer::T_OPEN_PARENTHESIS)],
+                   [$this->identicalTo(Lexer::T_CLOSE_PARENTHESIS)]
                )
                ->willReturnSelf();
 
@@ -50,12 +45,11 @@ class RandFunctionTest extends TestCase
 
     /**
      * Tests the getSql method.
-     * @throws ReflectionException
      * @covers ::getSql
      */
     public function testGetSql(): void
     {
-        /* @var SqlWalker $sqlWalker */
+        /* @var SqlWalker&MockObject $sqlWalker */
         $sqlWalker = $this->createMock(SqlWalker::class);
 
         $function = new RandFunction('foo');

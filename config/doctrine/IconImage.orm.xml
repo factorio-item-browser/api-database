@@ -1,0 +1,33 @@
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
+    <entity name="FactorioItemBrowser\Api\Database\Entity\IconImage">
+        <options>
+            <option name="comment">The table holding the icon image data.</option>
+        </options>
+
+        <id name="id" type="uuid_binary">
+            <options>
+                <option name="comment">The internal id of the image.</option>
+            </options>
+        </id>
+
+        <field name="contents" type="blob">
+            <options>
+                <option name="comment">The contents of the image.</option>
+            </options>
+        </field>
+
+        <field name="size" type="smallint">
+            <options>
+                <option name="unsigned">true</option>
+                <option name="comment">The size of the image.</option>
+            </options>
+        </field>
+
+        <one-to-many field="icons" target-entity="Icon" mapped-by="image" />
+    </entity>
+</doctrine-mapping>

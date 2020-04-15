@@ -11,24 +11,21 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database;
 
-use BluePsyduck\ZendAutoWireFactory\AutoWireFactory;
+use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
 use ContainerInteropDoctrine\EntityManagerFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
 
 return [
     'dependencies' => [
         'factories'  => [
-            Filter\DataFilter::class => InvokableFactory::class,
-
             Repository\CachedSearchResultRepository::class => AutoWireFactory::class,
+            Repository\CombinationRepository::class => AutoWireFactory::class,
             Repository\CraftingCategoryRepository::class => AutoWireFactory::class,
-            Repository\IconFileRepository::class => AutoWireFactory::class,
+            Repository\IconImageRepository::class => AutoWireFactory::class,
             Repository\IconRepository::class => AutoWireFactory::class,
             Repository\ItemRepository::class => AutoWireFactory::class,
             Repository\MachineRepository::class => AutoWireFactory::class,
             Repository\ModRepository::class => AutoWireFactory::class,
-            Repository\ModCombinationRepository::class => AutoWireFactory::class,
             Repository\RecipeRepository::class => AutoWireFactory::class,
             Repository\TranslationRepository::class => AutoWireFactory::class,
 

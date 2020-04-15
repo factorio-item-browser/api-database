@@ -6,7 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity class of the recipe database table.
@@ -23,15 +23,9 @@ class Recipe
 
     /**
      * The internal id of the recipe.
-     * @var int|null
+     * @var UuidInterface
      */
     protected $id;
-
-    /**
-     * The mod combinations which are adding the recipe.
-     * @var Collection|ModCombination[]
-     */
-    protected $modCombinations;
 
     /**
      * The name of the recipe.
@@ -59,38 +53,38 @@ class Recipe
 
     /**
      * The ingredients of the recipe.
-     * @var Collection|RecipeIngredient[]
+     * @var Collection<int,RecipeIngredient>
      */
     protected $ingredients;
 
     /**
      * The products of the recipe.
-     * @var Collection|RecipeProduct[]
+     * @var Collection<int,RecipeProduct>
      */
     protected $products;
 
     /**
-     * Initializes the entity.
-     * @param string $name
-     * @param string $mode
-     * @param CraftingCategory $craftingCategory
+     * The combinations which are adding the recipe.
+     * @var Collection<int,Combination>
      */
-    public function __construct(string $name, string $mode, CraftingCategory $craftingCategory)
+    protected $combinations;
+
+    /**
+     * Initializes the entity.
+     */
+    public function __construct()
     {
-        $this->name = $name;
-        $this->mode = $mode;
-        $this->craftingCategory = $craftingCategory;
-        $this->modCombinations = new ArrayCollection();
         $this->ingredients = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->combinations = new ArrayCollection();
     }
 
     /**
      * Sets the internal id of the recipe.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -98,20 +92,11 @@ class Recipe
 
     /**
      * Returns the internal id of the recipe.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
-        return (int) $this->id;
-    }
-
-    /**
-     * Returns the mod combinations adding the recipe.
-     * @return Collection|ModCombination[]
-     */
-    public function getModCombinations(): Collection
-    {
-        return $this->modCombinations;
+        return $this->id;
     }
 
     /**
@@ -196,7 +181,7 @@ class Recipe
 
     /**
      * Returns the ingredients of the recipe.
-     * @return Collection|RecipeIngredient[]
+     * @return Collection<int,RecipeIngredient>
      */
     public function getIngredients(): Collection
     {
@@ -204,17 +189,8 @@ class Recipe
     }
 
     /**
-     * Returns the ordered ingredients of the recipe, in case the ingredients are not already ordered.
-     * @return Collection|RecipeIngredient[]
-     */
-    public function getOrderedIngredients(): Collection
-    {
-        return $this->ingredients->matching(Criteria::create()->orderBy(['order' => Criteria::ASC]));
-    }
-
-    /**
      * Returns the products of the recipe.
-     * @return Collection|RecipeProduct[]
+     * @return Collection<int,RecipeProduct>
      */
     public function getProducts(): Collection
     {
@@ -222,11 +198,11 @@ class Recipe
     }
 
     /**
-     * Returns the ordered products of the recipe, in case the products are not already ordered.
-     * @return Collection|RecipeProduct[]
+     * Returns the combinations adding the recipe.
+     * @return Collection<int,Combination>
      */
-    public function getOrderedProducts(): Collection
+    public function getCombinations(): Collection
     {
-        return $this->products->matching(Criteria::create()->orderBy(['order' => Criteria::ASC]));
+        return $this->combinations;
     }
 }

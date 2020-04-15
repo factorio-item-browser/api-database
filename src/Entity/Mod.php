@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity class of the Mod database table.
@@ -17,7 +18,7 @@ class Mod
 {
     /**
      * The internal id of the mod.
-     * @var int|null
+     * @var UuidInterface
      */
     protected $id;
 
@@ -28,53 +29,37 @@ class Mod
     protected $name = '';
 
     /**
+     * The version of the mod.
+     * @var string
+     */
+    protected $version = '';
+
+    /**
      * The author of the mod.
      * @var string
      */
     protected $author = '';
 
     /**
-     * The current version of the mod that has been imported.
-     * @var string
-     */
-    protected $currentVersion = '';
-
-    /**
-     * The order position of the mod, 1 being the base mod.
-     * @var int
-     */
-    protected $order = 0;
-
-    /**
-     * The dependencies of the mod.
-     * @var Collection|ModDependency[]
-     */
-    protected $dependencies;
-
-    /**
-     * The combinations this mod is the main mod of.
-     * @var Collection|ModCombination[]
+     * The combinations this mod is the part of.
+     * @var Collection<int,Combination>
      */
     protected $combinations;
 
     /**
      * Initializes the entity.
-     * @param string $name
      */
-    public function __construct(string $name)
+    public function __construct()
     {
-        $this->name = $name;
-
         $this->combinations = new ArrayCollection();
-        $this->dependencies = new ArrayCollection();
     }
 
     /**
      * Sets the internal id of the item.
-     * @param int $id
+     * @param UuidInterface $id
      * @return $this Implementing fluent interface.
      */
-    public function setId(int $id): self
+    public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
@@ -82,11 +67,11 @@ class Mod
 
     /**
      * Returns the internal id of the item.
-     * @return int
+     * @return UuidInterface
      */
-    public function getId(): int
+    public function getId(): UuidInterface
     {
-        return (int) $this->id;
+        return $this->id;
     }
 
     /**
@@ -110,6 +95,26 @@ class Mod
     }
 
     /**
+     * Sets the version of the mod.
+     * @param string $version
+     * @return $this Implementing fluent interface.
+     */
+    public function setVersion(string $version): self
+    {
+        $this->version = $version;
+        return $this;
+    }
+
+    /**
+     * Returns the version of the mod.
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
      * Sets the author of the mod.
      * @param string $author
      * @return $this Implementing fluent interface.
@@ -130,57 +135,8 @@ class Mod
     }
 
     /**
-     * Sets the current version of the mod that has been imported.
-     * @param string $currentVersion
-     * @return $this Implementing fluent interface.
-     */
-    public function setCurrentVersion(string $currentVersion): self
-    {
-        $this->currentVersion = $currentVersion;
-        return $this;
-    }
-
-    /**
-     * Returns the current version of the mod that has been imported.
-     * @return string
-     */
-    public function getCurrentVersion(): string
-    {
-        return $this->currentVersion;
-    }
-
-    /**
-     * Sets the order position of the mod, 1 being the base mod.
-     * @param int $order
-     * @return $this Implementing fluent interface.
-     */
-    public function setOrder(int $order): self
-    {
-        $this->order = $order;
-        return $this;
-    }
-
-    /**
-     * Returns the order position of the mod, 1 being the base mod.
-     * @return int
-     */
-    public function getOrder(): int
-    {
-        return $this->order;
-    }
-
-    /**
-     * Returns the dependencies of the mod.
-     * @return Collection|ModDependency[]
-     */
-    public function getDependencies(): Collection
-    {
-        return $this->dependencies;
-    }
-
-    /**
-     * Returns the combinations this mod is the main mod of.
-     * @return Collection|ModCombination[]
+     * Returns the combinations this mod is part of.
+     * @return Collection<int,Combination>
      */
     public function getCombinations(): Collection
     {

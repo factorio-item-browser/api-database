@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
-use FactorioItemBrowser\Api\Database\Entity\Mod;
-use FactorioItemBrowser\Api\Database\Entity\ModCombination;
+use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the Translation class.
@@ -21,49 +22,28 @@ class TranslationTest extends TestCase
     /**
      * Tests the constructing.
      * @covers ::__construct
+     * @covers ::getCombinations
      */
     public function testConstruct(): void
     {
-        $modCombination = new ModCombination(new Mod('abc'), 'def');
-        $translation = new Translation($modCombination, 'ghi', 'jkl', 'mno');
-
-        $this->assertSame(0, $translation->getId());
-        $this->assertSame($modCombination, $translation->getModCombination());
-        $this->assertSame('ghi', $translation->getLocale());
-        $this->assertSame('jkl', $translation->getType());
-        $this->assertSame('mno', $translation->getName());
-        $this->assertSame('', $translation->getValue());
-        $this->assertSame('', $translation->getDescription());
-        $this->assertFalse($translation->getIsDuplicatedByRecipe());
-        $this->assertFalse($translation->getIsDuplicatedByMachine());
+        $translation = new Translation();
+        
+        $this->assertInstanceOf(ArrayCollection::class, $translation->getCombinations());
     }
 
     /**
-     * Tests setting and getting the id.
+     * Tests the setting and getting the id.
      * @covers ::getId
      * @covers ::setId
      */
     public function testSetAndGetId(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
-
-        $id = 42;
+        /* @var UuidInterface&MockObject $id */
+        $id = $this->createMock(UuidInterface::class);
+        $translation = new Translation();
+    
         $this->assertSame($translation, $translation->setId($id));
         $this->assertSame($id, $translation->getId());
-    }
-
-    /**
-     * Tests setting and getting the modCombination.
-     * @covers ::getModCombination
-     * @covers ::setModCombination
-     */
-    public function testSetAndGetModCombination(): void
-    {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
-
-        $modCombination = new ModCombination(new Mod('foo'), 'bar');
-        $this->assertSame($translation, $translation->setModCombination($modCombination));
-        $this->assertSame($modCombination, $translation->getModCombination());
     }
 
     /**
@@ -73,9 +53,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetLocale(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
+        $locale = 'abc';
+        $translation = new Translation();
 
-        $locale = 'pqr';
         $this->assertSame($translation, $translation->setLocale($locale));
         $this->assertSame($locale, $translation->getLocale());
     }
@@ -87,9 +67,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetType(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
+        $type = 'abc';
+        $translation = new Translation();
 
-        $type = 'pqr';
         $this->assertSame($translation, $translation->setType($type));
         $this->assertSame($type, $translation->getType());
     }
@@ -101,9 +81,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetName(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
+        $name = 'abc';
+        $translation = new Translation();
 
-        $name = 'pqr';
         $this->assertSame($translation, $translation->setName($name));
         $this->assertSame($name, $translation->getName());
     }
@@ -115,9 +95,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetValue(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
+        $value = 'abc';
+        $translation = new Translation();
 
-        $value = 'pqr';
         $this->assertSame($translation, $translation->setValue($value));
         $this->assertSame($value, $translation->getValue());
     }
@@ -129,9 +109,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetDescription(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
+        $description = 'abc';
+        $translation = new Translation();
 
-        $description = 'pqr';
         $this->assertSame($translation, $translation->setDescription($description));
         $this->assertSame($description, $translation->getDescription());
     }
@@ -143,9 +123,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetIsDuplicatedByRecipe(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
-
         $isDuplicatedByRecipe = true;
+        $translation = new Translation();
+
         $this->assertSame($translation, $translation->setIsDuplicatedByRecipe($isDuplicatedByRecipe));
         $this->assertTrue($translation->getIsDuplicatedByRecipe());
     }
@@ -157,9 +137,9 @@ class TranslationTest extends TestCase
      */
     public function testSetAndGetIsDuplicatedByMachine(): void
     {
-        $translation = new Translation(new ModCombination(new Mod('abc'), 'def'), 'ghi', 'jkl', 'mno');
-
         $isDuplicatedByMachine = true;
+        $translation = new Translation();
+
         $this->assertSame($translation, $translation->setIsDuplicatedByMachine($isDuplicatedByMachine));
         $this->assertTrue($translation->getIsDuplicatedByMachine());
     }

@@ -6,7 +6,9 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the CraftingCategory class.
@@ -25,38 +27,37 @@ class CraftingCategoryTest extends TestCase
      */
     public function testConstruct(): void
     {
-        $craftingCategory = new CraftingCategory('abc');
+        $craftingCategory = new CraftingCategory();
 
-        $this->assertSame(0, $craftingCategory->getId());
-        $this->assertSame('abc', $craftingCategory->getName());
         $this->assertInstanceOf(ArrayCollection::class, $craftingCategory->getMachines());
         $this->assertInstanceOf(ArrayCollection::class, $craftingCategory->getRecipes());
     }
 
     /**
-     * Tests setting and getting the id.
+     * Tests the setting and getting the id.
      * @covers ::getId
      * @covers ::setId
      */
     public function testSetAndGetId(): void
     {
-        $craftingCategory = new CraftingCategory('foo');
+        /* @var UuidInterface&MockObject $id */
+        $id = $this->createMock(UuidInterface::class);
+        $craftingCategory = new CraftingCategory();
 
-        $id = 42;
         $this->assertSame($craftingCategory, $craftingCategory->setId($id));
         $this->assertSame($id, $craftingCategory->getId());
     }
 
     /**
-     * Tests setting and getting the name.
+     * Tests the setting and getting the name.
      * @covers ::getName
      * @covers ::setName
      */
     public function testSetAndGetName(): void
     {
-        $craftingCategory = new CraftingCategory('foo');
-
         $name = 'abc';
+        $craftingCategory = new CraftingCategory();
+
         $this->assertSame($craftingCategory, $craftingCategory->setName($name));
         $this->assertSame($name, $craftingCategory->getName());
     }

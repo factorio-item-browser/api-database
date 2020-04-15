@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use DateTime;
-use Exception;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the CachedSearchResult class.
@@ -20,59 +21,97 @@ class CachedSearchResultTest extends TestCase
 {
     /**
      * Tests the constructing.
-     * @throws Exception
      * @covers ::__construct
      */
     public function testConstruct(): void
     {
-        $cachedSearchResult = new CachedSearchResult('12ab34cd');
+        $cachedSearchResult = new CachedSearchResult();
 
-        $this->assertSame('12ab34cd', $cachedSearchResult->getHash());
-        $this->assertSame('', $cachedSearchResult->getResultData());
-        $cachedSearchResult->getLastSearchTime(); // assertion through type hinting
+        $this->assertInstanceOf(DateTime::class, $cachedSearchResult->getLastSearchTime());
     }
 
     /**
-     * Tests setting and getting the hash.
-     * @throws Exception
-     * @covers ::getHash
-     * @covers ::setHash
+     * Tests the setting and getting the combination id.
+     * @covers ::getCombinationId
+     * @covers ::setCombinationId
      */
-    public function testSetAndGetHash(): void
+    public function testSetAndGetCombinationId(): void
     {
-        $cachedSearchResult = new CachedSearchResult('ab12cd34');
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        $cachedSearchResult = new CachedSearchResult();
 
-        $hash = '12ab34cd';
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setHash($hash));
-        $this->assertSame($hash, $cachedSearchResult->getHash());
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setCombinationId($combinationId));
+        $this->assertSame($combinationId, $cachedSearchResult->getCombinationId());
     }
 
     /**
-     * Tests setting and getting the resultData.
-     * @throws Exception
+     * Tests the setting and getting the locale.
+     * @covers ::getLocale
+     * @covers ::setLocale
+     */
+    public function testSetAndGetLocale(): void
+    {
+        $locale = 'abc';
+        $cachedSearchResult = new CachedSearchResult();
+
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setLocale($locale));
+        $this->assertSame($locale, $cachedSearchResult->getLocale());
+    }
+
+    /**
+     * Tests the setting and getting the search hash.
+     * @covers ::getSearchHash
+     * @covers ::setSearchHash
+     */
+    public function testSetAndGetSearchHash(): void
+    {
+        /* @var UuidInterface&MockObject $searchHash */
+        $searchHash = $this->createMock(UuidInterface::class);
+        $cachedSearchResult = new CachedSearchResult();
+
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setSearchHash($searchHash));
+        $this->assertSame($searchHash, $cachedSearchResult->getSearchHash());
+    }
+
+    /**
+     * Tests the setting and getting the search query.
+     * @covers ::getSearchQuery
+     * @covers ::setSearchQuery
+     */
+    public function testSetAndGetSearchQuery(): void
+    {
+        $searchQuery = 'abc';
+        $cachedSearchResult = new CachedSearchResult();
+
+        $this->assertSame($cachedSearchResult, $cachedSearchResult->setSearchQuery($searchQuery));
+        $this->assertSame($searchQuery, $cachedSearchResult->getSearchQuery());
+    }
+
+    /**
+     * Tests the setting and getting the result data.
      * @covers ::getResultData
      * @covers ::setResultData
      */
     public function testSetAndGetResultData(): void
     {
-        $cachedSearchResult = new CachedSearchResult('ab12cd34');
-
         $resultData = 'abc';
+        $cachedSearchResult = new CachedSearchResult();
+
         $this->assertSame($cachedSearchResult, $cachedSearchResult->setResultData($resultData));
         $this->assertSame($resultData, $cachedSearchResult->getResultData());
     }
 
     /**
-     * Tests setting and getting the lastSearchTime.
-     * @throws Exception
+     * Tests the setting and getting the last search time.
      * @covers ::getLastSearchTime
      * @covers ::setLastSearchTime
      */
     public function testSetAndGetLastSearchTime(): void
     {
-        $cachedSearchResult = new CachedSearchResult('ab12cd34');
-
         $lastSearchTime = new DateTime('2038-01-19 03:14:07');
+        $cachedSearchResult = new CachedSearchResult();
+
         $this->assertSame($cachedSearchResult, $cachedSearchResult->setLastSearchTime($lastSearchTime));
         $this->assertSame($lastSearchTime, $cachedSearchResult->getLastSearchTime());
     }

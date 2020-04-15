@@ -13,23 +13,19 @@
             <index columns="name" />
         </indexes>
 
-        <id name="id" type="integer">
-            <generator />
+        <id name="id" type="uuid_binary">
             <options>
-                <option name="unsigned">true</option>
                 <option name="comment">The internal id of the recipe.</option>
             </options>
         </id>
 
-        <many-to-many field="modCombinations" target-entity="ModCombination" mapped-by="recipes" />
-
-        <field name="name" length="255" unique="true">
+        <field name="name" length="255">
             <options>
                 <option name="comment">The name of the recipe.</option>
             </options>
         </field>
 
-        <field name="mode" column-definition="ENUM('normal', 'expensive')">
+        <field name="mode" type="enum_recipe_mode">
             <options>
                 <option name="comment">The mode of the recipe.</option>
             </options>
@@ -43,11 +39,27 @@
         </field>
 
         <many-to-one field="craftingCategory" target-entity="CraftingCategory">
-            <join-column name="craftingCategoryId" />
+            <join-column name="craftingCategoryId" nullable="false" />
         </many-to-one>
 
-        <one-to-many field="ingredients" target-entity="RecipeIngredient" mapped-by="recipe" />
+        <one-to-many field="ingredients" target-entity="RecipeIngredient" mapped-by="recipe">
+            <cascade>
+                <cascade-all />
+            </cascade>
+            <order-by>
+                <order-by-field name="order" />
+            </order-by>
+        </one-to-many>
 
-        <one-to-many field="products" target-entity="RecipeProduct" mapped-by="recipe" />
+        <one-to-many field="products" target-entity="RecipeProduct" mapped-by="recipe">
+            <cascade>
+                <cascade-all />
+            </cascade>
+            <order-by>
+                <order-by-field name="order" />
+            </order-by>
+        </one-to-many>
+
+        <many-to-many field="combinations" target-entity="Combination" mapped-by="recipes" />
     </entity>
 </doctrine-mapping>
