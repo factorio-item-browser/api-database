@@ -238,9 +238,7 @@ class TranslationRepositoryTest extends TestCase
     {
         $locale = 'abc';
         $keywords = ['foo', 'b_a\\r%'];
-
-        $priorityColumn = 'MIN(CASE WHEN t.locale = :localePrimary THEN :priorityPrimary '
-            . 'WHEN t.locale = :localeSecondary THEN :prioritySecondary ELSE :priorityAny END) AS priority';
+        $searchField = "LOWER(CONCAT(t.type, '|', t.name, '|', t.value, '|', t.description))";
 
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
@@ -267,7 +265,7 @@ class TranslationRepositoryTest extends TestCase
                      ->with($this->identicalTo([
                          't.type AS type',
                          't.name AS name',
-                         $priorityColumn,
+                         'MIN(IF(t.locale = :localePrimary, :priorityPrimary, :prioritySecondary)) AS priority',
                      ]))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
@@ -283,12 +281,13 @@ class TranslationRepositoryTest extends TestCase
                          $this->identicalTo('c.id = :combinationId')
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly(3))
+        $queryBuilder->expects($this->exactly(4))
                      ->method('andWhere')
                      ->withConsecutive(
                          [$this->identicalTo('t.type IN (:types)')],
-                         [$this->identicalTo('LOWER(CONCAT(t.type, t.name, t.value, t.description)) LIKE :keyword0')],
-                         [$this->identicalTo('LOWER(CONCAT(t.type, t.name, t.value, t.description)) LIKE :keyword1')]
+                         [$this->identicalTo('t.locale IN (:localePrimary, :localeSecondary)')],
+                         [$this->identicalTo("{$searchField} LIKE :keyword0")],
+                         [$this->identicalTo("{$searchField} LIKE :keyword1")]
                      )
                      ->willReturnSelf();
         $queryBuilder->expects($this->exactly(2))
@@ -298,7 +297,7 @@ class TranslationRepositoryTest extends TestCase
                          [$this->identicalTo('t.name')]
                      )
                      ->willReturnSelf();
-        $queryBuilder->expects($this->exactly(9))
+        $queryBuilder->expects($this->exactly(8))
                      ->method('setParameter')
                      ->withConsecutive(
                          [
@@ -321,10 +320,6 @@ class TranslationRepositoryTest extends TestCase
                          [
                              $this->identicalTo('prioritySecondary'),
                              $this->identicalTo(SearchResultPriority::SECONDARY_LOCALE_MATCH)
-                         ],
-                         [
-                             $this->identicalTo('priorityAny'),
-                             $this->identicalTo(SearchResultPriority::ANY_MATCH)
                          ],
                          [
                              $this->identicalTo('types'),

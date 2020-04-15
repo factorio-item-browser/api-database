@@ -104,14 +104,11 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
             return [];
         }
 
-        $searchField = 'LOWER(CONCAT(t.type, t.name, t.value, t.description))';
-        $priority = 'CASE WHEN t.locale = :localePrimary THEN :priorityPrimary '
-            . 'WHEN t.locale = :localeSecondary THEN :prioritySecondary ELSE :priorityAny END';
-
+        $searchField = "LOWER(CONCAT(t.type, '|', t.name, '|', t.value, '|', t.description))";
         $columns = [
             't.type AS type',
             't.name AS name',
-            "MIN({$priority}) AS priority",
+            'MIN(IF(t.locale = :localePrimary, :priorityPrimary, :prioritySecondary)) AS priority',
         ];
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
@@ -119,6 +116,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
                      ->from(Translation::class, 't')
                      ->innerJoin('t.combinations', 'c', 'WITH', 'c.id = :combinationId')
                      ->andWhere('t.type IN (:types)')
+                     ->andWhere('t.locale IN (:localePrimary, :localeSecondary)')
                      ->addGroupBy('t.type')
                      ->addGroupBy('t.name')
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
@@ -126,7 +124,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('localeSecondary', 'en')
                      ->setParameter('priorityPrimary', SearchResultPriority::PRIMARY_LOCALE_MATCH)
                      ->setParameter('prioritySecondary', SearchResultPriority::SECONDARY_LOCALE_MATCH)
-                     ->setParameter('priorityAny', SearchResultPriority::ANY_MATCH)
                      ->setParameter('types', [
                          EntityType::ITEM,
                          EntityType::FLUID,
