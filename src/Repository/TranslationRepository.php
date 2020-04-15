@@ -105,10 +105,11 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
         }
 
         $searchField = "LOWER(CONCAT(t.type, '|', t.name, '|', t.value, '|', t.description))";
+        $priority = 'CASE WHEN t.locale = :localePrimary THEN :priorityPrimary ELSE :prioritySecondary END';
         $columns = [
             't.type AS type',
             't.name AS name',
-            'MIN(IF(t.locale = :localePrimary, :priorityPrimary, :prioritySecondary)) AS priority',
+            "MIN({$priority}) AS priority",
         ];
 
         $queryBuilder = $this->entityManager->createQueryBuilder();

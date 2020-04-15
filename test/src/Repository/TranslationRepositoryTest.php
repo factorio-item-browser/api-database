@@ -238,6 +238,7 @@ class TranslationRepositoryTest extends TestCase
     {
         $locale = 'abc';
         $keywords = ['foo', 'b_a\\r%'];
+        $priority = 'CASE WHEN t.locale = :localePrimary THEN :priorityPrimary ELSE :prioritySecondary END';
         $searchField = "LOWER(CONCAT(t.type, '|', t.name, '|', t.value, '|', t.description))";
 
         /* @var UuidInterface&MockObject $combinationId */
@@ -265,7 +266,7 @@ class TranslationRepositoryTest extends TestCase
                      ->with($this->identicalTo([
                          't.type AS type',
                          't.name AS name',
-                         'MIN(IF(t.locale = :localePrimary, :priorityPrimary, :prioritySecondary)) AS priority',
+                         "MIN({$priority}) AS priority",
                      ]))
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
