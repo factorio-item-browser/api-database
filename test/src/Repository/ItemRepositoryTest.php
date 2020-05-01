@@ -395,4 +395,83 @@ class ItemRepositoryTest extends TestCase
 
         $this->assertSame($queryResult, $result);
     }
+
+    /**
+     * Tests the findAll method.
+     * @covers ::findAll
+     */
+    public function testFindAll(): void
+    {
+        $numberOfItems = 42;
+        $indexOfFirstItem = 21;
+
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $queryResult = [
+            $this->createMock(Item::class),
+            $this->createMock(Item::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(Item::class), $this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('innerJoin')
+                     ->with(
+                         $this->identicalTo('i.combinations'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('combinationId'),
+                         $this->identicalTo($combinationId),
+                         $this->identicalTo(UuidBinaryType::NAME)
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->exactly(2))
+                     ->method('addOrderBy')
+                     ->withConsecutive(
+                         [$this->identicalTo('i.name'), $this->identicalTo('ASC')],
+                         [$this->identicalTo('i.type'), $this->identicalTo('ASC')]
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setMaxResults')
+                     ->with($this->identicalTo($numberOfItems))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setFirstResult')
+                     ->with($this->identicalTo($indexOfFirstItem))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new ItemRepository($this->entityManager);
+        $result = $repository->findAll($combinationId, $numberOfItems, $indexOfFirstItem);
+
+        $this->assertSame($queryResult, $result);
+    }
 }
