@@ -745,6 +745,89 @@ class RecipeRepositoryTest extends TestCase
     }
 
     /**
+     * Tests the findAllData method.
+     * @throws ReflectionException
+     * @covers ::findAllData
+     */
+    public function testFindAllData(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $queryResult = [
+            ['id' => $this->createMock(UuidInterface::class)],
+            ['id' => $this->createMock(UuidInterface::class)],
+        ];
+        $mappedResult = [
+            $this->createMock(RecipeData::class),
+            $this->createMock(RecipeData::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo([
+                         'r.id AS id',
+                         'r.name AS name',
+                         'r.mode AS mode',
+                     ]))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(Recipe::class), $this->identicalTo('r'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('innerJoin')
+                     ->with(
+                         $this->identicalTo('r.combinations'),
+                         $this->identicalTo('c'),
+                         $this->identicalTo('WITH'),
+                         $this->identicalTo('c.id = :combinationId')
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('combinationId'),
+                         $this->identicalTo($combinationId),
+                         $this->identicalTo(UuidBinaryType::NAME)
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('addOrderBy')
+                     ->with($this->identicalTo('r.name'), $this->identicalTo('ASC'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        /* @var RecipeRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(RecipeRepository::class)
+                           ->onlyMethods(['mapRecipeDataResult'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('mapRecipeDataResult')
+                   ->with($this->identicalTo($queryResult))
+                   ->willReturn($mappedResult);
+
+        $result = $repository->findAllData($combinationId);
+
+        $this->assertSame($mappedResult, $result);
+    }
+
+    /**
      * Tests the mapRecipeDataResult method.
      * @throws ReflectionException
      * @covers ::mapRecipeDataResult
