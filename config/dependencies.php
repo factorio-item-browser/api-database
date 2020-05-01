@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database;
 
 use BluePsyduck\LaminasAutoWireFactory\AutoWireFactory;
-use ContainerInteropDoctrine\EntityManagerFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Roave\PsrContainerDoctrine\EntityManagerFactory;
 
 return [
     'dependencies' => [

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed 
+
+- Dependency `dasprid/container-interop-doctrine` to `roave/psr-container-doctrine`.
+
 ## 3.0.0 - 2020-04-15
 
 ### Changed
