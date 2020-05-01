@@ -402,9 +402,6 @@ class ItemRepositoryTest extends TestCase
      */
     public function testFindAll(): void
     {
-        $numberOfItems = 42;
-        $indexOfFirstItem = 21;
-
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
@@ -454,14 +451,6 @@ class ItemRepositoryTest extends TestCase
                      )
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())
-                     ->method('setMaxResults')
-                     ->with($this->identicalTo($numberOfItems))
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
-                     ->method('setFirstResult')
-                     ->with($this->identicalTo($indexOfFirstItem))
-                     ->willReturnSelf();
-        $queryBuilder->expects($this->once())
                      ->method('getQuery')
                      ->willReturn($query);
 
@@ -470,7 +459,7 @@ class ItemRepositoryTest extends TestCase
                             ->willReturn($queryBuilder);
 
         $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findAll($combinationId, $numberOfItems, $indexOfFirstItem);
+        $result = $repository->findAll($combinationId);
 
         $this->assertSame($queryResult, $result);
     }
