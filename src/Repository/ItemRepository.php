@@ -119,4 +119,22 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
 
         return $queryBuilder->getQuery()->getResult();
     }
+
+    /**
+     * Finds all items, sorted by their name.
+     * @param UuidInterface $combinationId
+     * @return array|Item[]
+     */
+    public function findAll(UuidInterface $combinationId): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('i')
+                     ->from(Item::class, 'i')
+                     ->innerJoin('i.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->addOrderBy('i.name', 'ASC')
+                     ->addOrderBy('i.type', 'ASC');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

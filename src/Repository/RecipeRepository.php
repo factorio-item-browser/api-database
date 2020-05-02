@@ -200,6 +200,28 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     }
 
     /**
+     * Finds the data of all recipes, sorted by their name.
+     * @param UuidInterface $combinationId
+     * @return array|RecipeData[]
+     */
+    public function findAllData(UuidInterface $combinationId): array
+    {
+        $columns = [
+            'r.id AS id',
+            'r.name AS name',
+            'r.mode AS mode',
+        ];
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select($columns)
+                     ->from(Recipe::class, 'r')
+                     ->innerJoin('r.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
+                     ->addOrderBy('r.name', 'ASC');
+
+        return $this->mapRecipeDataResult($queryBuilder->getQuery()->getResult());
+    }
+
+    /**
      * Maps the query result to instances of RecipeData.
      * @param array<mixed> $recipeData
      * @return array|RecipeData[]
