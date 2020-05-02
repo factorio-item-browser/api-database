@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+
+- Method `findAll()` to the `ItemRepository` returning all available items.
+- Method `findAllData()` to the `RecipeRepository` returning the data of all available recipes.
+
 ### Changed 
 
 - Dependency `dasprid/container-interop-doctrine` to `roave/psr-container-doctrine`.
