@@ -36,7 +36,7 @@ class Item
 
     /**
      * The combinations which are adding the item.
-     * @var Collection<int,Combination>
+     * @var Collection<int,Combination>|Combination[]
      */
     protected $combinations;
 
@@ -110,7 +110,7 @@ class Item
 
     /**
      * Returns the combinations which are adding the item.
-     * @return Collection<int,Combination>
+     * @return Collection<int,Combination>|Combination[]
      */
     public function getCombinations(): Collection
     {

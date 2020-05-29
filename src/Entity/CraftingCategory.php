@@ -30,13 +30,13 @@ class CraftingCategory
 
     /**
      * The machines supporting the crafting category.
-     * @var Collection<int,Machine>
+     * @var Collection<int,Machine>|Machine[]
      */
     protected $machines;
 
     /**
      * The recipes using the crafting category.
-     * @var Collection<int,Recipe>
+     * @var Collection<int,Recipe>|Recipe[]
      */
     protected $recipes;
 
@@ -91,7 +91,7 @@ class CraftingCategory
 
     /**
      * Returns the machines supporting the crafting category.
-     * @return Collection<int,Machine>
+     * @return Collection<int,Machine>|Machine[]
      */
     public function getMachines(): Collection
     {
@@ -100,7 +100,7 @@ class CraftingCategory
 
     /**
      * Returns the recipes using the crafting category.
-     * @return Collection<int,Recipe>
+     * @return Collection<int,Recipe>|Recipe[]
      */
     public function getRecipes(): Collection
     {

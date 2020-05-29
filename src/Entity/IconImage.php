@@ -36,7 +36,7 @@ class IconImage
 
     /**
      * The icons using the image.
-     * @var Collection<int,Icon>
+     * @var Collection<int,Icon>|Icon[]
      */
     protected $icons;
 
@@ -113,7 +113,7 @@ class IconImage
 
     /**
      * Returns the icons using this image.
-     * @return Collection<int,Icon>
+     * @return Collection<int,Icon>|Icon[]
      */
     public function getIcons(): Collection
     {
