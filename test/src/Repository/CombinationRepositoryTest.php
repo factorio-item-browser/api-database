@@ -147,6 +147,61 @@ class CombinationRepositoryTest extends TestCase
     }
 
     /**
+     * Tests the findByLastUsageTime method.
+     * @covers ::findByLastUsageTime
+     */
+    public function testFindByLastUsageTime(): void
+    {
+        /* @var DateTime&MockObject $earliestLastUsageTime */
+        $earliestLastUsageTime = $this->createMock(DateTime::class);
+
+        $queryResult = [
+            $this->createMock(Combination::class),
+            $this->createMock(Combination::class),
+        ];
+
+        /* @var AbstractQuery&MockObject $query */
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        /* @var QueryBuilder&MockObject $queryBuilder */
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo('c'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(Combination::class), $this->identicalTo('c'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('c.lastUsageTime >= :lastUsageTime'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('lastUsageTime'),
+                         $this->identicalTo($earliestLastUsageTime)
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new CombinationRepository($this->entityManager);
+        $result = $repository->findByLastUsageTime($earliestLastUsageTime);
+
+        $this->assertSame($queryResult, $result);
+    }
+
+    /**
      * Tests the updateLastUsageTime method.
      * @covers ::updateLastUsageTime
      */
