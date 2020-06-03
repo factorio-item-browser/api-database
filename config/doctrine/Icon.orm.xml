@@ -6,6 +6,8 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\Icon">
         <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_bin</option>
             <option name="comment">The table holding the icons of the items and recipes.</option>
         </options>
 
@@ -19,6 +21,8 @@
 
         <id name="name" length="255">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The name of the icon's prototype.</option>
             </options>
         </id>

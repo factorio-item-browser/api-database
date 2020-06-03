@@ -6,6 +6,8 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\CachedSearchResult">
         <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_bin</option>
             <option name="comment">The table caching the search results.</option>
         </options>
 
@@ -17,6 +19,8 @@
 
         <id name="locale" length="5">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The locale used for the search.</option>
             </options>
         </id>
@@ -29,12 +33,16 @@
 
         <field name="searchQuery" type="text" length="65535">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The raw query string of the search.</option>
             </options>
         </field>
 
         <field name="resultData" type="text">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The result data of the search.</option>
             </options>
         </field>

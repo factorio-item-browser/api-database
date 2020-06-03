@@ -6,6 +6,8 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\RecipeProduct">
         <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_bin</option>
             <option name="comment">The table holding the products for the recipes.</option>
         </options>
 

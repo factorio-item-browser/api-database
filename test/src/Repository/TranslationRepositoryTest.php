@@ -239,7 +239,7 @@ class TranslationRepositoryTest extends TestCase
         $locale = 'abc';
         $keywords = ['foo', 'b_a\\r%'];
         $priority = 'CASE WHEN t.locale = :localePrimary THEN :priorityPrimary ELSE :prioritySecondary END';
-        $searchField = "LOWER(CONCAT(t.type, '|', t.name, '|', t.value, '|', t.description))";
+        $searchField = "LOWER(CONCAT(t.value, '|', t.description))";
 
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);

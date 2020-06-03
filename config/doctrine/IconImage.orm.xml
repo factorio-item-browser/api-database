@@ -6,6 +6,8 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\IconImage">
         <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_bin</option>
             <option name="comment">The table holding the icon image data.</option>
         </options>
 

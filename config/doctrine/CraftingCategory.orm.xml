@@ -6,12 +6,14 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\CraftingCategory">
         <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_bin</option>
             <option name="comment">The table holding the crafting categories.</option>
         </options>
 
-        <unique-constraints>
-            <unique-constraint columns="name" />
-        </unique-constraints>
+        <indexes>
+            <index columns="name" />
+        </indexes>
 
         <id name="id" type="uuid_binary">
             <options>
@@ -21,6 +23,8 @@
 
         <field name="name" length="255">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The name of the crafting category.</option>
             </options>
         </field>

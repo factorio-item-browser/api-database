@@ -6,6 +6,8 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\Recipe">
         <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_bin</option>
             <option name="comment">The table holding the recipes to craft the items.</option>
         </options>
 
@@ -21,6 +23,8 @@
 
         <field name="name" length="255">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The name of the recipe.</option>
             </options>
         </field>
