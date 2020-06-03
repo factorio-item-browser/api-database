@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.2.0 - 2020-06-03
+
+### Added
+
+- Method `findByLastUsageTime()` to `CombinationRepository` allowing searching for recently used combinations.
+
+### Changed
+
+- Charset of all tables to `utf8mb4` to actually be UTF-8.
+- All identifying columns' collation to `utf8mb4_bin` to make them case-sensitive, as they are in the game.
+- `findByKeywords()` of `TranslationRepository` no longer uses `type` and `name` columns to match the keywords.
+
 ## 3.1.0 - 2020-05-02
 
 ### Added
