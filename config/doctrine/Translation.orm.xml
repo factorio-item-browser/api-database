@@ -6,6 +6,8 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\Translation">
         <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_bin</option>
             <option name="comment">The table holding the localized translations of the items and recipes etc.</option>
         </options>
 
@@ -21,6 +23,8 @@
         
         <field name="locale" length="5">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The locale of the translation.</option>
             </options>
         </field>
@@ -33,18 +37,24 @@
 
         <field name="name" length="255">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The name of the translation.</option>
             </options>
         </field>
 
         <field name="value" type="text" length="65535">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The actual translation.</option>
             </options>
         </field>
 
         <field name="description" type="text" length="65535">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The translated description.</option>
             </options>
         </field>

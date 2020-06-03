@@ -6,12 +6,14 @@
 >
     <entity name="FactorioItemBrowser\Api\Database\Entity\Item">
         <options>
+            <option name="charset">utf8mb4</option>
+            <option name="collate">utf8mb4_bin</option>
             <option name="comment">The table holding the items.</option>
         </options>
 
-        <unique-constraints>
-            <unique-constraint columns="type,name" />
-        </unique-constraints>
+        <indexes>
+            <index columns="type,name" />
+        </indexes>
 
         <id name="id" type="uuid_binary">
             <options>
@@ -27,6 +29,8 @@
 
         <field name="name" length="255">
             <options>
+                <option name="charset">utf8mb4</option>
+                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The unique name of the item.</option>
             </options>
         </field>
