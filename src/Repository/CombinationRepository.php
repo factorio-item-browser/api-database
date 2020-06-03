@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
@@ -38,6 +39,22 @@ class CombinationRepository extends AbstractRepository
             // Will never happen, we are searching for the primary key.
             return null;
         }
+    }
+
+    /**
+     * Finds all combinations which where used after the specified time.
+     * @param DateTimeInterface $earliestUsageTime
+     * @return array<Combination>|Combination[]
+     */
+    public function findByLastUsageTime(DateTimeInterface $earliestUsageTime): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('c')
+                     ->from(Combination::class, 'c')
+                     ->andWhere('c.lastUsageTime >= :lastUsageTime')
+                     ->setParameter('lastUsageTime', $earliestUsageTime);
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**

@@ -45,7 +45,7 @@ class Machine
 
     /**
      * The crafting categories supported by the machine.
-     * @var Collection<int,CraftingCategory>
+     * @var Collection<int,CraftingCategory>|CraftingCategory[]
      */
     protected $craftingCategories;
 
@@ -93,7 +93,7 @@ class Machine
 
     /**
      * The combinations which are adding the machine.
-     * @var Collection<int,Combination>
+     * @var Collection<int,Combination>|Combination[]
      */
     protected $combinations;
 
@@ -148,7 +148,7 @@ class Machine
 
     /**
      * Returns the crafting categories supported by the machine.
-     * @return Collection<int,CraftingCategory>
+     * @return Collection<int,CraftingCategory>|CraftingCategory[]
      */
     public function getCraftingCategories(): Collection
     {
@@ -297,7 +297,7 @@ class Machine
 
     /**
      * Returns the combinations which are adding the machine.
-     * @return Collection<int,Combination>
+     * @return Collection<int,Combination>|Combination[]
      */
     public function getCombinations(): Collection
     {
