@@ -36,7 +36,7 @@
         <field name="author" length="255">
             <options>
                 <option name="charset">utf8mb4</option>
-                <option name="collate">utf8mb4_bin</option>
+                <option name="collate">utf8mb4_general_ci</option>
                 <option name="comment">The author of the mod.</option>
             </options>
         </field>

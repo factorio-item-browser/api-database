@@ -104,7 +104,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
             return [];
         }
 
-        $searchField = "LOWER(CONCAT(t.type, '|', t.name, '|', t.value, '|', t.description))";
+        $searchField = "LOWER(CONCAT(t.value, '|', t.description))";
         $priority = 'CASE WHEN t.locale = :localePrimary THEN :priorityPrimary ELSE :prioritySecondary END';
         $columns = [
             't.type AS type',

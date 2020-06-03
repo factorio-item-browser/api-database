@@ -46,7 +46,7 @@
         <field name="value" type="text" length="65535">
             <options>
                 <option name="charset">utf8mb4</option>
-                <option name="collate">utf8mb4_bin</option>
+                <option name="collate">utf8mb4_general_ci</option>
                 <option name="comment">The actual translation.</option>
             </options>
         </field>
@@ -54,7 +54,7 @@
         <field name="description" type="text" length="65535">
             <options>
                 <option name="charset">utf8mb4</option>
-                <option name="collate">utf8mb4_bin</option>
+                <option name="collate">utf8mb4_general_ci</option>
                 <option name="comment">The translated description.</option>
             </options>
         </field>
