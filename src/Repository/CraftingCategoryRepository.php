@@ -19,6 +19,26 @@ use Ramsey\Uuid\UuidInterface;
  */
 class CraftingCategoryRepository extends AbstractIdRepositoryWithOrphans
 {
+    /**
+     * Finds the crafting categories with the specified names.
+     * @param array<string>|string[] $names
+     * @return array<CraftingCategory>|CraftingCategory[]
+     */
+    public function findByNames(array $names): array
+    {
+        if (count($names) === 0) {
+            return [];
+        }
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('cc')
+                     ->from(CraftingCategory::class, 'cc')
+                     ->where('cc.name IN (:names)')
+                     ->setParameter('names', array_values($names));
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
     protected function getEntityClass(): string
     {
         return CraftingCategory::class;

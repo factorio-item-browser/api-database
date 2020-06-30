@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Repository;
 
 use BluePsyduck\TestHelper\ReflectionTrait;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
@@ -39,6 +40,70 @@ class CraftingCategoryRepositoryTest extends TestCase
 
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
+
+    /**
+     * Tests the findByNames method.
+     * @covers ::findByNames
+     */
+    public function testFindByNames(): void
+    {
+        $names = ['abc', 'def'];
+        $queryResult = [
+            $this->createMock(CraftingCategory::class),
+            $this->createMock(CraftingCategory::class),
+        ];
+
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo('cc'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(CraftingCategory::class), $this->identicalTo('cc'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('where')
+                     ->with($this->identicalTo('cc.name IN (:names)'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with($this->identicalTo('names'), $this->identicalTo($names))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new CraftingCategoryRepository($this->entityManager);
+        $result = $repository->findByNames($names);
+
+        $this->assertSame($queryResult, $result);
+    }
+
+    /**
+     * Tests the findByNames method.
+     * @covers ::findByNames
+     */
+    public function testFindByNamesWithoutNames(): void
+    {
+        $this->entityManager->expects($this->never())
+                            ->method('createQueryBuilder');
+
+        $repository = new CraftingCategoryRepository($this->entityManager);
+        $result = $repository->findByNames([]);
+
+        $this->assertSame([], $result);
+    }
+
 
     /**
      * Tests the getEntityClass method.
