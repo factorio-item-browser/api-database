@@ -14,7 +14,7 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class Item
+class Item implements EntityWithId
 {
     /**
      * The internal id of the item.

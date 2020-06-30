@@ -14,7 +14,7 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class Recipe
+class Recipe implements EntityWithId
 {
     /**
      * The factor of the crafting time.

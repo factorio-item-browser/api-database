@@ -14,7 +14,7 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class Machine
+class Machine implements EntityWithId
 {
     /**
      * The factor used for the crafting speed.

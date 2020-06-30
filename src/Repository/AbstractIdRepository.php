@@ -11,19 +11,22 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @template TEntity
  */
 abstract class AbstractIdRepository extends AbstractRepository
 {
     /**
      * Returns the entity class this repository manages.
      * @return string
+     * @phpstan-return class-string<TEntity>
      */
     abstract protected function getEntityClass(): string;
 
     /**
      * Returns the entities with the specified ids.
-     * @param array|UuidInterface[] $ids
-     * @return array|object[]
+     * @param array<UuidInterface>|UuidInterface[] $ids
+     * @return array<TEntity>|object[]
      */
     public function findByIds(array $ids): array
     {

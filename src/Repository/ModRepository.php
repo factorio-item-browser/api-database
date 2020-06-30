@@ -15,14 +15,11 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
+ * @extends AbstractIdRepositoryWithOrphans<Mod>
  * @method array|Mod[] findByIds(array|UuidInterface[] $ids)
  */
 class ModRepository extends AbstractIdRepositoryWithOrphans
 {
-    /**
-     * Returns the entity class this repository manages.
-     * @return string
-     */
     protected function getEntityClass(): string
     {
         return Mod::class;

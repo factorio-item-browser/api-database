@@ -14,13 +14,15 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @extends AbstractIdRepositoryWithOrphans<Machine>
  */
 class MachineRepository extends AbstractIdRepositoryWithOrphans
 {
     /**
      * Returns the entities with the specified ids.
-     * @param array|UuidInterface[] $ids
-     * @return array|Machine[]
+     * @param array<UuidInterface>|UuidInterface[] $ids
+     * @return array<Machine>|Machine[]
      */
     public function findByIds(array $ids): array
     {
@@ -37,10 +39,6 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
         return $queryBuilder->getQuery()->getResult();
     }
 
-    /**
-     * Returns the entity class this repository manages.
-     * @return string
-     */
     protected function getEntityClass(): string
     {
         return Machine::class;
