@@ -26,7 +26,7 @@ abstract class AbstractIdRepository extends AbstractRepository
     /**
      * Returns the entities with the specified ids.
      * @param array<UuidInterface>|UuidInterface[] $ids
-     * @return array<TEntity>|object[]
+     * @return array<TEntity>
      */
     public function findByIds(array $ids): array
     {

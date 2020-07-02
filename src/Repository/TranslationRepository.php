@@ -156,6 +156,19 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     }
 
     /**
+     * Clears the cross table to the specified combination.
+     * @param UuidInterface $combinationId
+     * @throws DBALException
+     */
+    public function clearCrossTable(UuidInterface $combinationId): void
+    {
+        $this->executeNativeSql(
+            'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?',
+            [$combinationId->getBytes()]
+        );
+    }
+
+    /**
      * Persists the translations to the combination, using optimized queries.
      * @param UuidInterface $combinationId
      * @param array|Translation[] $translations
@@ -164,7 +177,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     public function persistTranslationsToCombination(UuidInterface $combinationId, array $translations): void
     {
         $this->insertTranslations($translations);
-        $this->clearCrossTable($combinationId);
         $this->insertIntoCrossTable($combinationId, $translations);
     }
 
@@ -196,19 +208,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
                 . '(`id`,`locale`,`type`,`name`,`value`,`description`,`isDuplicatedByMachine`,`isDuplicatedByRecipe`) '
                 . "VALUES {$this->buildParameterPlaceholders(count($translations), 8)}",
             $parameters
-        );
-    }
-
-    /**
-     * Clears the cross table to the specified combination.
-     * @param UuidInterface $combinationId
-     * @throws DBALException
-     */
-    protected function clearCrossTable(UuidInterface $combinationId): void
-    {
-        $this->executeNativeSql(
-            'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?',
-            [$combinationId->getBytes()]
         );
     }
 
