@@ -24,8 +24,8 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
     public function removeOrphans(): void
     {
         $ids = $this->findOrphanedIds();
-        if (count($ids) > 0) {
-            $this->removeIds($ids);
+        foreach (array_chunk($ids, 1024) as $chunkedIds) {
+            $this->removeIds($chunkedIds);
         }
     }
 

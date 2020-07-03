@@ -593,8 +593,7 @@ class TranslationRepositoryTest extends TestCase
         $translation2->setId($translationId2);
 
         $placeholders = 'jkl';
-        $expectedQuery = 'INSERT INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
-            . 'VALUES jkl';
+        $expectedQuery = 'INSERT IGNORE INTO `CombinationXTranslation` (`combinationId`, `translationId`) VALUES jkl';
         $expectedParameters = ['abc', 'def', 'abc', 'ghi'];
 
         /* @var TranslationRepository&MockObject $repository */

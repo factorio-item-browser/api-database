@@ -230,7 +230,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
         }
 
         $this->executeNativeSql(
-            'INSERT INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
+            'INSERT IGNORE INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
             . "VALUES {$this->buildParameterPlaceholders(count($translations), 2)}",
             $parameters
         );
