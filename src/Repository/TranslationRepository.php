@@ -176,8 +176,10 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      */
     public function persistTranslationsToCombination(UuidInterface $combinationId, array $translations): void
     {
-        $this->insertTranslations($translations);
-        $this->insertIntoCrossTable($combinationId, $translations);
+        foreach (array_chunk($translations, 1024) as $chunkedTranslations) {
+            $this->insertTranslations($chunkedTranslations);
+            $this->insertIntoCrossTable($combinationId, $chunkedTranslations);
+        }
     }
 
     /**
