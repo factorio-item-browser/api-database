@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.3.0 - 2020-07-14
+
+### Added
+
+- Method `findByNames()` to `CraftingCategoryRepository` to search for crafting categories by their names.
+- Method `clearCombination()` to `IconRepository` clearing all icons assigned to a combination.
+
+### Changed
+
+- Method `persistTranslationsToCombination()` of `TranslationRepository` no longer clears the cross-table of the 
+  combination. Use method `clearCrossTable()` for that, which is now public. 
+
+### Fixed
+
+- Inserting too many translations at once leading to an SQL error because of a too large query.
+
 ## 3.2.0 - 2020-06-03
 
 ### Added
