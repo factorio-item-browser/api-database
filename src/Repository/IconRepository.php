@@ -68,4 +68,17 @@ class IconRepository extends AbstractRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+
+    /**
+     * Clears all icons of the specified combination.
+     * @param UuidInterface $combinationId
+     */
+    public function clearCombination(UuidInterface $combinationId): void
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(Icon::class, 'i')
+                     ->andWhere('i.combination = :combinationId')
+                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
+        $queryBuilder->getQuery()->execute();
+    }
 }

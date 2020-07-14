@@ -271,4 +271,45 @@ class IconRepositoryTest extends TestCase
 
         $this->assertSame([], $result);
     }
+
+    /**
+     * Tests the clearCombination method.
+     * @covers ::clearCombination
+     */
+    public function testClearCombination(): void
+    {
+        $combinationId = $this->createMock(UuidInterface::class);
+
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('execute');
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('delete')
+                     ->with($this->identicalTo(Icon::class), $this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with($this->identicalTo('i.combination = :combinationId'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with(
+                         $this->identicalTo('combinationId'),
+                         $this->identicalTo($combinationId),
+                         $this->identicalTo(UuidBinaryType::NAME)
+                     )
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $repository = new IconRepository($this->entityManager);
+        $repository->clearCombination($combinationId);
+    }
 }

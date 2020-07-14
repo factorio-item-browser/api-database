@@ -423,6 +423,34 @@ class TranslationRepositoryTest extends TestCase
     }
 
     /**
+     * Tests the clearCrossTable method.
+     * @throws ReflectionException
+     * @covers ::clearCrossTable
+     */
+    public function testClearCrossTable(): void
+    {
+        /* @var UuidInterface&MockObject $combinationId */
+        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId->expects($this->once())
+                      ->method('getBytes')
+                      ->willReturn('abc');
+
+        $expectedQuery = 'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?';
+        $expectedParameters = ['abc'];
+
+        /* @var TranslationRepository&MockObject $repository */
+        $repository = $this->getMockBuilder(TranslationRepository::class)
+                           ->onlyMethods(['executeNativeSql'])
+                           ->setConstructorArgs([$this->entityManager])
+                           ->getMock();
+        $repository->expects($this->once())
+                   ->method('executeNativeSql')
+                   ->with($this->identicalTo($expectedQuery), $this->identicalTo($expectedParameters));
+
+        $repository->clearCrossTable($combinationId);
+    }
+
+    /**
      * Tests the persistTranslationsToCombination method.
      * @covers ::persistTranslationsToCombination
      * @throws DBALException
@@ -435,7 +463,7 @@ class TranslationRepositoryTest extends TestCase
             $this->createMock(Translation::class),
             $this->createMock(Translation::class),
         ];
-        
+
         /* @var TranslationRepository&MockObject $repository */
         $repository = $this->getMockBuilder(TranslationRepository::class)
                            ->onlyMethods(['insertTranslations', 'clearCrossTable', 'insertIntoCrossTable'])
@@ -444,9 +472,6 @@ class TranslationRepositoryTest extends TestCase
         $repository->expects($this->once())
                    ->method('insertTranslations')
                    ->with($this->identicalTo($translations));
-        $repository->expects($this->once())
-                   ->method('clearCrossTable')
-                   ->with($this->identicalTo($combinationId));
         $repository->expects($this->once())
                    ->method('insertIntoCrossTable')
                    ->with($this->identicalTo($combinationId), $this->identicalTo($translations));
@@ -501,7 +526,7 @@ class TranslationRepositoryTest extends TestCase
         $expectedQuery = 'INSERT IGNORE INTO `Translation` '
             . '(`id`,`locale`,`type`,`name`,`value`,`description`,`isDuplicatedByMachine`,`isDuplicatedByRecipe`) '
             . 'VALUES klm';
-        
+
         /* @var TranslationRepository&MockObject $repository */
         $repository = $this->getMockBuilder(TranslationRepository::class)
                            ->onlyMethods(['buildParameterPlaceholders', 'executeNativeSql'])
@@ -539,34 +564,6 @@ class TranslationRepositoryTest extends TestCase
     }
 
     /**
-     * Tests the clearCrossTable method.
-     * @throws ReflectionException
-     * @covers ::clearCrossTable
-     */
-    public function testClearCrossTable(): void
-    {
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
-        $combinationId->expects($this->once())
-                      ->method('getBytes')
-                      ->willReturn('abc');
-
-        $expectedQuery = 'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?';
-        $expectedParameters = ['abc'];
-
-        /* @var TranslationRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(TranslationRepository::class)
-                           ->onlyMethods(['executeNativeSql'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('executeNativeSql')
-                   ->with($this->identicalTo($expectedQuery), $this->identicalTo($expectedParameters));
-
-        $this->invokeMethod($repository, 'clearCrossTable', $combinationId);
-    }
-
-    /**
      * Tests the insertIntoCrossTable method.
      * @throws ReflectionException
      * @covers ::insertIntoCrossTable
@@ -596,8 +593,7 @@ class TranslationRepositoryTest extends TestCase
         $translation2->setId($translationId2);
 
         $placeholders = 'jkl';
-        $expectedQuery = 'INSERT INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
-            . 'VALUES jkl';
+        $expectedQuery = 'INSERT IGNORE INTO `CombinationXTranslation` (`combinationId`, `translationId`) VALUES jkl';
         $expectedParameters = ['abc', 'def', 'abc', 'ghi'];
 
         /* @var TranslationRepository&MockObject $repository */

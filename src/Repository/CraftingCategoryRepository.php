@@ -14,14 +14,31 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
+ * @extends AbstractIdRepositoryWithOrphans<CraftingCategory>
  * @method array|CraftingCategory[] findByIds(array|UuidInterface[] $ids)
  */
 class CraftingCategoryRepository extends AbstractIdRepositoryWithOrphans
 {
     /**
-     * Returns the entity class this repository manages.
-     * @return string
+     * Finds the crafting categories with the specified names.
+     * @param array<string>|string[] $names
+     * @return array<CraftingCategory>|CraftingCategory[]
      */
+    public function findByNames(array $names): array
+    {
+        if (count($names) === 0) {
+            return [];
+        }
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('cc')
+                     ->from(CraftingCategory::class, 'cc')
+                     ->where('cc.name IN (:names)')
+                     ->setParameter('names', array_values($names));
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
     protected function getEntityClass(): string
     {
         return CraftingCategory::class;

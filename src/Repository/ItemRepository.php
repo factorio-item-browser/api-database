@@ -18,14 +18,11 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
+ * @extends AbstractIdRepositoryWithOrphans<Item>
  * @method array|Item[] findByIds(array|UuidInterface[] $ids)
  */
 class ItemRepository extends AbstractIdRepositoryWithOrphans
 {
-    /**
-     * Returns the entity class this repository manages.
-     * @return string
-     */
     protected function getEntityClass(): string
     {
         return Item::class;

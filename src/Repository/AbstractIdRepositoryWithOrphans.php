@@ -12,6 +12,9 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @template TEntity
+ * @extends AbstractIdRepository<TEntity>
  */
 abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
 {
@@ -21,14 +24,14 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
     public function removeOrphans(): void
     {
         $ids = $this->findOrphanedIds();
-        if (count($ids) > 0) {
-            $this->removeIds($ids);
+        foreach (array_chunk($ids, 1024) as $chunkedIds) {
+            $this->removeIds($chunkedIds);
         }
     }
 
     /**
      * Returns the ids of orphaned entities.
-     * @return array|UuidInterface[]
+     * @return array<UuidInterface>|UuidInterface[]
      */
     protected function findOrphanedIds(): array
     {
@@ -53,7 +56,7 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
 
     /**
      * Removes the entities with the specified ids from the database.
-     * @param array|UuidInterface[] $ids
+     * @param array<UuidInterface>|UuidInterface[] $ids
      */
     protected function removeIds(array $ids): void
     {

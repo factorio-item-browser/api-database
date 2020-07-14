@@ -20,14 +20,11 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
+ * @extends AbstractIdRepositoryWithOrphans<Translation>
  * @method array|Translation[] findByIds(array|UuidInterface[] $ids)
  */
 class TranslationRepository extends AbstractIdRepositoryWithOrphans
 {
-    /**
-     * Returns the entity class this repository manages.
-     * @return string
-     */
     protected function getEntityClass(): string
     {
         return Translation::class;
@@ -159,6 +156,19 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     }
 
     /**
+     * Clears the cross table to the specified combination.
+     * @param UuidInterface $combinationId
+     * @throws DBALException
+     */
+    public function clearCrossTable(UuidInterface $combinationId): void
+    {
+        $this->executeNativeSql(
+            'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?',
+            [$combinationId->getBytes()]
+        );
+    }
+
+    /**
      * Persists the translations to the combination, using optimized queries.
      * @param UuidInterface $combinationId
      * @param array|Translation[] $translations
@@ -166,9 +176,10 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      */
     public function persistTranslationsToCombination(UuidInterface $combinationId, array $translations): void
     {
-        $this->insertTranslations($translations);
-        $this->clearCrossTable($combinationId);
-        $this->insertIntoCrossTable($combinationId, $translations);
+        foreach (array_chunk($translations, 1024) as $chunkedTranslations) {
+            $this->insertTranslations($chunkedTranslations);
+            $this->insertIntoCrossTable($combinationId, $chunkedTranslations);
+        }
     }
 
     /**
@@ -203,19 +214,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     }
 
     /**
-     * Clears the cross table to the specified combination.
-     * @param UuidInterface $combinationId
-     * @throws DBALException
-     */
-    protected function clearCrossTable(UuidInterface $combinationId): void
-    {
-        $this->executeNativeSql(
-            'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?',
-            [$combinationId->getBytes()]
-        );
-    }
-
-    /**
      * Inserts the translations into the cross table to the specified combination.
      * @param UuidInterface $combinationId
      * @param array|Translation[] $translations
@@ -234,7 +232,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
         }
 
         $this->executeNativeSql(
-            'INSERT INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
+            'INSERT IGNORE INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
             . "VALUES {$this->buildParameterPlaceholders(count($translations), 2)}",
             $parameters
         );
