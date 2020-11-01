@@ -210,7 +210,7 @@ class RecipeRepositoryTest extends TestCase
         $query2 = $this->createMock(AbstractQuery::class);
         $query2->expects($this->once())
                ->method('execute');
-        
+
         /* @var AbstractQuery&MockObject $query3 */
         $query3 = $this->createMock(AbstractQuery::class);
         $query3->expects($this->once())
@@ -414,7 +414,7 @@ class RecipeRepositoryTest extends TestCase
     {
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
-        
+
         $itemIds = [
             $this->createMock(UuidInterface::class),
             $this->createMock(UuidInterface::class),
@@ -423,7 +423,7 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(RecipeData::class),
             $this->createMock(RecipeData::class),
         ];
-        
+
         /* @var RecipeRepository&MockObject $repository */
         $repository = $this->getMockBuilder(RecipeRepository::class)
                            ->onlyMethods(['findDataByItemIds'])
@@ -437,12 +437,12 @@ class RecipeRepositoryTest extends TestCase
                        $this->identicalTo($itemIds)
                    )
                    ->willReturn($data);
-        
+
         $result = $repository->findDataByIngredientItemIds($combinationId, $itemIds);
-        
+
         $this->assertSame($data, $result);
     }
-    
+
     /**
      * Tests the findDataByProductItemIds method.
      * @covers ::findDataByProductItemIds
@@ -451,7 +451,7 @@ class RecipeRepositoryTest extends TestCase
     {
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
-        
+
         $itemIds = [
             $this->createMock(UuidInterface::class),
             $this->createMock(UuidInterface::class),
@@ -460,7 +460,7 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(RecipeData::class),
             $this->createMock(RecipeData::class),
         ];
-        
+
         /* @var RecipeRepository&MockObject $repository */
         $repository = $this->getMockBuilder(RecipeRepository::class)
                            ->onlyMethods(['findDataByItemIds'])
@@ -474,9 +474,9 @@ class RecipeRepositoryTest extends TestCase
                        $this->identicalTo($itemIds)
                    )
                    ->willReturn($data);
-        
+
         $result = $repository->findDataByProductItemIds($combinationId, $itemIds);
-        
+
         $this->assertSame($data, $result);
     }
 

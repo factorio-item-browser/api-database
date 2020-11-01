@@ -59,7 +59,7 @@ class IconImageTest extends TestCase
     {
         $contents = 'abc';
         $image = new IconImage();
-    
+
         $this->assertSame($image, $image->setContents($contents));
         $this->assertSame($contents, $image->getContents());
     }

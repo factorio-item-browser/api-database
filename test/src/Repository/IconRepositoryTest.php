@@ -170,7 +170,7 @@ class IconRepositoryTest extends TestCase
     {
         /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
-        
+
         $imageIds = [
             $this->createMock(UuidInterface::class),
             $this->createMock(UuidInterface::class),
@@ -180,13 +180,13 @@ class IconRepositoryTest extends TestCase
             $this->createMock(Icon::class),
             $this->createMock(Icon::class),
         ];
-        
+
         /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
-        
+
         /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
@@ -243,7 +243,7 @@ class IconRepositoryTest extends TestCase
                    ->willReturn($mappedImageIds);
 
         $result = $repository->findByImageIds($combinationId, $imageIds);
-        
+
         $this->assertSame($queryResult, $result);
     }
 

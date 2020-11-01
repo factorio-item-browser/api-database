@@ -40,7 +40,7 @@ class Combination implements EntityWithId
      * @var Collection<int,Mod>|Mod[]
      */
     protected $mods;
-    
+
     /**
      * The items added by the combination.
      * @var Collection<int,Item>|Item[]

@@ -30,7 +30,7 @@ class RecipeTest extends TestCase
     public function testConstruct(): void
     {
         $recipe = new Recipe();
-        
+
         $this->assertInstanceOf(ArrayCollection::class, $recipe->getIngredients());
         $this->assertInstanceOf(ArrayCollection::class, $recipe->getProducts());
         $this->assertInstanceOf(ArrayCollection::class, $recipe->getCombinations());

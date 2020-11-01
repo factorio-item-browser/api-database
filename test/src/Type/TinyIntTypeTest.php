@@ -38,7 +38,7 @@ class TinyIntTypeTest extends TestCase
         Type::addType(TinyIntType::NAME, TinyIntType::class);
         self::$type = Type::getType(TinyIntType::NAME);
     }
-    
+
     /**
      * Tests the getSQLDeclaration method.
      * @covers ::getSQLDeclaration

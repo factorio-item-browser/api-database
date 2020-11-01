@@ -27,7 +27,7 @@ class TranslationTest extends TestCase
     public function testConstruct(): void
     {
         $translation = new Translation();
-        
+
         $this->assertInstanceOf(ArrayCollection::class, $translation->getCombinations());
     }
 
@@ -41,7 +41,7 @@ class TranslationTest extends TestCase
         /* @var UuidInterface&MockObject $id */
         $id = $this->createMock(UuidInterface::class);
         $translation = new Translation();
-    
+
         $this->assertSame($translation, $translation->setId($id));
         $this->assertSame($id, $translation->getId());
     }
