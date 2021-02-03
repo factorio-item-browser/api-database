@@ -21,23 +21,23 @@ class TinyIntType extends IntegerType
     public const NAME = 'tinyint';
 
     /**
-     * Returns the SQL declaration snippet for a field of this type.
-     * @param mixed[] $fieldDeclaration The field declaration.
-     * @param AbstractPlatform $platform The currently used database platform.
-     * @return string
-     */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-    {
-        return 'TINY' . $platform->getIntegerTypeDeclarationSQL($fieldDeclaration);
-    }
-
-    /**
      * Returns the name of this type.
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
+    }
+
+    /**
+     * Returns the SQL declaration snippet for a field of this type.
+     * @param array<mixed> $column
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
+    {
+        return 'TINY' . $platform->getIntegerTypeDeclarationSQL($column);
     }
 
     /**
@@ -45,7 +45,7 @@ class TinyIntType extends IntegerType
      * @param AbstractPlatform $platform
      * @return boolean
      */
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;
     }

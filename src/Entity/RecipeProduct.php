@@ -31,37 +31,37 @@ class RecipeProduct
      * The recipe of the result.
      * @var Recipe
      */
-    protected $recipe;
+    protected Recipe $recipe;
 
     /**
      * The order of the product in the recipe.
      * @var int
      */
-    protected $order = 0;
+    protected int $order = 0;
 
     /**
      * The item of the result.
      * @var Item
      */
-    protected $item;
+    protected Item $item;
 
     /**
      * The minimal amount of the product in the recipe.
      * @var int
      */
-    protected $amountMin = 0;
+    protected int $amountMin = 0;
 
     /**
      * The maximal amount of the product in the recipe.
      * @var int
      */
-    protected $amountMax = 0;
+    protected int $amountMax = 0;
 
     /**
      * The probability of the product in the recipe.
      * @var int
      */
-    protected $probability = 0;
+    protected int $probability = 0;
 
     /**
      * Sets the recipe of the result.

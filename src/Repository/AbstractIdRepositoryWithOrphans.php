@@ -31,7 +31,7 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
 
     /**
      * Returns the ids of orphaned entities.
-     * @return array<UuidInterface>|UuidInterface[]
+     * @return array<UuidInterface>
      */
     protected function findOrphanedIds(): array
     {
@@ -56,7 +56,7 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
 
     /**
      * Removes the entities with the specified ids from the database.
-     * @param array<UuidInterface>|UuidInterface[] $ids
+     * @param array<UuidInterface> $ids
      */
     protected function removeIds(array $ids): void
     {

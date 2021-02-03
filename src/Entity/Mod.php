@@ -20,31 +20,31 @@ class Mod implements EntityWithId
      * The internal id of the mod.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The name of the mod.
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The version of the mod.
      * @var string
      */
-    protected $version = '';
+    protected string $version = '';
 
     /**
      * The author of the mod.
      * @var string
      */
-    protected $author = '';
+    protected string $author = '';
 
     /**
      * The combinations this mod is the part of.
-     * @var Collection<int,Combination>|Combination[]
+     * @var Collection<int, Combination>
      */
-    protected $combinations;
+    protected Collection $combinations;
 
     /**
      * Initializes the entity.
@@ -136,7 +136,7 @@ class Mod implements EntityWithId
 
     /**
      * Returns the combinations this mod is part of.
-     * @return Collection<int,Combination>|Combination[]
+     * @return Collection<int, Combination>|Combination[]
      */
     public function getCombinations(): Collection
     {

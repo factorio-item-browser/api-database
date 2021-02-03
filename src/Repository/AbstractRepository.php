@@ -19,7 +19,7 @@ class AbstractRepository
      * The entity manager.
      * @var EntityManagerInterface
      */
-    protected $entityManager;
+    protected EntityManagerInterface $entityManager;
 
     /**
      * Initializes the repository.
@@ -32,8 +32,8 @@ class AbstractRepository
 
     /**
      * Maps the ids to their parameter values.
-     * @param array|UuidInterface[] $ids
-     * @return array|string[]
+     * @param array<UuidInterface> $ids
+     * @return array<string>
      */
     protected function mapIdsToParameterValues(array $ids): array
     {

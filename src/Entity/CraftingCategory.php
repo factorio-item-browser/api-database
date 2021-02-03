@@ -20,25 +20,25 @@ class CraftingCategory implements EntityWithId
      * The internal id of the crafting category.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The name of the crafting category.
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The machines supporting the crafting category.
-     * @var Collection<int,Machine>|Machine[]
+     * @var Collection<int, Machine>
      */
-    protected $machines;
+    protected Collection $machines;
 
     /**
      * The recipes using the crafting category.
-     * @var Collection<int,Recipe>|Recipe[]
+     * @var Collection<int, Recipe>
      */
-    protected $recipes;
+    protected Collection $recipes;
 
     /**
      * Initializes the entity.
@@ -91,7 +91,7 @@ class CraftingCategory implements EntityWithId
 
     /**
      * Returns the machines supporting the crafting category.
-     * @return Collection<int,Machine>|Machine[]
+     * @return Collection<int, Machine>|Machine[]
      */
     public function getMachines(): Collection
     {
@@ -100,7 +100,7 @@ class CraftingCategory implements EntityWithId
 
     /**
      * Returns the recipes using the crafting category.
-     * @return Collection<int,Recipe>|Recipe[]
+     * @return Collection<int, Recipe>|Recipe[]
      */
     public function getRecipes(): Collection
     {

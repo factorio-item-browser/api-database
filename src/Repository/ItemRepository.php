@@ -19,7 +19,7 @@ use Ramsey\Uuid\UuidInterface;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
  * @extends AbstractIdRepositoryWithOrphans<Item>
- * @method array|Item[] findByIds(array|UuidInterface[] $ids)
+ * @method Item[] findByIds(UuidInterface[] $ids)
  */
 class ItemRepository extends AbstractIdRepositoryWithOrphans
 {
@@ -47,7 +47,7 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
      * Finds the items with the specified types and names.
      * @param UuidInterface $combinationId
      * @param NamesByTypes $namesByTypes
-     * @return array|Item[]
+     * @return array<Item>
      */
     public function findByTypesAndNames(UuidInterface $combinationId, NamesByTypes $namesByTypes): array
     {
@@ -75,8 +75,8 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the items matching the specified keywords.
      * @param UuidInterface $combinationId
-     * @param array|string[] $keywords
-     * @return array|Item[]
+     * @param array<string> $keywords
+     * @return array<Item>
      */
     public function findByKeywords(UuidInterface $combinationId, array $keywords): array
     {
@@ -102,7 +102,7 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
      * Finds random items.
      * @param UuidInterface $combinationId
      * @param int $numberOfItems
-     * @return array|Item[]
+     * @return array<Item>
      */
     public function findRandom(UuidInterface $combinationId, int $numberOfItems): array
     {
@@ -120,7 +120,7 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds all items, sorted by their name.
      * @param UuidInterface $combinationId
-     * @return array|Item[]
+     * @return array<Item>
      */
     public function findAll(UuidInterface $combinationId): array
     {

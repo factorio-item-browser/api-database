@@ -44,7 +44,7 @@ class CombinationRepository extends AbstractRepository
     /**
      * Finds all combinations which where used after the specified time.
      * @param DateTimeInterface $earliestUsageTime
-     * @return array<Combination>|Combination[]
+     * @return array<Combination>
      */
     public function findByLastUsageTime(DateTimeInterface $earliestUsageTime): array
     {

@@ -16,25 +16,25 @@ class Icon
      * The combination adding the icon.
      * @var Combination
      */
-    protected $combination;
+    protected Combination $combination;
 
     /**
      * The type of the icon's prototype.
      * @var string
      */
-    protected $type = '';
+    protected string $type = '';
 
     /**
      * The name of the icons's prototype.
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The image of the icon.
      * @var IconImage
      */
-    protected $image;
+    protected IconImage $image;
 
     /**
      * Sets the combination adding the icon.

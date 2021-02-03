@@ -25,49 +25,49 @@ class Recipe implements EntityWithId
      * The internal id of the recipe.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The name of the recipe.
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The mode of the recipe.
      * @var string
      */
-    protected $mode = '';
+    protected string $mode = '';
 
     /**
      * The required time in milliseconds to craft the recipe.
      * @var int
      */
-    protected $craftingTime = 0;
+    protected int $craftingTime = 0;
 
     /**
      * The crafting category of the recipe.
      * @var CraftingCategory
      */
-    protected $craftingCategory;
+    protected CraftingCategory $craftingCategory;
 
     /**
      * The ingredients of the recipe.
-     * @var Collection<int,RecipeIngredient>|RecipeIngredient[]
+     * @var Collection<int, RecipeIngredient>
      */
-    protected $ingredients;
+    protected Collection $ingredients;
 
     /**
      * The products of the recipe.
-     * @var Collection<int,RecipeProduct>|RecipeProduct[]
+     * @var Collection<int, RecipeProduct>
      */
-    protected $products;
+    protected Collection $products;
 
     /**
      * The combinations which are adding the recipe.
-     * @var Collection<int,Combination>|Combination[]
+     * @var Collection<int, Combination>
      */
-    protected $combinations;
+    protected Collection $combinations;
 
     /**
      * Initializes the entity.
@@ -181,7 +181,7 @@ class Recipe implements EntityWithId
 
     /**
      * Returns the ingredients of the recipe.
-     * @return Collection<int,RecipeIngredient>|RecipeIngredient[]
+     * @return Collection<int, RecipeIngredient>|RecipeIngredient[]
      */
     public function getIngredients(): Collection
     {
@@ -190,7 +190,7 @@ class Recipe implements EntityWithId
 
     /**
      * Returns the products of the recipe.
-     * @return Collection<int,RecipeProduct>|RecipeProduct[]
+     * @return Collection<int, RecipeProduct>|RecipeProduct[]
      */
     public function getProducts(): Collection
     {
@@ -199,7 +199,7 @@ class Recipe implements EntityWithId
 
     /**
      * Returns the combinations adding the recipe.
-     * @return Collection<int,Combination>|Combination[]
+     * @return Collection<int, Combination>|Combination[]
      */
     public function getCombinations(): Collection
     {

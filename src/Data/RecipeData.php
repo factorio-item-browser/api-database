@@ -18,25 +18,25 @@ class RecipeData
      * The id of the recipe.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The name of the recipe.
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The mode of the recipe.
      * @var string
      */
-    protected $mode = '';
+    protected string $mode = '';
 
     /**
      * The item id related to the recipe data.
      * @var UuidInterface|null
      */
-    protected $itemId;
+    protected ?UuidInterface $itemId;
 
     /**
      * Sets the id of the recipe.

@@ -20,7 +20,7 @@ class IconImage implements EntityWithId
      * The internal id of the image.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The contents of the image.
@@ -32,13 +32,13 @@ class IconImage implements EntityWithId
      * The size of the image.
      * @var int
      */
-    protected $size = 0;
+    protected int $size = 0;
 
     /**
      * The icons using the image.
-     * @var Collection<int,Icon>|Icon[]
+     * @var Collection<int, Icon>
      */
-    protected $icons;
+    protected Collection $icons;
 
     /**
      * Initializes the entity.
@@ -113,7 +113,7 @@ class IconImage implements EntityWithId
 
     /**
      * Returns the icons using this image.
-     * @return Collection<int,Icon>|Icon[]
+     * @return Collection<int, Icon>|Icon[]
      */
     public function getIcons(): Collection
     {

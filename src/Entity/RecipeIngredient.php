@@ -21,25 +21,25 @@ class RecipeIngredient
      * The recipe of the ingredient.
      * @var Recipe
      */
-    protected $recipe;
+    protected Recipe $recipe;
 
     /**
      * The order of the ingredient in the recipe.
      * @var int
      */
-    protected $order = 0;
+    protected int $order = 0;
 
     /**
      * The item of the ingredient.
      * @var Item
      */
-    protected $item;
+    protected Item $item;
 
     /**
      * The amount required for the recipe.
      * @var int
      */
-    protected $amount = 0;
+    protected int $amount = 0;
 
     /**
      * Sets the recipe of the ingredient.

@@ -6,7 +6,6 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use DateTime;
 use DateTimeInterface;
-use Exception;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -21,41 +20,40 @@ class CachedSearchResult
      * The id of the combination used for the search.
      * @var UuidInterface
      */
-    protected $combinationId;
+    protected UuidInterface $combinationId;
 
     /**
      * The locale used for the search.
      * @var string
      */
-    protected $locale = '';
+    protected string $locale = '';
 
     /**
      * The hash of the search.
      * @var UuidInterface
      */
-    protected $searchHash;
+    protected UuidInterface $searchHash;
 
     /**
      * The raw query string of the search.
      * @var string
      */
-    protected $searchQuery = '';
+    protected string $searchQuery = '';
 
     /**
      * The result data of the search.
      * @var string
      */
-    protected $resultData = '';
+    protected string $resultData = '';
 
     /**
      * The time when the search result was last used.
      * @var DateTimeInterface
      */
-    protected $lastSearchTime;
+    protected DateTimeInterface $lastSearchTime;
 
     /**
      * Initializes the entity.
-     * @throws Exception
      */
     public function __construct()
     {

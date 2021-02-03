@@ -21,8 +21,8 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
 {
     /**
      * Returns the entities with the specified ids.
-     * @param array<UuidInterface>|UuidInterface[] $ids
-     * @return array<Machine>|Machine[]
+     * @param array<UuidInterface> $ids
+     * @return array<Machine>
      */
     public function findByIds(array $ids): array
     {
@@ -57,7 +57,7 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Removes the entities with the specified ids from the database.
-     * @param array|UuidInterface[] $ids
+     * @param array<UuidInterface> $ids
      */
     protected function removeIds(array $ids): void
     {
@@ -72,8 +72,8 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the data of the machines with the specified names.
      * @param UuidInterface $combinationId
-     * @param array|string[] $names
-     * @return array|Machine[]
+     * @param array<string> $names
+     * @return array<Machine>
      */
     public function findByNames(UuidInterface $combinationId, array $names): array
     {
@@ -96,7 +96,7 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
      * Finds the machines supporting the specified crafting categories.
      * @param UuidInterface $combinationId
      * @param string $craftingCategoryName
-     * @return array|Machine[]
+     * @return array<Machine>
      */
     public function findByCraftingCategoryName(UuidInterface $combinationId, string $craftingCategoryName): array
     {

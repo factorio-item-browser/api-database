@@ -14,9 +14,9 @@ class NamesByTypes
 {
     /**
      * The values of the collection.
-     * @var array|string[][]
+     * @var array<string, array<string>>
      */
-    protected $values = [];
+    protected array $values = [];
 
     /**
      * Adds a type and name pair to the collection.
@@ -33,7 +33,7 @@ class NamesByTypes
     /**
      * Sets the names of the type.
      * @param string $type
-     * @param array|string[] $names
+     * @param array<string> $names
      * @return $this
      */
     public function setNames(string $type, array $names): self
@@ -49,7 +49,7 @@ class NamesByTypes
     /**
      * Returns the names of the type.
      * @param string $type
-     * @return array|string[]
+     * @return array<string>
      */
     public function getNames(string $type): array
     {
@@ -78,7 +78,7 @@ class NamesByTypes
 
     /**
      * Transforms the collection into a two-dimensional array.
-     * @return array|string[][]
+     * @return array<string, array<string>>
      */
     public function toArray(): array
     {

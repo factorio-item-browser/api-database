@@ -15,7 +15,7 @@ use Ramsey\Uuid\UuidInterface;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
  * @extends AbstractIdRepositoryWithOrphans<IconImage>
- * @method array|IconImage[] findByIds(array|UuidInterface[] $ids)
+ * @method IconImage[] findByIds(UuidInterface[] $ids)
  */
 class IconImageRepository extends AbstractIdRepositoryWithOrphans
 {

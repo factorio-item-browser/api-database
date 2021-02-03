@@ -20,55 +20,55 @@ class Translation implements EntityWithId
      * The internal id of the translation.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The locale of the translation.
      * @var string
      */
-    protected $locale = '';
+    protected string $locale = '';
 
     /**
      * The type of the translation.
      * @var string
      */
-    protected $type = '';
+    protected string $type = '';
 
     /**
      * The name of the translation.
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The actual translation.
      * @var string
      */
-    protected $value = '';
+    protected string $value = '';
 
     /**
      * The translated description.
      * @var string
      */
-    protected $description = '';
+    protected string $description = '';
 
     /**
      * Whether this translation is duplicated by the recipe.
      * @var bool
      */
-    protected $isDuplicatedByRecipe = false;
+    protected bool $isDuplicatedByRecipe = false;
 
     /**
      * Whether this translation is duplicated by the machine.
      * @var bool
      */
-    protected $isDuplicatedByMachine = false;
+    protected bool $isDuplicatedByMachine = false;
 
     /**
      * The combinations which are adding the translation.
-     * @var Collection<int,Combination>|Combination[]
+     * @var Collection<int, Combination>
      */
-    protected $combinations;
+    protected Collection $combinations;
 
     /**
      * Initializes the entity.
@@ -240,7 +240,7 @@ class Translation implements EntityWithId
 
     /**
      * Returns the combinations which are adding the translation.
-     * @return Collection<int,Combination>|Combination[]
+     * @return Collection<int, Combination>|Combination[]
      */
     public function getCombinations(): Collection
     {

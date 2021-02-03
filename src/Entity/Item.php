@@ -20,25 +20,25 @@ class Item implements EntityWithId
      * The internal id of the item.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The type of the item.
      * @var string
      */
-    protected $type = '';
+    protected string $type = '';
 
     /**
      * The unique name of the item.
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The combinations which are adding the item.
-     * @var Collection<int,Combination>|Combination[]
+     * @var Collection<int, Combination>
      */
-    protected $combinations;
+    protected Collection $combinations;
 
     /**
      * Initializes the entity.
@@ -110,7 +110,7 @@ class Item implements EntityWithId
 
     /**
      * Returns the combinations which are adding the item.
-     * @return Collection<int,Combination>|Combination[]
+     * @return Collection<int, Combination>|Combination[]
      */
     public function getCombinations(): Collection
     {

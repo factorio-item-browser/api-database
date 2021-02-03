@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as DriverException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
@@ -21,7 +22,7 @@ use Ramsey\Uuid\UuidInterface;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
  * @extends AbstractIdRepositoryWithOrphans<Translation>
- * @method array|Translation[] findByIds(array|UuidInterface[] $ids)
+ * @method Translation[] findByIds(UuidInterface[] $ids)
  */
 class TranslationRepository extends AbstractIdRepositoryWithOrphans
 {
@@ -46,7 +47,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      * @param UuidInterface $combinationId
      * @param string $locale The locale to prefer in the results.
      * @param NamesByTypes $namesByTypes The names to search, grouped by their types.
-     * @return array|Translation[]
+     * @return array<Translation>
      */
     public function findByTypesAndNames(UuidInterface $combinationId, string $locale, NamesByTypes $namesByTypes): array
     {
@@ -92,8 +93,8 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      * Finds the types and names matching the specified keywords.
      * @param UuidInterface $combinationId
      * @param string $locale
-     * @param array|string[] $keywords
-     * @return array|TranslationPriorityData[]
+     * @param array<string> $keywords
+     * @return array<TranslationPriorityData>
      */
     public function findDataByKeywords(UuidInterface $combinationId, string $locale, array $keywords): array
     {
@@ -139,7 +140,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Maps the query result to instances of TranslationPriorityData.
      * @param array<mixed> $translationPriorityData
-     * @return array|TranslationPriorityData[]
+     * @return array<TranslationPriorityData>
      */
     protected function mapTranslationPriorityDataResult(array $translationPriorityData): array
     {
@@ -159,6 +160,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      * Clears the cross table to the specified combination.
      * @param UuidInterface $combinationId
      * @throws DBALException
+     * @throws DriverException
      */
     public function clearCrossTable(UuidInterface $combinationId): void
     {
@@ -171,8 +173,9 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Persists the translations to the combination, using optimized queries.
      * @param UuidInterface $combinationId
-     * @param array|Translation[] $translations
+     * @param array<Translation> $translations
      * @throws DBALException
+     * @throws DriverException
      */
     public function persistTranslationsToCombination(UuidInterface $combinationId, array $translations): void
     {
@@ -184,8 +187,9 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Inserts the translations into the database.
-     * @param array|Translation[] $translations
+     * @param array<Translation> $translations
      * @throws DBALException
+     * @throws DriverException
      */
     protected function insertTranslations(array $translations): void
     {
@@ -216,8 +220,9 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Inserts the translations into the cross table to the specified combination.
      * @param UuidInterface $combinationId
-     * @param array|Translation[] $translations
+     * @param array<Translation> $translations
      * @throws DBALException
+     * @throws DriverException
      */
     protected function insertIntoCrossTable(UuidInterface $combinationId, array $translations): void
     {
@@ -255,6 +260,7 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      * @param string $query
      * @param array<mixed> $parameters
      * @throws DBALException
+     * @throws DriverException
      */
     protected function executeNativeSql(string $query, array $parameters): void
     {

@@ -26,12 +26,21 @@ abstract class AbstractEnumType extends Type
     public const VALUES = ['foo', 'bar'];
 
     /**
-     * Returns the SQL declaration snippet for a field of this type.
-     * @param mixed[] $fieldDeclaration The field declaration.
-     * @param AbstractPlatform $platform The currently used database platform.
+     * Returns the name of this type.
      * @return string
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getName(): string
+    {
+        return static::NAME;
+    }
+
+    /**
+     * Returns the SQL declaration snippet for a field of this type.
+     * @param array<mixed> $column
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         $quotedValues = implode(',', array_map(function (string $value) use ($platform): string {
             return $platform->quoteStringLiteral(trim($value));
@@ -41,20 +50,11 @@ abstract class AbstractEnumType extends Type
     }
 
     /**
-     * Returns the name of this type.
-     * @return string
-     */
-    public function getName()
-    {
-        return static::NAME;
-    }
-
-    /**
      * Returns whether an SQL comment hint is required.
      * @param AbstractPlatform $platform
      * @return boolean
      */
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;
     }

@@ -24,18 +24,18 @@ class TimestampType extends DateTimeType
      * Returns the name of this type.
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }
 
     /**
      * Returns the SQL declaration snippet for a field of this type.
-     * @param array<mixed> $fieldDeclaration
+     * @param array<mixed> $column
      * @param AbstractPlatform $platform
      * @return string
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return 'TIMESTAMP';
     }
@@ -45,7 +45,7 @@ class TimestampType extends DateTimeType
      * @param AbstractPlatform $platform
      * @return boolean
      */
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;
     }

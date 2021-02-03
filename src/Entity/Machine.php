@@ -35,67 +35,67 @@ class Machine implements EntityWithId
      * The internal id of the machine.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The name of the machine.
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The crafting categories supported by the machine.
-     * @var Collection<int,CraftingCategory>|CraftingCategory[]
+     * @var Collection<int, CraftingCategory>
      */
-    protected $craftingCategories;
+    protected Collection $craftingCategories;
 
     /**
      * The crafting speed of the machine.
      * @var int
      */
-    protected $craftingSpeed = self::FACTOR_CRAFTING_SPEED;
+    protected int $craftingSpeed = self::FACTOR_CRAFTING_SPEED;
 
     /**
      * The number of item slots available in the machine.
      * @var int
      */
-    protected $numberOfItemSlots = 0;
+    protected int $numberOfItemSlots = 0;
 
     /**
      * The number of fluid input slots available in the machine.
      * @var int
      */
-    protected $numberOfFluidInputSlots = 0;
+    protected int $numberOfFluidInputSlots = 0;
 
     /**
      * The number of fluid output slots available in the machine.
      * @var int
      */
-    protected $numberOfFluidOutputSlots = 0;
+    protected int $numberOfFluidOutputSlots = 0;
 
     /**
      * The number of module slots available in the machine.
      * @var int
      */
-    protected $numberOfModuleSlots = 0;
+    protected int $numberOfModuleSlots = 0;
 
     /**
      * The energy usage of the machine.
      * @var int
      */
-    protected $energyUsage = 0;
+    protected int $energyUsage = 0;
 
     /**
      * The unit of the energy usage.
      * @var string
      */
-    protected $energyUsageUnit = '';
+    protected string $energyUsageUnit = '';
 
     /**
      * The combinations which are adding the machine.
-     * @var Collection<int,Combination>|Combination[]
+     * @var Collection<int, Combination>
      */
-    protected $combinations;
+    protected Collection $combinations;
 
     /**
      * Initializes the entity.
@@ -148,7 +148,7 @@ class Machine implements EntityWithId
 
     /**
      * Returns the crafting categories supported by the machine.
-     * @return Collection<int,CraftingCategory>|CraftingCategory[]
+     * @return Collection<int, CraftingCategory>|CraftingCategory[]
      */
     public function getCraftingCategories(): Collection
     {
@@ -297,7 +297,7 @@ class Machine implements EntityWithId
 
     /**
      * Returns the combinations which are adding the machine.
-     * @return Collection<int,Combination>|Combination[]
+     * @return Collection<int, Combination>|Combination[]
      */
     public function getCombinations(): Collection
     {

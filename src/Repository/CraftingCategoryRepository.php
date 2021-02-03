@@ -15,14 +15,14 @@ use Ramsey\Uuid\UuidInterface;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
  * @extends AbstractIdRepositoryWithOrphans<CraftingCategory>
- * @method array|CraftingCategory[] findByIds(array|UuidInterface[] $ids)
+ * @method CraftingCategory[] findByIds(UuidInterface[] $ids)
  */
 class CraftingCategoryRepository extends AbstractIdRepositoryWithOrphans
 {
     /**
      * Finds the crafting categories with the specified names.
-     * @param array<string>|string[] $names
-     * @return array<CraftingCategory>|CraftingCategory[]
+     * @param array<string> $names
+     * @return array<CraftingCategory>
      */
     public function findByNames(array $names): array
     {

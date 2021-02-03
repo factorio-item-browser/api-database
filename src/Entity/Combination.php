@@ -21,55 +21,55 @@ class Combination implements EntityWithId
      * The internal id of the combination.
      * @var UuidInterface
      */
-    protected $id;
+    protected UuidInterface $id;
 
     /**
      * The time when the combination was imported.
      * @var DateTimeInterface
      */
-    protected $importTime;
+    protected DateTimeInterface $importTime;
 
     /**
      * The time when the combination was last used by a visitor.
      * @var DateTimeInterface
      */
-    protected $lastUsageTime;
+    protected DateTimeInterface $lastUsageTime;
 
     /**
      * The mods added by the combination.
-     * @var Collection<int,Mod>|Mod[]
+     * @var Collection<int, Mod>
      */
-    protected $mods;
+    protected Collection $mods;
 
     /**
      * The items added by the combination.
-     * @var Collection<int,Item>|Item[]
+     * @var Collection<int, Item>
      */
-    protected $items;
+    protected Collection $items;
 
     /**
      * The recipes added by the combination.
-     * @var Collection<int,Recipe>|Recipe[]
+     * @var Collection<int, Recipe>
      */
-    protected $recipes;
+    protected Collection $recipes;
 
     /**
      * The machines added by the combination.
-     * @var Collection<int,Machine>|Machine[]
+     * @var Collection<int, Machine>
      */
-    protected $machines;
+    protected Collection $machines;
 
     /**
      * The translations added by the combination.
-     * @var Collection<int,Translation>|Translation[]
+     * @var Collection<int, Translation>
      */
-    protected $translations;
+    protected Collection $translations;
 
     /**
      * The icons used by the combination.
-     * @var Collection<int,Icon>|Icon[]
+     * @var Collection<int, Icon>
      */
-    protected $icons;
+    protected Collection $icons;
 
     /**
      * Initializes the combination.
@@ -146,7 +146,7 @@ class Combination implements EntityWithId
 
     /**
      * Returns the mods added by the combination.
-     * @return Collection<int,Mod>|Mod[]
+     * @return Collection<int, Mod>|Mod[]
      */
     public function getMods(): Collection
     {
@@ -155,7 +155,7 @@ class Combination implements EntityWithId
 
     /**
      * Returns the items added by the combination.
-     * @return Collection<int,Item>|Item[]
+     * @return Collection<int, Item>|Item[]
      */
     public function getItems(): Collection
     {
@@ -164,7 +164,7 @@ class Combination implements EntityWithId
 
     /**
      * Returns the recipes added by the combination.
-     * @return Collection<int,Recipe>|Recipe[]
+     * @return Collection<int, Recipe>|Recipe[]
      */
     public function getRecipes(): Collection
     {
@@ -173,7 +173,7 @@ class Combination implements EntityWithId
 
     /**
      * Returns the machines added by the combination.
-     * @return Collection<int,Machine>|Machine[]
+     * @return Collection<int, Machine>|Machine[]
      */
     public function getMachines(): Collection
     {
@@ -182,7 +182,7 @@ class Combination implements EntityWithId
 
     /**
      * Returns the translations added by the combination.
-     * @return Collection<int,Translation>|Translation[]
+     * @return Collection<int, Translation>|Translation[]
      */
     public function getTranslations(): Collection
     {
@@ -191,7 +191,7 @@ class Combination implements EntityWithId
 
     /**
      * Returns the icons used by the combination.
-     * @return Collection<int,Icon>|Icon[]
+     * @return Collection<int, Icon>|Icon[]
      */
     public function getIcons(): Collection
     {

@@ -18,19 +18,19 @@ class TranslationPriorityData
      * The type of the translation.
      * @var string
      */
-    protected $type = '';
+    protected string $type = '';
 
     /**
      * The name of the translation.
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The priority of the translation.
      * @var int
      */
-    protected $priority = SearchResultPriority::ANY_MATCH;
+    protected int $priority = SearchResultPriority::ANY_MATCH;
 
     /**
      * Sets the type of the translation.

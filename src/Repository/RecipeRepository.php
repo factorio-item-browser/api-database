@@ -25,8 +25,8 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
 {
     /**
      * Returns the entities with the specified ids.
-     * @param array|UuidInterface[] $ids
-     * @return array|Recipe[]
+     * @param array<UuidInterface> $ids
+     * @return array<Recipe>
      */
     public function findByIds(array $ids): array
     {
@@ -64,7 +64,7 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Removes the entities with the specified ids from the database.
-     * @param array|UuidInterface[] $ids
+     * @param array<UuidInterface> $ids
      */
     protected function removeIds(array $ids): void
     {
@@ -86,8 +86,8 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the data of the recipes with the specified names.
      * @param UuidInterface $combinationId
-     * @param array|string[] $names
-     * @return array|RecipeData[]
+     * @param array<string> $names
+     * @return array<RecipeData>
      */
     public function findDataByNames(UuidInterface $combinationId, array $names): array
     {
@@ -114,8 +114,8 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the data of the recipes having the specified items as ingredients.
      * @param UuidInterface $combinationId
-     * @param array|UuidInterface[] $itemIds
-     * @return array|RecipeData[]
+     * @param array<UuidInterface> $itemIds
+     * @return array<RecipeData>
      */
     public function findDataByIngredientItemIds(UuidInterface $combinationId, array $itemIds): array
     {
@@ -125,8 +125,8 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the data of the recipes having the specified items as products.
      * @param UuidInterface $combinationId
-     * @param array|UuidInterface[] $itemIds
-     * @return array|RecipeData[]
+     * @param array<UuidInterface> $itemIds
+     * @return array<RecipeData>
      */
     public function findDataByProductItemIds(UuidInterface $combinationId, array $itemIds): array
     {
@@ -137,8 +137,8 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
      * Finds the data of recipes having a specific item involved.
      * @param UuidInterface $combinationId
      * @param string $recipeProperty
-     * @param array|UuidInterface[] $itemIds
-     * @return array|RecipeData[]
+     * @param array<UuidInterface> $itemIds
+     * @return array<RecipeData>
      */
     protected function findDataByItemIds(UuidInterface $combinationId, string $recipeProperty, array $itemIds): array
     {
@@ -169,8 +169,8 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the data of the recipes with the specified keywords.
      * @param UuidInterface $combinationId
-     * @param array|string[] $keywords
-     * @return array|RecipeData[]
+     * @param array<string> $keywords
+     * @return array<RecipeData>
      */
     public function findDataByKeywords(UuidInterface $combinationId, array $keywords): array
     {
@@ -200,7 +200,7 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Finds the data of all recipes, sorted by their name.
      * @param UuidInterface $combinationId
-     * @return array|RecipeData[]
+     * @return array<RecipeData>
      */
     public function findAllData(UuidInterface $combinationId): array
     {
@@ -222,7 +222,7 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Maps the query result to instances of RecipeData.
      * @param array<mixed> $recipeData
-     * @return array|RecipeData[]
+     * @return array<RecipeData>
      */
     protected function mapRecipeDataResult(array $recipeData): array
     {

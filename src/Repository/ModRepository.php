@@ -16,7 +16,7 @@ use Ramsey\Uuid\UuidInterface;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
  * @extends AbstractIdRepositoryWithOrphans<Mod>
- * @method array|Mod[] findByIds(array|UuidInterface[] $ids)
+ * @method Mod[] findByIds(UuidInterface[] $ids)
  */
 class ModRepository extends AbstractIdRepositoryWithOrphans
 {
@@ -39,7 +39,7 @@ class ModRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Returns all mods used by the specified combination.
      * @param UuidInterface $combinationId
-     * @return array|Mod[]
+     * @return array<Mod>
      */
     public function findByCombinationId(UuidInterface $combinationId): array
     {
