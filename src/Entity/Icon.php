@@ -25,7 +25,7 @@ class Icon
     protected string $type = '';
 
     /**
-     * The name of the icons's prototype.
+     * The name of the icon's prototype.
      * @var string
      */
     protected string $name = '';

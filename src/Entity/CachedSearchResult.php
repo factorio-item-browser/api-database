@@ -42,9 +42,9 @@ class CachedSearchResult
 
     /**
      * The result data of the search.
-     * @var string
+     * @var string|resource
      */
-    protected string $resultData = '';
+    protected $resultData = '';
 
     /**
      * The time when the search result was last used.
@@ -157,6 +157,9 @@ class CachedSearchResult
      */
     public function getResultData(): string
     {
+        if (is_resource($this->resultData)) {
+            $this->resultData = (string) stream_get_contents($this->resultData);
+        }
         return $this->resultData;
     }
 

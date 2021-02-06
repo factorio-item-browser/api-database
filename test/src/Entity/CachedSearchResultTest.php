@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
+use BluePsyduck\TestHelper\ReflectionTrait;
 use DateTime;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\UuidInterface;
+use ReflectionException;
 
 /**
  * The PHPUnit test of the CachedSearchResult class.
@@ -19,6 +21,8 @@ use Ramsey\Uuid\UuidInterface;
  */
 class CachedSearchResultTest extends TestCase
 {
+    use ReflectionTrait;
+
     /**
      * Tests the constructing.
      * @covers ::__construct
@@ -100,6 +104,28 @@ class CachedSearchResultTest extends TestCase
 
         $this->assertSame($cachedSearchResult, $cachedSearchResult->setResultData($resultData));
         $this->assertSame($resultData, $cachedSearchResult->getResultData());
+    }
+
+    /**
+     * Tests getting the result data.
+     * @throws ReflectionException
+     * @covers ::getResultData
+     */
+    public function testGetResultDataAsResource(): void
+    {
+        $contents = 'abc';
+
+        $stream = fopen('php://memory', 'r+');
+        if ($stream === false) {
+            $this->fail('unable to open memory stream.');
+        }
+        fwrite($stream, $contents);
+        fseek($stream, 0);
+
+        $image = new CachedSearchResult();
+
+        $this->injectProperty($image, 'resultData', $stream);
+        $this->assertSame($contents, $image->getResultData());
     }
 
     /**

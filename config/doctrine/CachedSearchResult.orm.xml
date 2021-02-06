@@ -39,10 +39,8 @@
             </options>
         </field>
 
-        <field name="resultData" type="text">
+        <field name="resultData" type="blob">
             <options>
-                <option name="charset">utf8mb4</option>
-                <option name="collate">utf8mb4_bin</option>
                 <option name="comment">The result data of the search.</option>
             </options>
         </field>
