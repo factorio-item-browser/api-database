@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.4.0 - 2021-02-06
+
+### Changed
+
+- Internal type of `resultData` of `CachedSearchResult` from TEXT to BLOB to allow storing binary encoded cache data. 
+
 ## 3.3.0 - 2020-07-14
 
 ### Added
