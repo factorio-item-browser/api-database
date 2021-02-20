@@ -25,33 +25,35 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\RecipeRepository
+ * @covers \FactorioItemBrowser\Api\Database\Repository\RecipeRepository
  */
 class RecipeRepositoryTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * The mocked entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
-
     /**
-     * Tests the findByIds method.
-     * @covers ::findByIds
+     * @param array<string> $mockedMethods
+     * @return RecipeRepository&MockObject
      */
+    private function createInstance(array $mockedMethods = []): RecipeRepository
+    {
+        return $this->getMockBuilder(RecipeRepository::class)
+                    ->disableProxyingToOriginalMethods()
+                    ->onlyMethods($mockedMethods)
+                    ->setConstructorArgs([
+                        $this->entityManager,
+                    ])
+                    ->getMock();
+    }
+
     public function testFindByIds(): void
     {
         $ids = [
@@ -64,13 +66,11 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(Recipe::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -114,66 +114,49 @@ class RecipeRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['mapIdsToParameterValues'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('mapIdsToParameterValues')
-                   ->with($this->identicalTo($ids))
-                   ->willReturn($mappedIds);
+        $instance = $this->createInstance(['mapIdsToParameterValues']);
+        $instance->expects($this->once())
+                 ->method('mapIdsToParameterValues')
+                 ->with($this->identicalTo($ids))
+                 ->willReturn($mappedIds);
 
-        $result = $repository->findByIds($ids);
+        $result = $instance->findByIds($ids);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the findByIds method.
-     * @covers ::findByIds
-     */
     public function testFindByIdsWithoutIds(): void
     {
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['getEntityClass', 'mapIdsToParameterValues'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->never())
-                   ->method('mapIdsToParameterValues');
+        $instance = $this->createInstance(['getEntityClass', 'mapIdsToParameterValues']);
+        $instance->expects($this->never())
+                 ->method('mapIdsToParameterValues');
 
-        $result = $repository->findByIds([]);
+        $result = $instance->findByIds([]);
 
         $this->assertSame([], $result);
     }
 
     /**
-     * Tests the getEntityClass method.
      * @throws ReflectionException
-     * @covers ::getEntityClass
      */
     public function testGetEntityClass(): void
     {
-        $repository = new RecipeRepository($this->entityManager);
-        $result = $this->invokeMethod($repository, 'getEntityClass');
+        $instance = $this->createInstance();
+        $result = $this->invokeMethod($instance, 'getEntityClass');
 
         $this->assertSame(Recipe::class, $result);
     }
 
     /**
-     * Tests the addOrphanConditions method.
      * @throws ReflectionException
-     * @covers ::addOrphanConditions
      */
     public function testAddOrphanConditions(): void
     {
         $alias = 'abc';
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('leftJoin')
@@ -184,14 +167,12 @@ class RecipeRepositoryTest extends TestCase
                      ->with($this->identicalTo('c.id IS NULL'))
                      ->willReturnSelf();
 
-        $repository = new RecipeRepository($this->entityManager);
-        $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
+        $instance = $this->createInstance();
+        $this->invokeMethod($instance, 'addOrphanConditions', $queryBuilder, $alias);
     }
 
     /**
-     * Tests the removeIds method.
      * @throws ReflectionException
-     * @covers ::removeIds
      */
     public function testRemoveIds(): void
     {
@@ -201,22 +182,18 @@ class RecipeRepositoryTest extends TestCase
         ];
         $mappedIds = ['abc', 'def'];
 
-        /* @var AbstractQuery&MockObject $query1 */
         $query1 = $this->createMock(AbstractQuery::class);
         $query1->expects($this->once())
                ->method('execute');
 
-        /* @var AbstractQuery&MockObject $query2 */
         $query2 = $this->createMock(AbstractQuery::class);
         $query2->expects($this->once())
                ->method('execute');
 
-        /* @var AbstractQuery&MockObject $query3 */
         $query3 = $this->createMock(AbstractQuery::class);
         $query3->expects($this->once())
                ->method('execute');
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder1 = $this->createMock(QueryBuilder::class);
         $queryBuilder1->expects($this->once())
                       ->method('delete')
@@ -234,7 +211,6 @@ class RecipeRepositoryTest extends TestCase
                       ->method('getQuery')
                       ->willReturn($query1);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder2 = $this->createMock(QueryBuilder::class);
         $queryBuilder2->expects($this->once())
                       ->method('delete')
@@ -252,7 +228,6 @@ class RecipeRepositoryTest extends TestCase
                       ->method('getQuery')
                       ->willReturn($query2);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder3 = $this->createMock(QueryBuilder::class);
         $queryBuilder3->expects($this->once())
                       ->method('delete')
@@ -278,28 +253,19 @@ class RecipeRepositoryTest extends TestCase
                                 $queryBuilder3
                             );
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods([ 'mapIdsToParameterValues'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->exactly(3))
-                   ->method('mapIdsToParameterValues')
-                   ->with($this->identicalTo($ids))
-                   ->willReturn($mappedIds);
+        $instance = $this->createInstance(['mapIdsToParameterValues']);
+        $instance->expects($this->exactly(3))
+                 ->method('mapIdsToParameterValues')
+                 ->with($this->identicalTo($ids))
+                 ->willReturn($mappedIds);
 
-        $this->invokeMethod($repository, 'removeIds', $ids);
+        $this->invokeMethod($instance, 'removeIds', $ids);
     }
 
-    /**
-     * Tests the findDataByNames method.
-     * @covers ::findDataByNames
-     */
     public function testFindDataByNames(): void
     {
         $names = ['abc', 'def'];
 
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $queryResult = [
@@ -311,13 +277,11 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(RecipeData::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -366,53 +330,35 @@ class RecipeRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['mapRecipeDataResult'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
+        $instance = $this->createInstance(['mapRecipeDataResult']);
+        $instance->expects($this->once())
                    ->method('mapRecipeDataResult')
                    ->with($this->identicalTo($queryResult))
                    ->willReturn($mappedResult);
 
-        $result = $repository->findDataByNames($combinationId, $names);
+        $result = $instance->findDataByNames($combinationId, $names);
 
         $this->assertSame($mappedResult, $result);
     }
 
-    /**
-     * Tests the findDataByNames method.
-     * @covers ::findDataByNames
-     */
     public function testFindDataByNamesWithoutNames(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['mapRecipeDataResult'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->never())
-                   ->method('mapRecipeDataResult');
+        $instance = $this->createInstance(['mapRecipeDataResult']);
+        $instance->expects($this->never())
+                 ->method('mapRecipeDataResult');
 
-        $result = $repository->findDataByNames($combinationId, []);
+        $result = $instance->findDataByNames($combinationId, []);
 
         $this->assertSame([], $result);
     }
 
-    /**
-     * Tests the findDataByIngredientItemIds method.
-     * @covers ::findDataByIngredientItemIds
-     */
     public function testFindDataByIngredientItemIds(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $itemIds = [
@@ -423,33 +369,32 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(RecipeData::class),
             $this->createMock(RecipeData::class),
         ];
+        $sortedData = [
+            $this->createMock(RecipeData::class),
+            $this->createMock(RecipeData::class),
+        ];
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['findDataByItemIds'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('findDataByItemIds')
-                   ->with(
-                       $this->identicalTo($combinationId),
-                       $this->identicalTo('ingredients'),
-                       $this->identicalTo($itemIds)
-                   )
-                   ->willReturn($data);
+        $instance = $this->createInstance(['findDataByItemIds', 'orderByNumberOfItems']);
+        $instance->expects($this->once())
+                 ->method('findDataByItemIds')
+                 ->with(
+                     $this->identicalTo($combinationId),
+                     $this->identicalTo('ingredients'),
+                     $this->identicalTo($itemIds)
+                 )
+                 ->willReturn($data);
+        $instance->expects($this->once())
+                 ->method('orderByNumberOfItems')
+                 ->with($this->identicalTo(RecipeIngredient::class), $this->identicalTo($data))
+                 ->willReturn($sortedData);
 
-        $result = $repository->findDataByIngredientItemIds($combinationId, $itemIds);
+        $result = $instance->findDataByIngredientItemIds($combinationId, $itemIds);
 
-        $this->assertSame($data, $result);
+        $this->assertSame($sortedData, $result);
     }
 
-    /**
-     * Tests the findDataByProductItemIds method.
-     * @covers ::findDataByProductItemIds
-     */
     public function testFindDataByProductItemIds(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $itemIds = [
@@ -460,30 +405,32 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(RecipeData::class),
             $this->createMock(RecipeData::class),
         ];
+        $sortedData = [
+            $this->createMock(RecipeData::class),
+            $this->createMock(RecipeData::class),
+        ];
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['findDataByItemIds'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('findDataByItemIds')
-                   ->with(
-                       $this->identicalTo($combinationId),
-                       $this->identicalTo('products'),
-                       $this->identicalTo($itemIds)
-                   )
-                   ->willReturn($data);
+        $instance = $this->createInstance(['findDataByItemIds', 'orderByNumberOfItems']);
+        $instance->expects($this->once())
+                 ->method('findDataByItemIds')
+                 ->with(
+                     $this->identicalTo($combinationId),
+                     $this->identicalTo('products'),
+                     $this->identicalTo($itemIds)
+                 )
+                 ->willReturn($data);
+        $instance->expects($this->once())
+                 ->method('orderByNumberOfItems')
+                 ->with($this->identicalTo(RecipeProduct::class), $this->identicalTo($data))
+                 ->willReturn($sortedData);
 
-        $result = $repository->findDataByProductItemIds($combinationId, $itemIds);
+        $result = $instance->findDataByProductItemIds($combinationId, $itemIds);
 
-        $this->assertSame($data, $result);
+        $this->assertSame($sortedData, $result);
     }
 
     /**
-     * Tests the findDataByItemIds method.
      * @throws ReflectionException
-     * @covers ::findDataByItemIds
      */
     public function testFindDataByItemIds(): void
     {
@@ -494,7 +441,6 @@ class RecipeRepositoryTest extends TestCase
         ];
         $mappedItemIds = ['def', 'ghi'];
 
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $queryResult = [
@@ -506,13 +452,11 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(RecipeData::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -573,64 +517,46 @@ class RecipeRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['mapIdsToParameterValues', 'mapRecipeDataResult'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('mapIdsToParameterValues')
-                   ->with($this->identicalTo($itemIds))
-                   ->willReturn($mappedItemIds);
-        $repository->expects($this->once())
-                   ->method('mapRecipeDataResult')
-                   ->with($this->identicalTo($queryResult))
-                   ->willReturn($mappedResult);
+        $instance = $this->createInstance(['mapIdsToParameterValues', 'mapRecipeDataResult']);
+        $instance->expects($this->once())
+                 ->method('mapIdsToParameterValues')
+                 ->with($this->identicalTo($itemIds))
+                 ->willReturn($mappedItemIds);
+        $instance->expects($this->once())
+                 ->method('mapRecipeDataResult')
+                 ->with($this->identicalTo($queryResult))
+                 ->willReturn($mappedResult);
 
-        $result = $this->invokeMethod($repository, 'findDataByItemIds', $combinationId, $recipeProperty, $itemIds);
+        $result = $this->invokeMethod($instance, 'findDataByItemIds', $combinationId, $recipeProperty, $itemIds);
 
         $this->assertSame($mappedResult, $result);
     }
 
     /**
-     * Tests the findDataByItemIds method.
      * @throws ReflectionException
-     * @covers ::findDataByItemIds
      */
     public function testFindDataByItemIdsWithoutItemIds(): void
     {
         $recipeProperty = 'abc';
-
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['mapIdsToParameterValues', 'mapRecipeDataResult'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->never())
-                   ->method('mapIdsToParameterValues');
-        $repository->expects($this->never())
-                   ->method('mapRecipeDataResult');
+        $instance = $this->createInstance(['mapIdsToParameterValues', 'mapRecipeDataResult']);
+        $instance->expects($this->never())
+                 ->method('mapIdsToParameterValues');
+        $instance->expects($this->never())
+                 ->method('mapRecipeDataResult');
 
-        $result = $this->invokeMethod($repository, 'findDataByItemIds', $combinationId, $recipeProperty, []);
+        $result = $this->invokeMethod($instance, 'findDataByItemIds', $combinationId, $recipeProperty, []);
 
         $this->assertSame([], $result);
     }
 
-    /**
-     * Tests the findDataByKeywords method.
-     * @covers ::findDataByKeywords
-     */
     public function testFindDataByKeywords(): void
     {
         $keywords = ['foo', 'b_a\\r%'];
-
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $queryResult = [
@@ -642,13 +568,11 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(RecipeData::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -704,54 +628,35 @@ class RecipeRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['mapRecipeDataResult'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
+        $instance = $this->createInstance(['mapRecipeDataResult']);
+        $instance->expects($this->once())
                    ->method('mapRecipeDataResult')
                    ->with($this->identicalTo($queryResult))
                    ->willReturn($mappedResult);
 
-        $result = $repository->findDataByKeywords($combinationId, $keywords);
+        $result = $instance->findDataByKeywords($combinationId, $keywords);
 
         $this->assertSame($mappedResult, $result);
     }
 
-    /**
-     * Tests the findDataByKeywords method.
-     * @covers ::findDataByKeywords
-     */
     public function testFindDataByKeywordsWithoutKeywords(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['mapRecipeDataResult'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->never())
-                   ->method('mapRecipeDataResult');
+        $instance = $this->createInstance(['mapRecipeDataResult']);
+        $instance->expects($this->never())
+                 ->method('mapRecipeDataResult');
 
-        $result = $repository->findDataByKeywords($combinationId, []);
+        $result = $instance->findDataByKeywords($combinationId, []);
 
         $this->assertSame([], $result);
     }
 
-    /**
-     * Tests the findAllData method.
-     * @throws ReflectionException
-     * @covers ::findAllData
-     */
     public function testFindAllData(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
         $combinationId = $this->createMock(UuidInterface::class);
 
         $queryResult = [
@@ -763,13 +668,11 @@ class RecipeRepositoryTest extends TestCase
             $this->createMock(RecipeData::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -812,31 +715,23 @@ class RecipeRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var RecipeRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(RecipeRepository::class)
-                           ->onlyMethods(['mapRecipeDataResult'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('mapRecipeDataResult')
-                   ->with($this->identicalTo($queryResult))
-                   ->willReturn($mappedResult);
+        $instance = $this->createInstance(['mapRecipeDataResult']);
+        $instance->expects($this->once())
+                 ->method('mapRecipeDataResult')
+                 ->with($this->identicalTo($queryResult))
+                 ->willReturn($mappedResult);
 
-        $result = $repository->findAllData($combinationId);
+        $result = $instance->findAllData($combinationId);
 
         $this->assertSame($mappedResult, $result);
     }
 
     /**
-     * Tests the mapRecipeDataResult method.
      * @throws ReflectionException
-     * @covers ::mapRecipeDataResult
      */
     public function testMapRecipeDataResult(): void
     {
-        /* @var UuidInterface&MockObject $id1 */
         $id1 = $this->createMock(UuidInterface::class);
-        /* @var UuidInterface&MockObject $id2 */
         $id2 = $this->createMock(UuidInterface::class);
 
         $itemId = Uuid::fromString('00000000-0000-0000-0000-000000000000');
@@ -866,9 +761,101 @@ class RecipeRepositoryTest extends TestCase
               ->setItemId($itemId);
         $expectedResult = [$data1, $data2];
 
-        $repository = new RecipeRepository($this->entityManager);
-        $result = $this->invokeMethod($repository, 'mapRecipeDataResult', $machineData);
+        $instance = $this->createInstance();
+        $result = $this->invokeMethod($instance, 'mapRecipeDataResult', $machineData);
 
         $this->assertEquals($expectedResult, $result);
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function testOrderByNumberOfItems(): void
+    {
+        $recipeId1 = Uuid::fromString('1fbe59ad-04a3-4654-b939-392c450fe222');
+        $recipeId2 = Uuid::fromString('22ca55c7-bb83-4ba1-b2e7-98bfe66948f5');
+        $recipeId3 = Uuid::fromString('37462be0-ae18-4689-b393-ae76ff91b056');
+        $recipeId4 = Uuid::fromString('45f51893-0676-47ad-b416-26a9d67925a5');
+
+        $data1 = new RecipeData();
+        $data1->setId($recipeId1);
+        $data2 = new RecipeData();
+        $data2->setId($recipeId2);
+        $data3 = new RecipeData();
+        $data3->setId($recipeId3);
+        $data4 = new RecipeData();
+        $data4->setId($recipeId4);
+        $data = [$data1, $data2, $data3, $data4];
+
+        $mappedRecipeIds = [
+            $this->createMock(UuidInterface::class),
+            $this->createMock(UuidInterface::class),
+        ];
+        $expectedRecipeIds = [$recipeId1, $recipeId2, $recipeId3, $recipeId4];
+
+        $queryResult = [
+            [
+                'recipeId' => $recipeId1->getBytes(),
+                'number' => '2',
+            ],
+            [
+                'recipeId' => $recipeId3->getBytes(),
+                'number' => '7',
+            ],
+            [
+                'recipeId' => $recipeId4->getBytes(),
+                'number' => '2',
+            ],
+        ];
+        $expectedResult = [
+            $data2,
+            $data1,
+            $data4,
+            $data3,
+        ];
+
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())
+              ->method('getResult')
+              ->willReturn($queryResult);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->once())
+                     ->method('select')
+                     ->with($this->identicalTo(['IDENTITY(i.recipe) AS recipeId', 'MAX(i.order) AS number']))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('from')
+                     ->with($this->identicalTo(RecipeProduct::class), $this->identicalTo('i'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('andWhere')
+                     ->with('i.recipe IN (:recipeIds)')
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('addGroupBy')
+                     ->with($this->identicalTo('i.recipe'))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('setParameter')
+                     ->with($this->identicalTo('recipeIds'), $this->identicalTo($mappedRecipeIds))
+                     ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('getQuery')
+                     ->willReturn($query);
+
+        $this->entityManager->expects($this->once())
+                            ->method('createQueryBuilder')
+                            ->willReturn($queryBuilder);
+
+        $instance = $this->createInstance(['mapIdsToParameterValues']);
+        $instance->expects($this->once())
+                 ->method('mapIdsToParameterValues')
+                 ->with($this->identicalTo($expectedRecipeIds))
+                 ->willReturn($mappedRecipeIds);
+
+        $result = $this->invokeMethod($instance, 'orderByNumberOfItems', RecipeProduct::class, $data);
+
+        $this->assertSame($expectedResult, $result);
     }
 }

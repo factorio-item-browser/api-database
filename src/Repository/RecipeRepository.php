@@ -119,7 +119,8 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
      */
     public function findDataByIngredientItemIds(UuidInterface $combinationId, array $itemIds): array
     {
-        return $this->findDataByItemIds($combinationId, 'ingredients', $itemIds);
+        $data = $this->findDataByItemIds($combinationId, 'ingredients', $itemIds);
+        return $this->orderByNumberOfItems(RecipeIngredient::class, $data);
     }
 
     /**
@@ -130,7 +131,8 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
      */
     public function findDataByProductItemIds(UuidInterface $combinationId, array $itemIds): array
     {
-        return $this->findDataByItemIds($combinationId, 'products', $itemIds);
+        $data = $this->findDataByItemIds($combinationId, 'products', $itemIds);
+        return $this->orderByNumberOfItems(RecipeProduct::class, $data);
     }
 
     /**
@@ -240,5 +242,37 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
             $result[] = $data;
         }
         return $result;
+    }
+
+    /**
+     * Orders the recipe data by their number of ingredients or products.
+     * @param class-string<RecipeIngredient|RecipeProduct> $class
+     * @param array<RecipeData> $recipeData
+     * @return array<RecipeData>
+     */
+    protected function orderByNumberOfItems(string $class, array $recipeData): array
+    {
+        $recipeIds = array_map(fn (RecipeData $recipeData) => $recipeData->getId(), $recipeData);
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select(['IDENTITY(i.recipe) AS recipeId', 'MAX(i.order) AS number'])
+                     ->from($class, 'i')
+                     ->andWhere('i.recipe IN (:recipeIds)')
+                     ->addGroupBy('i.recipe')
+                     ->setParameter('recipeIds', $this->mapIdsToParameterValues($recipeIds));
+
+        $numbers = [];
+        foreach ($queryBuilder->getQuery()->getResult() as $row) {
+            $numbers[$row['recipeId']] = intval($row['number']);
+        }
+
+        // Workaround: sort family is not stable as of PHP 7.4. Will be stable in PHP 8.0.
+        $newData = [];
+        foreach ($recipeData as $index => $data) {
+            $sortKey = ($numbers[$data->getId()->getBytes()] ?? 0) * count($recipeData) + $index;
+            $newData[$sortKey] = $data;
+        }
+        ksort($newData);
+        return array_values($newData);
     }
 }
