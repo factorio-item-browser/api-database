@@ -66,22 +66,21 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
         $conditions = [];
         foreach ($namesByTypes->toArray() as $type => $names) {
             $i = count($conditions);
+            $conditions[] = "(t.type IN (:types{$i}) AND t.name IN (:names{$i}))";
+
             switch ($type) {
                 case EntityType::RECIPE:
-                    // Special case: Recipes may re-use the translations provided by the item with the same name.
-                    $conditions[] = "((t.type = :type{$i} OR t.isDuplicatedByRecipe = 1) AND t.name IN (:names{$i}))";
+                    $types = [EntityType::RECIPE, EntityType::FLUID, EntityType::ITEM];
                     break;
-
                 case EntityType::MACHINE:
-                    // Special case: Machines may re-use the translations provided by the item with the same name.
-                    $conditions[] = "((t.type = :type{$i} OR t.isDuplicatedByMachine = 1) AND t.name IN (:names{$i}))";
+                    $types = [EntityType::MACHINE, EntityType::FLUID, EntityType::ITEM];
                     break;
-
                 default:
-                    $conditions[] = "(t.type = :type{$i} AND t.name IN (:names{$i}))";
+                    $types = [$type];
                     break;
             }
-            $queryBuilder->setParameter("type{$i}", $type)
+
+            $queryBuilder->setParameter("types{$i}", $types)
                          ->setParameter("names{$i}", array_values($names));
         }
         $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
