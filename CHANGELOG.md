@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.5.0 - 2021-02-22
+
+### Changed
+
+- Production recipes are now sorted by their number of products to prefer simpler recipes over catalyst ones.
+- Consumption recipes are now sorted by their number of ingredients to prefer simpler recipes.
+
+### Fixed
+
+- Bad condition causing inability to use the index on the Translation table.
+
 ## 3.4.0 - 2021-02-06
 
 ### Changed
