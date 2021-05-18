@@ -17,9 +17,8 @@
     "bluepsyduck/laminas-autowire-factory": "^1.0",
     "doctrine/orm": "^2.6",
     "factorio-item-browser/common": "^1.0",
-    "psr/container": "^1.0",
     "ramsey/uuid-doctrine": "^1.5",
-    "roave/psr-container-doctrine": "^2.2"
+    "roave/psr-container-doctrine": "^3.0"
   },
   "require-dev": {
     "bluepsyduck/test-helper": "^2.0",
