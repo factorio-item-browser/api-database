@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.6.0 - 2021-05-18
+
+### Changed
+
+- Upgraded dependency `roave/psr-container-doctrine` to version 3.x.
+
 ## 3.5.0 - 2021-02-22
 
 ### Changed
