@@ -29,6 +29,18 @@
             </options>
         </field>
 
+        <field name="lastUpdateCheckTime" type="timestamp" nullable="true">
+            <options>
+                <option name="comment">The last time this combination was checked for an update.</option>
+            </options>
+        </field>
+
+        <field name="lastUpdateHash" type="uuid_binary" nullable="true">
+            <options>
+                <option name="comment">The hash representing the mod versions used when the combination was last updated.</option>
+            </options>
+        </field>
+
         <many-to-many field="mods" target-entity="Mod">
             <join-table name="CombinationXMod">
                 <join-columns>

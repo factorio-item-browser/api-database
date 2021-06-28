@@ -36,6 +36,18 @@ class Combination implements EntityWithId
     protected DateTimeInterface $lastUsageTime;
 
     /**
+     * The last time this combination was checked for an update.
+     * @var DateTimeInterface|null
+     */
+    protected ?DateTimeInterface $lastUpdateCheckTime = null;
+
+    /**
+     * The hash representing the mod versions used when the combination was last updated.
+     * @var UuidInterface|null
+     */
+    protected ?UuidInterface $lastUpdateHash = null;
+
+    /**
      * The mods added by the combination.
      * @var Collection<int, Mod>
      */
@@ -142,6 +154,46 @@ class Combination implements EntityWithId
     public function getLastUsageTime(): DateTimeInterface
     {
         return $this->lastUsageTime;
+    }
+
+    /**
+     * Sets the last time this combination was checked for an update.
+     * @param DateTimeInterface|null $lastUpdateCheckTime
+     * @return $this
+     */
+    public function setLastUpdateCheckTime(?DateTimeInterface $lastUpdateCheckTime): self
+    {
+        $this->lastUpdateCheckTime = $lastUpdateCheckTime;
+        return $this;
+    }
+
+    /**
+     * Returns the last time this combination was checked for an update.
+     * @return DateTimeInterface|null
+     */
+    public function getLastUpdateCheckTime(): ?DateTimeInterface
+    {
+        return $this->lastUpdateCheckTime;
+    }
+
+    /**
+     * Sets the hash representing the mod versions used when the combination was last updated.
+     * @param UuidInterface|null $lastUpdateHash
+     * @return $this
+     */
+    public function setLastUpdateHash(?UuidInterface $lastUpdateHash): self
+    {
+        $this->lastUpdateHash = $lastUpdateHash;
+        return $this;
+    }
+
+    /**
+     * Returns the hash representing the mod versions used when the combination was last updated.
+     * @return UuidInterface|null
+     */
+    public function getLastUpdateHash(): ?UuidInterface
+    {
+        return $this->lastUpdateHash;
     }
 
     /**
