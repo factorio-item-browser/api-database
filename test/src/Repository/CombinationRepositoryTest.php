@@ -167,7 +167,7 @@ class CombinationRepositoryTest extends TestCase
                      ->withConsecutive(
                          [$this->identicalTo('c.lastUsageTime >= :lastUsageTime')],
                          [$this->identicalTo(
-                             '(c.lastUpdateCheckTime IS NULL OR c.lastUpdateCheckTime < :lastUpdateCheckTime',
+                             '(c.lastUpdateCheckTime IS NULL OR c.lastUpdateCheckTime < :lastUpdateCheckTime)',
                          )],
                          [$this->identicalTo('c.lastUsageTime > c.importTime')],
                      )

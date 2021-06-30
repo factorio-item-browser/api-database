@@ -57,7 +57,7 @@ class CombinationRepository extends AbstractRepository
         $queryBuilder->select('c')
                      ->from(Combination::class, 'c')
                      ->andWhere('c.lastUsageTime >= :lastUsageTime')
-                     ->andWhere('(c.lastUpdateCheckTime IS NULL OR c.lastUpdateCheckTime < :lastUpdateCheckTime')
+                     ->andWhere('(c.lastUpdateCheckTime IS NULL OR c.lastUpdateCheckTime < :lastUpdateCheckTime)')
                      ->andWhere('c.lastUsageTime > c.importTime')
                      ->setParameter('lastUsageTime', $earliestUsageTime)
                      ->setParameter('lastUpdateCheckTime', $latestUpdateCheckTime)
