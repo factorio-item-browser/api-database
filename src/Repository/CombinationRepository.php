@@ -59,6 +59,7 @@ class CombinationRepository extends AbstractRepository
                      ->andWhere('c.lastUsageTime >= :lastUsageTime')
                      ->andWhere('(c.lastUpdateCheckTime IS NULL OR c.lastUpdateCheckTime < :lastUpdateCheckTime)')
                      ->andWhere('c.lastUsageTime > c.importTime')
+                     ->addOrderBy('c.lastUsageTime', 'DESC')
                      ->setParameter('lastUsageTime', $earliestUsageTime)
                      ->setParameter('lastUpdateCheckTime', $latestUpdateCheckTime)
                      ->setMaxResults($limit);

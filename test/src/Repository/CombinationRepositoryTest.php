@@ -172,6 +172,10 @@ class CombinationRepositoryTest extends TestCase
                          [$this->identicalTo('c.lastUsageTime > c.importTime')],
                      )
                      ->willReturnSelf();
+        $queryBuilder->expects($this->once())
+                     ->method('addOrderBy')
+                     ->with($this->identicalTo('c.lastUsageTime'), $this->identicalTo('DESC'))
+                     ->willReturnSelf();
         $queryBuilder->expects($this->exactly(2))
                      ->method('setParameter')
                      ->withConsecutive(
