@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.7.0 - 2021-07-09
+
+### Added
+
+- Columns `lastUpdateCheckTime` and `lastUpdateHash` to the `Combination` table.
+
+### Changed
+
+- Method `findByLastUsageTime` to `findPossibleCombinationsForUpdate` in the `CombinationRepository` as a more 
+  specialized method to fetch possible combinations to be updated.
+
 ## 3.6.0 - 2021-05-18
 
 ### Changed
