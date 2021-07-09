@@ -42,17 +42,27 @@ class CombinationRepository extends AbstractRepository
     }
 
     /**
-     * Finds all combinations which where used after the specified time.
+     * Finds combinations which may be possible to be updated.
      * @param DateTimeInterface $earliestUsageTime
+     * @param DateTimeInterface $latestUpdateCheckTime
+     * @param int $limit
      * @return array<Combination>
      */
-    public function findByLastUsageTime(DateTimeInterface $earliestUsageTime): array
-    {
+    public function findPossibleCombinationsForUpdate(
+        DateTimeInterface $earliestUsageTime,
+        DateTimeInterface $latestUpdateCheckTime,
+        int $limit
+    ): array {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('c')
                      ->from(Combination::class, 'c')
                      ->andWhere('c.lastUsageTime >= :lastUsageTime')
-                     ->setParameter('lastUsageTime', $earliestUsageTime);
+                     ->andWhere('(c.lastUpdateCheckTime IS NULL OR c.lastUpdateCheckTime < :lastUpdateCheckTime)')
+                     ->andWhere('c.lastUsageTime > c.importTime')
+                     ->addOrderBy('c.lastUsageTime', 'DESC')
+                     ->setParameter('lastUsageTime', $earliestUsageTime)
+                     ->setParameter('lastUpdateCheckTime', $latestUpdateCheckTime)
+                     ->setMaxResults($limit);
 
         return $queryBuilder->getQuery()->getResult();
     }

@@ -14,6 +14,7 @@ jobs:
       matrix:
         php-version:
           - "7.4"
+          - "8.0"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -82,7 +83,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.4"
+          php-version: "8.0"
           extensions: pdo_mysql
           tools: cs2pr
           coverage: none
@@ -114,7 +115,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.4"
+          php-version: "8.0"
           extensions: pdo_mysql
           coverage: none
 
