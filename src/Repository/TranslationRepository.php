@@ -244,8 +244,8 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Builds the placeholders for all the parameters to insert.
-     * @param int $numberOfRows
-     * @param int $numberOfValues
+     * @param positive-int $numberOfRows
+     * @param positive-int $numberOfValues
      * @return string
      */
     protected function buildParameterPlaceholders(int $numberOfRows, int $numberOfValues): string
