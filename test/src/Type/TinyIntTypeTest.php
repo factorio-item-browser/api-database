@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Type;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use FactorioItemBrowser\Api\Database\Type\TinyIntType;
@@ -28,7 +28,7 @@ class TinyIntTypeTest extends TestCase
 
     /**
      * Sets up the test case.
-     * @throws DBALException
+     * @throws Exception
      */
     public static function setUpBeforeClass(): void
     {
