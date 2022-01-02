@@ -21,7 +21,7 @@ use Ramsey\Uuid\UuidInterface;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
 #[Entity]
-#[Table(options: [
+#[Table(name: '`Mod`', options: [
     'charset' => 'utf8mb4',
     'collate' => 'utf8mb4_bin',
     'comment' => 'The table holding the mods.',
