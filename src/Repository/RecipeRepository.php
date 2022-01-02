@@ -23,6 +23,10 @@ use Ramsey\Uuid\UuidInterface;
  */
 class RecipeRepository extends AbstractIdRepositoryWithOrphans
 {
+    /**
+     * @param array<UuidInterface> $ids
+     * @return array<Recipe>
+     */
     public function findByIds(array $ids): array
     {
         if (count($ids) === 0) {

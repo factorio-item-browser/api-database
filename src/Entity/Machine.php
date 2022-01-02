@@ -37,6 +37,7 @@ class Machine implements EntityWithId
 {
     private const FACTOR_CRAFTING_SPEED = 1000;
     private const FACTOR_ENERGY_USAGE = 1000;
+    public const VALUE_UNLIMITED_SLOTS = 255;
 
     #[Id]
     #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the machine.'])]
