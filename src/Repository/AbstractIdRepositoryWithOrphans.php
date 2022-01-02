@@ -40,8 +40,10 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
                      ->from($this->getEntityClass(), 'e');
         $this->addOrphanConditions($queryBuilder, 'e');
 
+        /** @var array<array{id: UuidInterface}> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
         $result = [];
-        foreach ($queryBuilder->getQuery()->getResult() as $data) {
+        foreach ($queryResult as $data) {
             $result[] = $data['id'];
         }
         return $result;

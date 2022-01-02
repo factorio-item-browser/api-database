@@ -42,7 +42,10 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
                      ->leftJoin('rp.item', 'rpi')
                      ->andWhere('r.id IN (:ids)')
                      ->setParameter('ids', $this->mapIdsToParameterValues($ids));
-        return $queryBuilder->getQuery()->getResult();
+
+        /** @var array<Recipe> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     protected function getEntityClass(): string
@@ -97,7 +100,9 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->setParameter('names', array_values($names));
 
-        return $this->mapRecipeDataResult($queryBuilder->getQuery()->getResult());
+        /** @var array<array{id: UuidInterface, name: string, mode: string}> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $this->mapRecipeDataResult($queryResult);
     }
 
     /**
@@ -150,7 +155,9 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
                      ->addOrderBy('r.name', 'ASC')
                      ->addOrderBy('r.mode', 'ASC');
 
-        return $this->mapRecipeDataResult($queryBuilder->getQuery()->getResult());
+        /** @var array<array{id: UuidInterface, name: string, mode: string, itemId: string}> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $this->mapRecipeDataResult($queryResult);
     }
 
     /**
@@ -180,7 +187,9 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
                          ->setParameter("keyword{$index}", '%' . addcslashes($keyword, '\\%_') . '%');
         }
 
-        return $this->mapRecipeDataResult($queryBuilder->getQuery()->getResult());
+        /** @var array<array{id: UuidInterface, name: string, mode: string}> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $this->mapRecipeDataResult($queryResult);
     }
 
     /**
@@ -201,12 +210,14 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->addOrderBy('r.name', 'ASC');
 
-        return $this->mapRecipeDataResult($queryBuilder->getQuery()->getResult());
+        /** @var array<array{id: UuidInterface, name: string, mode: string}> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $this->mapRecipeDataResult($queryResult);
     }
 
     /**
      * Maps the query result to instances of RecipeData.
-     * @param array<mixed> $recipeData
+     * @param array<array{id: UuidInterface, name: string, mode: string, itemId?: string}> $recipeData
      * @return array<RecipeData>
      */
     protected function mapRecipeDataResult(array $recipeData): array
@@ -244,8 +255,10 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
                      ->addGroupBy('i.recipe')
                      ->setParameter('recipeIds', $this->mapIdsToParameterValues($recipeIds));
 
+        /** @var array<array{recipeId: string, number: string}> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
         $numbers = [];
-        foreach ($queryBuilder->getQuery()->getResult() as $row) {
+        foreach ($queryResult as $row) {
             $numbers[$row['recipeId']] = intval($row['number']);
         }
 

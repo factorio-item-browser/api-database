@@ -36,7 +36,10 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
                      ->leftJoin('m.craftingCategories', 'cc')
                      ->andWhere('m.id IN (:ids)')
                      ->setParameter('ids', $this->mapIdsToParameterValues($ids));
-        return $queryBuilder->getQuery()->getResult();
+
+        /** @var array<Machine> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     protected function getEntityClass(): string
@@ -79,7 +82,9 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->setParameter('names', array_values($names));
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Machine> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     /**
@@ -96,6 +101,8 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->setParameter('craftingCategoryName', $craftingCategoryName);
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Machine> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 }

@@ -44,6 +44,8 @@ class ModRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->orderBy('m.name', 'ASC');
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Mod> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 }

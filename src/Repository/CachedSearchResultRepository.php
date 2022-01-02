@@ -35,7 +35,9 @@ class CachedSearchResultRepository extends AbstractRepository
                      ->setParameter('searchHash', $searchHash, UuidBinaryType::NAME);
 
         try {
-            return $queryBuilder->getQuery()->getOneOrNullResult();
+            /** @var CachedSearchResult $queryResult */
+            $queryResult = $queryBuilder->getQuery()->getOneOrNullResult();
+            return $queryResult;
         } catch (NonUniqueResultException) {
             // Can never happen, we are searching for the primary keys.
             return null;

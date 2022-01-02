@@ -41,7 +41,9 @@ class IconRepository extends AbstractRepository
             ++$index;
         }
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Icon> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     /**
@@ -63,7 +65,9 @@ class IconRepository extends AbstractRepository
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->setParameter('imageIds', $this->mapIdsToParameterValues($imageIds));
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Icon> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     /**

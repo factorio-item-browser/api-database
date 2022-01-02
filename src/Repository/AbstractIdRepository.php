@@ -38,6 +38,9 @@ abstract class AbstractIdRepository extends AbstractRepository
                      ->from($this->getEntityClass(), 'e')
                      ->andWhere('e.id IN (:ids)')
                      ->setParameter('ids', $this->mapIdsToParameterValues($ids));
-        return $queryBuilder->getQuery()->getResult();
+
+        /** @var array<TEntity> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 }

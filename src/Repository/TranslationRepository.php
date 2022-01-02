@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\DBAL\Driver\Exception as DriverException;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
@@ -60,24 +59,20 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
             $i = count($conditions);
             $conditions[] = "(t.type IN (:types{$i}) AND t.name IN (:names{$i}))";
 
-            switch ($type) {
-                case EntityType::RECIPE:
-                    $types = [EntityType::RECIPE, EntityType::FLUID, EntityType::ITEM];
-                    break;
-                case EntityType::MACHINE:
-                    $types = [EntityType::MACHINE, EntityType::FLUID, EntityType::ITEM];
-                    break;
-                default:
-                    $types = [$type];
-                    break;
-            }
+            $types = match ($type) {
+                EntityType::RECIPE => [EntityType::RECIPE, EntityType::FLUID, EntityType::ITEM],
+                EntityType::MACHINE => [EntityType::MACHINE, EntityType::FLUID, EntityType::ITEM],
+                default => [$type],
+            };
 
             $queryBuilder->setParameter("types{$i}", $types)
                          ->setParameter("names{$i}", array_values($names));
         }
         $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Translation> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     /**
@@ -123,12 +118,14 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
                          ->setParameter("keyword{$index}", '%' . addcslashes(strtolower($keyword), '\\%_') . '%');
         }
 
-        return $this->mapTranslationPriorityDataResult($queryBuilder->getQuery()->getResult());
+        /** @var array<array{type: string, name: string, priority: string}> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $this->mapTranslationPriorityDataResult($queryResult);
     }
 
     /**
      * Maps the query result to instances of TranslationPriorityData.
-     * @param array<mixed> $translationPriorityData
+     * @param array<array{type: string, name: string, priority: string}> $translationPriorityData
      * @return array<TranslationPriorityData>
      */
     protected function mapTranslationPriorityDataResult(array $translationPriorityData): array
@@ -148,7 +145,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
     /**
      * Clears the cross table to the specified combination.
      * @throws DBALException
-     * @throws DriverException
      */
     public function clearCrossTable(UuidInterface $combinationId): void
     {
@@ -162,7 +158,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      * Persists the translations to the combination, using optimized queries.
      * @param array<Translation> $translations
      * @throws DBALException
-     * @throws DriverException
      */
     public function persistTranslationsToCombination(UuidInterface $combinationId, array $translations): void
     {
@@ -176,7 +171,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      * Inserts the translations into the database.
      * @param array<Translation> $translations
      * @throws DBALException
-     * @throws DriverException
      */
     protected function insertTranslations(array $translations): void
     {
@@ -208,7 +202,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
      * Inserts the translations into the cross table to the specified combination.
      * @param array<Translation> $translations
      * @throws DBALException
-     * @throws DriverException
      */
     protected function insertIntoCrossTable(UuidInterface $combinationId, array $translations): void
     {

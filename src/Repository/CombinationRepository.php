@@ -32,7 +32,9 @@ class CombinationRepository extends AbstractRepository
                      ->setParameter('id', $id, UuidBinaryType::NAME);
 
         try {
-            return $queryBuilder->getQuery()->getOneOrNullResult();
+            /** @var Combination $queryResult */
+            $queryResult = $queryBuilder->getQuery()->getOneOrNullResult();
+            return $queryResult;
         } catch (NonUniqueResultException) {
             // Will never happen, we are searching for the primary key.
             return null;
@@ -59,7 +61,9 @@ class CombinationRepository extends AbstractRepository
                      ->setParameter('lastUpdateCheckTime', $latestUpdateCheckTime)
                      ->setMaxResults($limit);
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Combination> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     /**

@@ -36,7 +36,9 @@ class CraftingCategoryRepository extends AbstractIdRepositoryWithOrphans
                      ->where('cc.name IN (:names)')
                      ->setParameter('names', array_values($names));
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<CraftingCategory> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     protected function getEntityClass(): string

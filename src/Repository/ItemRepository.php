@@ -62,7 +62,9 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
             ++$index;
         }
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Item> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     /**
@@ -87,7 +89,9 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
                          ->setParameter("keyword{$index}", '%' . addcslashes($keyword, '\\%_') . '%');
         }
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Item> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     /**
@@ -104,7 +108,9 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
                      ->addOrderBy('rand')
                      ->setMaxResults($numberOfItems);
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Item> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 
     /**
@@ -121,6 +127,8 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
                      ->addOrderBy('i.name', 'ASC')
                      ->addOrderBy('i.type', 'ASC');
 
-        return $queryBuilder->getQuery()->getResult();
+        /** @var array<Item> $queryResult */
+        $queryResult = $queryBuilder->getQuery()->getResult();
+        return $queryResult;
     }
 }
