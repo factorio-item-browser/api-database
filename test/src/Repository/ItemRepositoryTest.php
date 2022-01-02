@@ -45,7 +45,6 @@ class ItemRepositoryTest extends TestCase
         );
     }
 
-
     /**
      * @throws ReflectionException
      */

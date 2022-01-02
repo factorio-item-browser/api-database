@@ -34,7 +34,10 @@ use Ramsey\Uuid\UuidInterface;
     'comment' => 'The table holding the recipes to craft the items.',
 ])]
 #[Index(columns: ['name'])]
+// @codeCoverageIgnoreStart
+// @see https://github.com/sebastianbergmann/php-code-coverage/issues/888
 class Recipe implements EntityWithId
+// @codeCoverageIgnoreEnd
 {
     private const FACTOR_CRAFTING_TIME = 1000;
 
