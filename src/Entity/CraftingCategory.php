@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
@@ -27,6 +28,7 @@ use Ramsey\Uuid\UuidInterface;
     'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the crafting categories.',
 ])]
+#[Index(columns: ['name'])]
 class CraftingCategory implements EntityWithId
 {
     #[Id]

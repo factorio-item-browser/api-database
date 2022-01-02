@@ -28,7 +28,7 @@ use Ramsey\Uuid\UuidInterface;
     'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the items.',
 ])]
-#[Index(columns: ['type', 'name'], name: 'idx_type_name')]
+#[Index(columns: ['type', 'name'])]
 class Item implements EntityWithId
 {
     #[Id]

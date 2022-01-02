@@ -32,7 +32,7 @@ use Ramsey\Uuid\UuidInterface;
     'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the crafting machines of the recipes.',
 ])]
-#[Index(columns: ['name'], name: 'idx_name')]
+#[Index(columns: ['name'])]
 class Machine implements EntityWithId
 {
     private const FACTOR_CRAFTING_SPEED = 1000;
@@ -62,31 +62,31 @@ class Machine implements EntityWithId
     ])]
     private int $craftingSpeed = self::FACTOR_CRAFTING_SPEED;
 
-    #[Column(type: Types::INTEGER, options: [
+    #[Column(type: 'tinyint', options: [
         'unsigned' => true,
         'comment' => 'The number of item slots available in the machine, or 255 for unlimited.',
     ])]
     private int $numberOfItemSlots = 0;
 
-    #[Column(type: Types::INTEGER, options: [
+    #[Column(type: 'tinyint', options: [
         'unsigned' => true,
         'comment' => 'The number of fluid input slots available in the machine.',
     ])]
     private int $numberOfFluidInputSlots = 0;
 
-    #[Column(type: Types::INTEGER, options: [
+    #[Column(type: 'tinyint', options: [
         'unsigned' => true,
         'comment' => 'The number of fluid output slots available in the machine.',
     ])]
     private int $numberOfFluidOutputSlots = 0;
 
-    #[Column(type: Types::INTEGER, options: [
+    #[Column(type: 'tinyint', options: [
         'unsigned' => true,
         'comment' => 'The number of module slots available in the machine.',
     ])]
     private int $numberOfModuleSlots = 0;
 
-    #[Column(type: Types::INTEGER, options: [
+    #[Column(type: 'tinyint', options: [
         'unsigned' => true,
         'comment' => 'The energy usage of the machine.',
     ])]

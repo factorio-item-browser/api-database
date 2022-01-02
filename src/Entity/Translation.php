@@ -29,7 +29,7 @@ use Ramsey\Uuid\UuidInterface;
     'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the localized translations of the items and recipes etc.',
 ])]
-#[Index(columns: ['locale', 'type', 'name'], name: 'idx_locale_type_name')]
+#[Index(columns: ['locale', 'type', 'name'])]
 class Translation implements EntityWithId
 {
     #[Id]
@@ -55,14 +55,14 @@ class Translation implements EntityWithId
 
     #[Column(type: Types::TEXT, length: 65535, options: [
         'charset' => 'utf8mb4',
-        'collation' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_general_ci',
         'comment' => 'The actual translation.',
     ])]
     private string $value = '';
 
     #[Column(type: Types::TEXT, length: 65535, options: [
         'charset' => 'utf8mb4',
-        'collation' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_general_ci',
         'comment' => 'The translated description.',
     ])]
     private string $description = '';

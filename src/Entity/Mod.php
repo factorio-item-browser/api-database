@@ -48,7 +48,7 @@ class Mod implements EntityWithId
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
-        'collation' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_general_ci',
         'comment' => 'The author of the mod.',
     ])]
     private string $author = '';

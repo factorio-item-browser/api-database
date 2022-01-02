@@ -40,7 +40,7 @@ class CachedSearchResult
     #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The hash of the search.'])]
     private UuidInterface $searchHash;
 
-    #[Column(type: Types::TEXT, options: [
+    #[Column(type: Types::TEXT, length: 65535, options: [
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_bin',
         'comment' => 'The raw query string of the search.',

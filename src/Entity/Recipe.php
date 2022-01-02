@@ -33,7 +33,7 @@ use Ramsey\Uuid\UuidInterface;
     'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the recipes to craft the items.',
 ])]
-#[Index(columns: ['name'], name: 'idx_name')]
+#[Index(columns: ['name'])]
 class Recipe implements EntityWithId
 {
     private const FACTOR_CRAFTING_TIME = 1000;
