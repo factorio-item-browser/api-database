@@ -24,7 +24,7 @@ use Ramsey\Uuid\UuidInterface;
 #[Entity]
 #[Table(options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the crafting categories.',
 ])]
 class CraftingCategory implements EntityWithId
@@ -35,7 +35,7 @@ class CraftingCategory implements EntityWithId
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The name of the crafting category.',
     ])]
     private string $name = '';

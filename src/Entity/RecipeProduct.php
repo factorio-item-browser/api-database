@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 #[Table(options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the products for the recipes.',
 ])]
 class RecipeProduct

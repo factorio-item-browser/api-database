@@ -23,7 +23,7 @@ use Ramsey\Uuid\UuidInterface;
 #[Entity]
 #[Table(name: '`Mod`', options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the mods.',
 ])]
 class Mod implements EntityWithId
@@ -34,21 +34,21 @@ class Mod implements EntityWithId
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The name of the mod.',
     ])]
     private string $name = '';
 
     #[Column(length: 16, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The version of the mod.',
     ])]
     private string $version = '';
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The author of the mod.',
     ])]
     private string $author = '';

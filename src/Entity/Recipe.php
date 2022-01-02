@@ -30,7 +30,7 @@ use Ramsey\Uuid\UuidInterface;
 #[Entity]
 #[Table(options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the recipes to craft the items.',
 ])]
 #[Index(columns: ['name'], name: 'idx_name')]
@@ -44,7 +44,7 @@ class Recipe implements EntityWithId
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The name of the recipe.',
     ])]
     private string $name = '';

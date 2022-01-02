@@ -24,7 +24,7 @@ use Ramsey\Uuid\UuidInterface;
 #[Entity]
 #[Table(options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the icon image data.',
 ])]
 class IconImage implements EntityWithId

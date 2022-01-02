@@ -25,7 +25,7 @@ use Ramsey\Uuid\UuidInterface;
 #[Entity]
 #[Table(options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the items.',
 ])]
 #[Index(columns: ['type', 'name'], name: 'idx_type_name')]
@@ -40,7 +40,7 @@ class Item implements EntityWithId
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The unique name of the item.',
     ])]
     private string $name = '';

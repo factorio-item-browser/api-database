@@ -23,7 +23,7 @@ use Ramsey\Uuid\UuidInterface;
 #[Entity]
 #[Table(options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table caching the search results.',
 ])]
 class CachedSearchResult
@@ -42,7 +42,7 @@ class CachedSearchResult
 
     #[Column(type: Types::TEXT, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The raw query string of the search.',
     ])]
     private string $searchQuery = '';

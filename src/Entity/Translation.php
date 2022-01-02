@@ -26,7 +26,7 @@ use Ramsey\Uuid\UuidInterface;
 #[Entity]
 #[Table(options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the localized translations of the items and recipes etc.',
 ])]
 #[Index(columns: ['locale', 'type', 'name'], name: 'idx_locale_type_name')]
@@ -38,7 +38,7 @@ class Translation implements EntityWithId
 
     #[Column(length: 5, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The locale of the translation.',
     ])]
     private string $locale = '';
@@ -48,21 +48,21 @@ class Translation implements EntityWithId
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The name of the translation.',
     ])]
     private string $name = '';
 
     #[Column(type: Types::TEXT, length: 65535, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The actual translation.',
     ])]
     private string $value = '';
 
     #[Column(type: Types::TEXT, length: 65535, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => 'The translated description.',
     ])]
     private string $description = '';

@@ -21,7 +21,7 @@ use FactorioItemBrowser\Api\Database\Type\EnumTypeEntityType;
 #[Entity]
 #[Table(options: [
     'charset' => 'utf8mb4',
-    'collate' => 'utf8mb4_bin',
+    'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the icons of the items and recipes.',
 ])]
 class Icon
@@ -38,7 +38,7 @@ class Icon
     #[Id]
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
-        'collate' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_bin',
         'comment' => "The name of the icon's prototype.",
     ])]
     private string $name = '';
