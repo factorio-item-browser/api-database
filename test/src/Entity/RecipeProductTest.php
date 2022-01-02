@@ -7,7 +7,6 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,103 +14,72 @@ use PHPUnit\Framework\TestCase;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\RecipeProduct
+ * @covers \FactorioItemBrowser\Api\Database\Entity\RecipeProduct
  */
 class RecipeProductTest extends TestCase
 {
-    /**
-     * Tests the setting and getting the recipe.
-     * @covers ::getRecipe
-     * @covers ::setRecipe
-     */
-    public function testSetAndGetRecipe(): void
+    private function createInstance(): RecipeProduct
     {
-        /* @var Recipe&MockObject $recipe */
-        $recipe = $this->createMock(Recipe::class);
-        $product = new RecipeProduct();
-
-        $this->assertSame($product, $product->setRecipe($recipe));
-        $this->assertSame($recipe, $product->getRecipe());
+        return new RecipeProduct();
     }
 
-    /**
-     * Tests the setting and getting the order.
-     * @covers ::getOrder
-     * @covers ::setOrder
-     */
+    public function testSetAndGetRecipe(): void
+    {
+        $recipe = new Recipe();
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setRecipe($recipe));
+        $this->assertSame($recipe, $instance->getRecipe());
+    }
+
     public function testSetAndGetOrder(): void
     {
         $order = 42;
-        $product = new RecipeProduct();
+        $instance = $this->createInstance();
 
-        $this->assertSame($product, $product->setOrder($order));
-        $this->assertSame($order, $product->getOrder());
+        $this->assertSame($instance, $instance->setOrder($order));
+        $this->assertSame($order, $instance->getOrder());
     }
 
-    /**
-     * Tests the setting and getting the item.
-     * @covers ::getItem
-     * @covers ::setItem
-     */
     public function testSetAndGetItem(): void
     {
-        /* @var Item&MockObject $item */
-        $item = $this->createMock(Item::class);
-        $product = new RecipeProduct();
+        $item = new Item();
+        $instance = $this->createInstance();
 
-        $this->assertSame($product, $product->setItem($item));
-        $this->assertSame($item, $product->getItem());
+        $this->assertSame($instance, $instance->setItem($item));
+        $this->assertSame($item, $instance->getItem());
     }
 
-    /**
-     * Tests the setting and getting the amount min.
-     * @covers ::getAmountMin
-     * @covers ::setAmountMin
-     */
     public function testSetAndGetAmountMin(): void
     {
         $amountMin = 13.37;
-        $product = new RecipeProduct();
+        $instance = $this->createInstance();
 
-        $this->assertSame($product, $product->setAmountMin($amountMin));
-        $this->assertSame($amountMin, $product->getAmountMin());
+        $this->assertSame($instance, $instance->setAmountMin($amountMin));
+        $this->assertSame($amountMin, $instance->getAmountMin());
     }
 
-    /**
-     * Tests the setting and getting the amount max.
-     * @covers ::getAmountMax
-     * @covers ::setAmountMax
-     */
     public function testSetAndGetAmountMax(): void
     {
         $amountMax = 13.37;
-        $product = new RecipeProduct();
+        $instance = $this->createInstance();
 
-        $this->assertSame($product, $product->setAmountMax($amountMax));
-        $this->assertSame($amountMax, $product->getAmountMax());
+        $this->assertSame($instance, $instance->setAmountMax($amountMax));
+        $this->assertSame($amountMax, $instance->getAmountMax());
     }
 
-    /**
-     * Tests the setting and getting the probability.
-     * @covers ::getProbability
-     * @covers ::setProbability
-     */
     public function testSetAndGetProbability(): void
     {
         $probability = 13.37;
-        $product = new RecipeProduct();
+        $instance = $this->createInstance();
 
-        $this->assertSame($product, $product->setProbability($probability));
-        $this->assertSame($probability, $product->getProbability());
+        $this->assertSame($instance, $instance->setProbability($probability));
+        $this->assertSame($probability, $instance->getProbability());
     }
 
-    /**
-     * Tests the getAmount method.
-     * @covers ::getAmount
-     */
     public function testGetAmount(): void
     {
-        $recipeProduct = new RecipeProduct();
+        $recipeProduct = $this->createInstance();
         $recipeProduct->setAmountMin(42)
                       ->setAmountMax(21)
                       ->setProbability(0.25);

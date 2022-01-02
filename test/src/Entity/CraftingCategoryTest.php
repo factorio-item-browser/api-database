@@ -6,59 +6,46 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the CraftingCategory class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\CraftingCategory
+ * @covers \FactorioItemBrowser\Api\Database\Entity\CraftingCategory
  */
 class CraftingCategoryTest extends TestCase
 {
-    /**
-     * Tests the constructing.
-     * @covers ::__construct
-     * @covers ::getMachines
-     * @covers ::getRecipes
-     */
+    private function createInstance(): CraftingCategory
+    {
+        return new CraftingCategory();
+    }
+
     public function testConstruct(): void
     {
-        $craftingCategory = new CraftingCategory();
+        $instance = $this->createInstance();
 
-        $this->assertInstanceOf(ArrayCollection::class, $craftingCategory->getMachines());
-        $this->assertInstanceOf(ArrayCollection::class, $craftingCategory->getRecipes());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getMachines());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getRecipes());
     }
 
-    /**
-     * Tests the setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
-     */
     public function testSetAndGetId(): void
     {
-        /* @var UuidInterface&MockObject $id */
-        $id = $this->createMock(UuidInterface::class);
-        $craftingCategory = new CraftingCategory();
+        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($craftingCategory, $craftingCategory->setId($id));
-        $this->assertSame($id, $craftingCategory->getId());
+        $this->assertSame($instance, $instance->setId($id));
+        $this->assertSame($id, $instance->getId());
     }
 
-    /**
-     * Tests the setting and getting the name.
-     * @covers ::getName
-     * @covers ::setName
-     */
     public function testSetAndGetName(): void
     {
         $name = 'abc';
-        $craftingCategory = new CraftingCategory();
+        $instance = $this->createInstance();
 
-        $this->assertSame($craftingCategory, $craftingCategory->setName($name));
-        $this->assertSame($name, $craftingCategory->getName());
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($name, $instance->getName());
     }
 }

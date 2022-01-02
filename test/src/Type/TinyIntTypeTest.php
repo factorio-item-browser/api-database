@@ -7,6 +7,7 @@ namespace FactorioItemBrowserTest\Api\Database\Type;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Type\TinyIntType;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -35,8 +36,8 @@ class TinyIntTypeTest extends TestCase
         parent::setUpBeforeClass();
 
         // We have to use the factory methods because Doctrine.
-        Type::addType(TinyIntType::NAME, TinyIntType::class);
-        self::$type = Type::getType(TinyIntType::NAME);
+        Type::addType(CustomTypes::TINYINT, TinyIntType::class);
+        self::$type = Type::getType(CustomTypes::TINYINT);
     }
 
     /**

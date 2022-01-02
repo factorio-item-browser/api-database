@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
@@ -37,13 +38,15 @@ class Combination implements EntityWithId
     #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the combination.'])]
     private UuidInterface $id;
 
-    #[Column(type: 'timestamp', options: ['comment' => 'The time when the combination was imported.'])]
+    #[Column(type: CustomTypes::TIMESTAMP, options: ['comment' => 'The time when the combination was imported.'])]
     private DateTimeInterface $importTime;
 
-    #[Column(type: 'timestamp', options: ['comment' => 'The time when the combination was last used by a visitor.'])]
+    #[Column(type: CustomTypes::TIMESTAMP, options: [
+        'comment' => 'The time when the combination was last used by a visitor.',
+    ])]
     private DateTimeInterface $lastUsageTime;
 
-    #[Column(type: 'timestamp', nullable: true, options: [
+    #[Column(type: CustomTypes::TIMESTAMP, nullable: true, options: [
         'comment' => 'The last time this combination was checked for an update.',
     ])]
     private ?DateTimeInterface $lastUpdateCheckTime = null;

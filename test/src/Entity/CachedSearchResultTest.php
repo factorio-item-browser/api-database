@@ -7,9 +7,8 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 use BluePsyduck\TestHelper\ReflectionTrait;
 use DateTime;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -17,99 +16,71 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\CachedSearchResult
+ * @covers \FactorioItemBrowser\Api\Database\Entity\CachedSearchResult
  */
 class CachedSearchResultTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * Tests the constructing.
-     * @covers ::__construct
-     */
+    private function createInstance(): CachedSearchResult
+    {
+        return new CachedSearchResult();
+    }
+
     public function testConstruct(): void
     {
-        $cachedSearchResult = new CachedSearchResult();
+        $instance = $this->createInstance();
 
-        $this->assertInstanceOf(DateTime::class, $cachedSearchResult->getLastSearchTime());
+        $this->assertInstanceOf(DateTime::class, $instance->getLastSearchTime());
     }
 
-    /**
-     * Tests the setting and getting the combination id.
-     * @covers ::getCombinationId
-     * @covers ::setCombinationId
-     */
     public function testSetAndGetCombinationId(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
-        $cachedSearchResult = new CachedSearchResult();
+        $combinationId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setCombinationId($combinationId));
-        $this->assertSame($combinationId, $cachedSearchResult->getCombinationId());
+        $this->assertSame($instance, $instance->setCombinationId($combinationId));
+        $this->assertSame($combinationId, $instance->getCombinationId());
     }
 
-    /**
-     * Tests the setting and getting the locale.
-     * @covers ::getLocale
-     * @covers ::setLocale
-     */
     public function testSetAndGetLocale(): void
     {
         $locale = 'abc';
-        $cachedSearchResult = new CachedSearchResult();
+        $instance = $this->createInstance();
 
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setLocale($locale));
-        $this->assertSame($locale, $cachedSearchResult->getLocale());
+        $this->assertSame($instance, $instance->setLocale($locale));
+        $this->assertSame($locale, $instance->getLocale());
     }
 
-    /**
-     * Tests the setting and getting the search hash.
-     * @covers ::getSearchHash
-     * @covers ::setSearchHash
-     */
     public function testSetAndGetSearchHash(): void
     {
-        /* @var UuidInterface&MockObject $searchHash */
-        $searchHash = $this->createMock(UuidInterface::class);
-        $cachedSearchResult = new CachedSearchResult();
+        $searchHash = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setSearchHash($searchHash));
-        $this->assertSame($searchHash, $cachedSearchResult->getSearchHash());
+        $this->assertSame($instance, $instance->setSearchHash($searchHash));
+        $this->assertSame($searchHash, $instance->getSearchHash());
     }
 
-    /**
-     * Tests the setting and getting the search query.
-     * @covers ::getSearchQuery
-     * @covers ::setSearchQuery
-     */
     public function testSetAndGetSearchQuery(): void
     {
         $searchQuery = 'abc';
-        $cachedSearchResult = new CachedSearchResult();
+        $instance = $this->createInstance();
 
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setSearchQuery($searchQuery));
-        $this->assertSame($searchQuery, $cachedSearchResult->getSearchQuery());
+        $this->assertSame($instance, $instance->setSearchQuery($searchQuery));
+        $this->assertSame($searchQuery, $instance->getSearchQuery());
     }
 
-    /**
-     * Tests the setting and getting the result data.
-     * @covers ::getResultData
-     * @covers ::setResultData
-     */
     public function testSetAndGetResultData(): void
     {
         $resultData = 'abc';
-        $cachedSearchResult = new CachedSearchResult();
+        $instance = $this->createInstance();
 
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setResultData($resultData));
-        $this->assertSame($resultData, $cachedSearchResult->getResultData());
+        $this->assertSame($instance, $instance->setResultData($resultData));
+        $this->assertSame($resultData, $instance->getResultData());
     }
 
     /**
-     * Tests getting the result data.
      * @throws ReflectionException
-     * @covers ::getResultData
      */
     public function testGetResultDataAsResource(): void
     {
@@ -122,23 +93,18 @@ class CachedSearchResultTest extends TestCase
         fwrite($stream, $contents);
         fseek($stream, 0);
 
-        $image = new CachedSearchResult();
-
+        $image = $this->createInstance();
         $this->injectProperty($image, 'resultData', $stream);
+
         $this->assertSame($contents, $image->getResultData());
     }
 
-    /**
-     * Tests the setting and getting the last search time.
-     * @covers ::getLastSearchTime
-     * @covers ::setLastSearchTime
-     */
     public function testSetAndGetLastSearchTime(): void
     {
         $lastSearchTime = new DateTime('2038-01-19 03:14:07');
-        $cachedSearchResult = new CachedSearchResult();
+        $instance = $this->createInstance();
 
-        $this->assertSame($cachedSearchResult, $cachedSearchResult->setLastSearchTime($lastSearchTime));
-        $this->assertSame($lastSearchTime, $cachedSearchResult->getLastSearchTime());
+        $this->assertSame($instance, $instance->setLastSearchTime($lastSearchTime));
+        $this->assertSame($lastSearchTime, $instance->getLastSearchTime());
     }
 }

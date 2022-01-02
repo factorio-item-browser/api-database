@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -19,58 +20,42 @@ use Ramsey\Uuid\UuidInterface;
  */
 class ItemTest extends TestCase
 {
-    /**
-     * Tests the constructing.
-     * @covers ::__construct
-     * @covers ::getCombinations
-     */
+    private function createInstance(): Item
+    {
+        return new Item();
+    }
+
     public function testConstruct(): void
     {
-        $item = new Item();
+        $instance = $this->createInstance();
 
-        $this->assertInstanceOf(ArrayCollection::class, $item->getCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
     }
 
-    /**
-     * Tests the setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
-     */
     public function testSetAndGetId(): void
     {
-        /* @var UuidInterface&MockObject $id */
-        $id = $this->createMock(UuidInterface::class);
-        $item = new Item();
+        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($item, $item->setId($id));
-        $this->assertSame($id, $item->getId());
+        $this->assertSame($instance, $instance->setId($id));
+        $this->assertSame($id, $instance->getId());
     }
 
-    /**
-     * Tests the setting and getting the type.
-     * @covers ::getType
-     * @covers ::setType
-     */
     public function testSetAndGetType(): void
     {
         $type = 'abc';
-        $item = new Item();
+        $instance = $this->createInstance();
 
-        $this->assertSame($item, $item->setType($type));
-        $this->assertSame($type, $item->getType());
+        $this->assertSame($instance, $instance->setType($type));
+        $this->assertSame($type, $instance->getType());
     }
 
-    /**
-     * Tests the setting and getting the name.
-     * @covers ::getName
-     * @covers ::setName
-     */
     public function testSetAndGetName(): void
     {
         $name = 'abc';
-        $item = new Item();
+        $instance = $this->createInstance();
 
-        $this->assertSame($item, $item->setName($name));
-        $this->assertSame($name, $item->getName());
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($name, $instance->getName());
     }
 }

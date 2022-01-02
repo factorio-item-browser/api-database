@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Type\TimestampType;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -18,13 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 class TimestampTypeTest extends TestCase
 {
-/**
+    /**
      * Tests the getName method.
      * @covers ::getName
      */
     public function testGetName(): void
     {
-        $expectedResult = TimestampType::NAME;
+        $expectedResult = CustomTypes::TIMESTAMP;
 
         /* @var TimestampType&MockObject $type */
         $type = $this->getMockBuilder(TimestampType::class)

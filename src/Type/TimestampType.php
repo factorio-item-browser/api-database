@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\DateTimeType;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 
 /**
  * The type representing a TIMESTAMP.
@@ -15,36 +16,16 @@ use Doctrine\DBAL\Types\DateTimeType;
  */
 class TimestampType extends DateTimeType
 {
-    /**
-     * The name of the type.
-     */
-    public const NAME = 'timestamp';
-
-    /**
-     * Returns the name of this type.
-     * @return string
-     */
     public function getName(): string
     {
-        return self::NAME;
+        return CustomTypes::TIMESTAMP;
     }
 
-    /**
-     * Returns the SQL declaration snippet for a field of this type.
-     * @param array<mixed> $column
-     * @param AbstractPlatform $platform
-     * @return string
-     */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return 'TIMESTAMP';
     }
 
-    /**
-     * Returns whether an SQL comment hint is required.
-     * @param AbstractPlatform $platform
-     * @return boolean
-     */
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

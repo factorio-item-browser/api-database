@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
@@ -37,7 +38,7 @@ class IconImage implements EntityWithId
     #[Column(type: Types::BLOB, options: ['comment' => 'The contents of the image.'])]
     private mixed $contents = '';
 
-    #[Column(type: 'smallint', options: [
+    #[Column(type: Types::SMALLINT, options: [
         'unsigned' => true,
         'comment' => 'The size of the image.',
     ])]

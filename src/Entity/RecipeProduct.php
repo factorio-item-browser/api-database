@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 
 /**
  * The entity class of the recipe product database table.
@@ -36,7 +37,7 @@ class RecipeProduct
     private Recipe $recipe;
 
     #[Id]
-    #[Column(name: '`order`', type: 'tinyint', options: [#
+    #[Column(name: '`order`', type: CustomTypes::TINYINT, options: [#
         'unsigned' => true,
         'comment' => 'The order of the product in the recipe.',
     ])]

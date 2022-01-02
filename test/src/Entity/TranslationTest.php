@@ -6,141 +6,97 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the Translation class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\Translation
+ * @covers \FactorioItemBrowser\Api\Database\Entity\Translation
  */
 class TranslationTest extends TestCase
 {
-    /**
-     * Tests the constructing.
-     * @covers ::__construct
-     * @covers ::getCombinations
-     */
+    private function createInstance(): Translation
+    {
+        return new Translation();
+    }
+
     public function testConstruct(): void
     {
-        $translation = new Translation();
+        $instance = $this->createInstance();
 
-        $this->assertInstanceOf(ArrayCollection::class, $translation->getCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
     }
 
-    /**
-     * Tests the setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
-     */
     public function testSetAndGetId(): void
     {
-        /* @var UuidInterface&MockObject $id */
-        $id = $this->createMock(UuidInterface::class);
-        $translation = new Translation();
+        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($translation, $translation->setId($id));
-        $this->assertSame($id, $translation->getId());
+        $this->assertSame($instance, $instance->setId($id));
+        $this->assertSame($id, $instance->getId());
     }
 
-    /**
-     * Tests setting and getting the locale.
-     * @covers ::getLocale
-     * @covers ::setLocale
-     */
     public function testSetAndGetLocale(): void
     {
         $locale = 'abc';
-        $translation = new Translation();
+        $instance = $this->createInstance();
 
-        $this->assertSame($translation, $translation->setLocale($locale));
-        $this->assertSame($locale, $translation->getLocale());
+        $this->assertSame($instance, $instance->setLocale($locale));
+        $this->assertSame($locale, $instance->getLocale());
     }
 
-    /**
-     * Tests setting and getting the type.
-     * @covers ::getType
-     * @covers ::setType
-     */
     public function testSetAndGetType(): void
     {
         $type = 'abc';
-        $translation = new Translation();
+        $instance = $this->createInstance();
 
-        $this->assertSame($translation, $translation->setType($type));
-        $this->assertSame($type, $translation->getType());
+        $this->assertSame($instance, $instance->setType($type));
+        $this->assertSame($type, $instance->getType());
     }
 
-    /**
-     * Tests setting and getting the name.
-     * @covers ::getName
-     * @covers ::setName
-     */
     public function testSetAndGetName(): void
     {
         $name = 'abc';
-        $translation = new Translation();
+        $instance = $this->createInstance();
 
-        $this->assertSame($translation, $translation->setName($name));
-        $this->assertSame($name, $translation->getName());
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($name, $instance->getName());
     }
 
-    /**
-     * Tests setting and getting the value.
-     * @covers ::getValue
-     * @covers ::setValue
-     */
     public function testSetAndGetValue(): void
     {
         $value = 'abc';
-        $translation = new Translation();
+        $instance = $this->createInstance();
 
-        $this->assertSame($translation, $translation->setValue($value));
-        $this->assertSame($value, $translation->getValue());
+        $this->assertSame($instance, $instance->setValue($value));
+        $this->assertSame($value, $instance->getValue());
     }
 
-    /**
-     * Tests setting and getting the description.
-     * @covers ::getDescription
-     * @covers ::setDescription
-     */
     public function testSetAndGetDescription(): void
     {
         $description = 'abc';
-        $translation = new Translation();
+        $instance = $this->createInstance();
 
-        $this->assertSame($translation, $translation->setDescription($description));
-        $this->assertSame($description, $translation->getDescription());
+        $this->assertSame($instance, $instance->setDescription($description));
+        $this->assertSame($description, $instance->getDescription());
     }
 
-    /**
-     * Tests setting and getting the isDuplicatedByRecipe.
-     * @covers ::getIsDuplicatedByRecipe
-     * @covers ::setIsDuplicatedByRecipe
-     */
     public function testSetAndGetIsDuplicatedByRecipe(): void
     {
-        $isDuplicatedByRecipe = true;
-        $translation = new Translation();
+        $instance = $this->createInstance();
 
-        $this->assertSame($translation, $translation->setIsDuplicatedByRecipe($isDuplicatedByRecipe));
-        $this->assertTrue($translation->getIsDuplicatedByRecipe());
+        $this->assertSame($instance, $instance->setIsDuplicatedByRecipe(true));
+        $this->assertTrue($instance->getIsDuplicatedByRecipe());
     }
 
-    /**
-     * Tests setting and getting the isDuplicatedByMachine.
-     * @covers ::getIsDuplicatedByMachine
-     * @covers ::setIsDuplicatedByMachine
-     */
     public function testSetAndGetIsDuplicatedByMachine(): void
     {
-        $isDuplicatedByMachine = true;
-        $translation = new Translation();
+        $instance = $this->createInstance();
 
-        $this->assertSame($translation, $translation->setIsDuplicatedByMachine($isDuplicatedByMachine));
-        $this->assertTrue($translation->getIsDuplicatedByMachine());
+        $this->assertSame($instance, $instance->setIsDuplicatedByMachine(true));
+        $this->assertTrue($instance->getIsDuplicatedByMachine());
     }
 }

@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
@@ -53,7 +54,7 @@ class CachedSearchResult
     #[Column(type: Types::BLOB, options: ['comment' => 'The result data of the search.'])]
     private mixed $resultData = '';
 
-    #[Column(type: 'timestamp', options: ['comment' => 'The time when the search result was last used.'])]
+    #[Column(type: CustomTypes::TIMESTAMP, options: ['comment' => 'The time when the search result was last used.'])]
     private DateTimeInterface $lastSearchTime;
 
     public function __construct()

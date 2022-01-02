@@ -34,7 +34,7 @@
         <field name="searchQuery" type="text" length="65535">
             <options>
                 <option name="charset">utf8mb4</option>
-                <option name="collate">utf8mb4_bin</option>
+                <option name="collate">utf8mb4_general_ci</option>
                 <option name="comment">The raw query string of the search.</option>
             </options>
         </field>

@@ -14,6 +14,7 @@ namespace FactorioItemBrowser\Api\Database;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 
 return [
@@ -47,8 +48,8 @@ return [
             Type\EnumTypeEntityType::NAME => Type\EnumTypeEntityType::class,
             Type\EnumTypeRecipeMode::NAME => Type\EnumTypeRecipeMode::class,
             Type\EnumTypeItemType::NAME => Type\EnumTypeItemType::class,
-            Type\TimestampType::NAME => Type\TimestampType::class,
-            Type\TinyIntType::NAME => Type\TinyIntType::class,
+            CustomTypes::TIMESTAMP => Type\TimestampType::class,
+            CustomTypes::TINYINT => Type\TinyIntType::class,
             UuidBinaryType::NAME => UuidBinaryType::class,
         ],
     ],

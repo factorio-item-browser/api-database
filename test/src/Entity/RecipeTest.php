@@ -7,104 +7,74 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the Recipe class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\Recipe
+ * @covers \FactorioItemBrowser\Api\Database\Entity\Recipe
  */
 class RecipeTest extends TestCase
 {
-    /**
-     * Tests the constructing
-     * @covers ::__construct
-     * @covers ::getIngredients()
-     * @covers ::getCombinations
-     * @covers ::getProducts()
-     */
+    private function createInstance(): Recipe
+    {
+        return new Recipe();
+    }
+
     public function testConstruct(): void
     {
-        $recipe = new Recipe();
+        $instance = $this->createInstance();
 
-        $this->assertInstanceOf(ArrayCollection::class, $recipe->getIngredients());
-        $this->assertInstanceOf(ArrayCollection::class, $recipe->getProducts());
-        $this->assertInstanceOf(ArrayCollection::class, $recipe->getCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getIngredients());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getProducts());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
     }
 
-    /**
-     * Tests setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
-     */
     public function testSetAndGetId(): void
     {
-        /* @var UuidInterface&MockObject $id */
-        $id = $this->createMock(UuidInterface::class);
-        $recipe = new Recipe();
+        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($recipe, $recipe->setId($id));
-        $this->assertSame($id, $recipe->getId());
+        $this->assertSame($instance, $instance->setId($id));
+        $this->assertSame($id, $instance->getId());
     }
 
-    /**
-     * Tests setting and getting the name.
-     * @covers ::getName
-     * @covers ::setName
-     */
     public function testSetAndGetName(): void
     {
         $name = 'abc';
-        $recipe = new Recipe();
+        $instance = $this->createInstance();
 
-        $this->assertSame($recipe, $recipe->setName($name));
-        $this->assertSame($name, $recipe->getName());
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($name, $instance->getName());
     }
 
-    /**
-     * Tests setting and getting the mode.
-     * @covers ::getMode
-     * @covers ::setMode
-     */
     public function testSetAndGetMode(): void
     {
         $mode = 'abc';
-        $recipe = new Recipe();
+        $instance = $this->createInstance();
 
-        $this->assertSame($recipe, $recipe->setMode($mode));
-        $this->assertSame($mode, $recipe->getMode());
+        $this->assertSame($instance, $instance->setMode($mode));
+        $this->assertSame($mode, $instance->getMode());
     }
 
-    /**
-     * Tests setting and getting the craftingTime.
-     * @covers ::getCraftingTime
-     * @covers ::setCraftingTime
-     */
     public function testSetAndGetCraftingTime(): void
     {
         $craftingTime = 13.37;
-        $recipe = new Recipe();
+        $instance = $this->createInstance();
 
-        $this->assertSame($recipe, $recipe->setCraftingTime($craftingTime));
-        $this->assertSame($craftingTime, $recipe->getCraftingTime());
+        $this->assertSame($instance, $instance->setCraftingTime($craftingTime));
+        $this->assertSame($craftingTime, $instance->getCraftingTime());
     }
 
-    /**
-     * Tests setting and getting the craftingCategory.
-     * @covers ::getCraftingCategory
-     * @covers ::setCraftingCategory
-     */
     public function testSetAndGetCraftingCategory(): void
     {
-        /* @var CraftingCategory&MockObject $craftingCategory */
-        $craftingCategory = $this->createMock(CraftingCategory::class);
-        $recipe = new Recipe();
+        $craftingCategory = new CraftingCategory();
+        $instance = $this->createInstance();
 
-        $this->assertSame($recipe, $recipe->setCraftingCategory($craftingCategory));
-        $this->assertSame($craftingCategory, $recipe->getCraftingCategory());
+        $this->assertSame($instance, $instance->setCraftingCategory($craftingCategory));
+        $this->assertSame($craftingCategory, $instance->getCraftingCategory());
     }
 }

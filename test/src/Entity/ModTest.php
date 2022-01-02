@@ -6,85 +6,63 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the Mod class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\Mod
+ * @covers \FactorioItemBrowser\Api\Database\Entity\Mod
  */
 class ModTest extends TestCase
 {
-    /**
-     * Tests the constructing.
-     * @covers ::__construct
-     * @covers ::getCombinations
-     */
+    private function createInstance(): Mod
+    {
+        return new Mod();
+    }
+
     public function testConstruct(): void
     {
-        $mod = new Mod();
+        $instance = $this->createInstance();
 
-        $this->assertInstanceOf(ArrayCollection::class, $mod->getCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
     }
 
-    /**
-     * Tests setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
-     */
     public function testSetAndGetId(): void
     {
-        /* @var UuidInterface&MockObject $id */
-        $id = $this->createMock(UuidInterface::class);
-        $mod = new Mod();
+        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($mod, $mod->setId($id));
-        $this->assertSame($id, $mod->getId());
+        $this->assertSame($instance, $instance->setId($id));
+        $this->assertSame($id, $instance->getId());
     }
 
-    /**
-     * Tests setting and getting the name.
-     * @covers ::getName
-     * @covers ::setName
-     */
     public function testSetAndGetName(): void
     {
         $name = 'abc';
-        $mod = new Mod();
+        $instance = $this->createInstance();
 
-        $this->assertSame($mod, $mod->setName($name));
-        $this->assertSame($name, $mod->getName());
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($name, $instance->getName());
     }
 
-    /**
-     * Tests setting and getting the Version.
-     * @covers ::getVersion
-     * @covers ::setVersion
-     */
     public function testSetAndGetVersion(): void
     {
-        $mod = new Mod();
-
         $version = '1.2.3';
-        $this->assertSame($mod, $mod->setVersion($version));
-        $this->assertSame($version, $mod->getVersion());
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setVersion($version));
+        $this->assertSame($version, $instance->getVersion());
     }
 
-    /**
-     * Tests setting and getting the author.
-     * @covers ::getAuthor
-     * @covers ::setAuthor
-     */
     public function testSetAndGetAuthor(): void
     {
         $author = 'abc';
-        $mod = new Mod();
+        $instance = $this->createInstance();
 
-        $this->assertSame($mod, $mod->setAuthor($author));
-        $this->assertSame($author, $mod->getAuthor());
+        $this->assertSame($instance, $instance->setAuthor($author));
+        $this->assertSame($author, $instance->getAuthor());
     }
 }

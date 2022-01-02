@@ -7,7 +7,6 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 use FactorioItemBrowser\Api\Database\Entity\IconImage;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,65 +14,47 @@ use PHPUnit\Framework\TestCase;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\Icon
+ * @covers \FactorioItemBrowser\Api\Database\Entity\Icon
  */
 class IconTest extends TestCase
 {
-    /**
-     * Tests the setting and getting the combination.
-     * @covers ::getCombination
-     * @covers ::setCombination
-     */
+    private function createInstance(): Icon
+    {
+        return new Icon();
+    }
     public function testSetAndGetCombination(): void
     {
-        /* @var Combination&MockObject $combination */
-        $combination = $this->createMock(Combination::class);
-        $icon = new Icon();
+        $combination = new Combination();
+        $instance = $this->createInstance();
 
-        $this->assertSame($icon, $icon->setCombination($combination));
-        $this->assertSame($combination, $icon->getCombination());
+        $this->assertSame($instance, $instance->setCombination($combination));
+        $this->assertSame($combination, $instance->getCombination());
     }
 
-    /**
-     * Tests the setting and getting the type.
-     * @covers ::getType
-     * @covers ::setType
-     */
     public function testSetAndGetType(): void
     {
         $type = 'abc';
-        $icon = new Icon();
+        $instance = $this->createInstance();
 
-        $this->assertSame($icon, $icon->setType($type));
-        $this->assertSame($type, $icon->getType());
+        $this->assertSame($instance, $instance->setType($type));
+        $this->assertSame($type, $instance->getType());
     }
 
-    /**
-     * Tests the setting and getting the name.
-     * @covers ::getName
-     * @covers ::setName
-     */
     public function testSetAndGetName(): void
     {
         $name = 'abc';
-        $icon = new Icon();
+        $instance = $this->createInstance();
 
-        $this->assertSame($icon, $icon->setName($name));
-        $this->assertSame($name, $icon->getName());
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($name, $instance->getName());
     }
 
-    /**
-     * Tests the setting and getting the image.
-     * @covers ::getImage
-     * @covers ::setImage
-     */
     public function testSetAndGetImage(): void
     {
-        /* @var IconImage&MockObject $image */
-        $image = $this->createMock(IconImage::class);
-        $icon = new Icon();
+        $image = new IconImage();
+        $instance = $this->createInstance();
 
-        $this->assertSame($icon, $icon->setImage($image));
-        $this->assertSame($image, $icon->getImage());
+        $this->assertSame($instance, $instance->setImage($image));
+        $this->assertSame($image, $instance->getImage());
     }
 }

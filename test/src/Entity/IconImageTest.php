@@ -7,9 +7,8 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 use BluePsyduck\TestHelper\ReflectionTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\IconImage;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -17,57 +16,44 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Entity\IconImage
+ * @covers \FactorioItemBrowser\Api\Database\Entity\IconImage
  */
 class IconImageTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * Tests the constructing.
-     * @covers ::__construct
-     * @covers ::getIcons
-     */
+    private function createInstance(): IconImage
+    {
+        return new IconImage();
+    }
+
     public function testConstruct(): void
     {
-        $image = new IconImage();
+        $instance = $this->createInstance();
 
-        $this->assertInstanceOf(ArrayCollection::class, $image->getIcons());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getIcons());
     }
 
-    /**
-     * Tests the setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
-     */
     public function testSetAndGetId(): void
     {
-        /* @var UuidInterface&MockObject $id */
-        $id = $this->createMock(UuidInterface::class);
-        $image = new IconImage();
+        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($image, $image->setId($id));
-        $this->assertSame($id, $image->getId());
+        $this->assertSame($instance, $instance->setId($id));
+        $this->assertSame($id, $instance->getId());
     }
 
-    /**
-     * Tests the setting and getting the contents.
-     * @covers ::getContents
-     * @covers ::setContents
-     */
     public function testSetAndGetContents(): void
     {
         $contents = 'abc';
-        $image = new IconImage();
+        $instance = $this->createInstance();
 
-        $this->assertSame($image, $image->setContents($contents));
-        $this->assertSame($contents, $image->getContents());
+        $this->assertSame($instance, $instance->setContents($contents));
+        $this->assertSame($contents, $instance->getContents());
     }
 
     /**
-     * Tests the getting the contents.
      * @throws ReflectionException
-     * @covers ::getContents
      */
     public function testGetContentsAsResource(): void
     {
@@ -80,23 +66,18 @@ class IconImageTest extends TestCase
         fwrite($stream, $contents);
         fseek($stream, 0);
 
-        $image = new IconImage();
+        $instance = $this->createInstance();
+        $this->injectProperty($instance, 'contents', $stream);
 
-        $this->injectProperty($image, 'contents', $stream);
-        $this->assertSame($contents, $image->getContents());
+        $this->assertSame($contents, $instance->getContents());
     }
 
-    /**
-     * Tests the setting and getting the size.
-     * @covers ::getSize
-     * @covers ::setSize
-     */
     public function testSetAndGetSize(): void
     {
         $size = 42;
-        $image = new IconImage();
+        $instance = $this->createInstance();
 
-        $this->assertSame($image, $image->setSize($size));
-        $this->assertSame($size, $image->getSize());
+        $this->assertSame($instance, $instance->setSize($size));
+        $this->assertSame($size, $instance->getSize());
     }
 }

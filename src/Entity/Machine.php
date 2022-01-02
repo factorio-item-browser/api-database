@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Type\EnumTypeEnergyUsageUnit;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
@@ -62,31 +63,31 @@ class Machine implements EntityWithId
     ])]
     private int $craftingSpeed = self::FACTOR_CRAFTING_SPEED;
 
-    #[Column(type: 'tinyint', options: [
+    #[Column(type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
         'comment' => 'The number of item slots available in the machine, or 255 for unlimited.',
     ])]
     private int $numberOfItemSlots = 0;
 
-    #[Column(type: 'tinyint', options: [
+    #[Column(type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
         'comment' => 'The number of fluid input slots available in the machine.',
     ])]
     private int $numberOfFluidInputSlots = 0;
 
-    #[Column(type: 'tinyint', options: [
+    #[Column(type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
         'comment' => 'The number of fluid output slots available in the machine.',
     ])]
     private int $numberOfFluidOutputSlots = 0;
 
-    #[Column(type: 'tinyint', options: [
+    #[Column(type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
         'comment' => 'The number of module slots available in the machine.',
     ])]
     private int $numberOfModuleSlots = 0;
 
-    #[Column(type: 'tinyint', options: [
+    #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The energy usage of the machine.',
     ])]
