@@ -13,16 +13,12 @@ namespace FactorioItemBrowser\Api\Database\Collection;
 class NamesByTypes
 {
     /**
-     * The values of the collection.
      * @var array<string, array<string>>
      */
-    protected array $values = [];
+    private array $values = [];
 
     /**
      * Adds a type and name pair to the collection.
-     * @param string $type
-     * @param string $name
-     * @return $this
      */
     public function addName(string $type, string $name): self
     {
@@ -32,9 +28,7 @@ class NamesByTypes
 
     /**
      * Sets the names of the type.
-     * @param string $type
      * @param array<string> $names
-     * @return $this
      */
     public function setNames(string $type, array $names): self
     {
@@ -48,7 +42,6 @@ class NamesByTypes
 
     /**
      * Returns the names of the type.
-     * @param string $type
      * @return array<string>
      */
     public function getNames(string $type): array
@@ -58,9 +51,6 @@ class NamesByTypes
 
     /**
      * Returns whether the type and name pair is part of the collection.
-     * @param string $type
-     * @param string $name
-     * @return bool
      */
     public function hasName(string $type, string $name): bool
     {
@@ -69,7 +59,6 @@ class NamesByTypes
 
     /**
      * Returns whether the collection is actually empty.
-     * @return bool
      */
     public function isEmpty(): bool
     {

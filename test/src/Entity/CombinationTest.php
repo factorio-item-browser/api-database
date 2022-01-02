@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the Combination class.
@@ -75,7 +74,7 @@ class CombinationTest extends TestCase
 
     public function testSetAndGetLastUpdateHash(): void
     {
-        $value = $this->createMock(UuidInterface::class);
+        $value = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
         $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setLastUpdateHash($value));

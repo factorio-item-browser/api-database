@@ -12,45 +12,48 @@ use FactorioItemBrowser\Api\Database\Entity\Combination;
 use FactorioItemBrowser\Api\Database\Repository\AbstractIdRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the AbstractIdRepository class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\AbstractIdRepository
+ * @covers \FactorioItemBrowser\Api\Database\Repository\AbstractIdRepository
  */
 class AbstractIdRepositoryTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * The mocked entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
     /**
-     * Tests the findByIds method.
-     * @covers ::findByIds
+     * @param array<string> $mockedMethods
+     * @return AbstractIdRepository<object>&MockObject
      */
+    private function createInstance(array $mockedMethods = []): AbstractIdRepository
+    {
+        return $this->getMockBuilder(AbstractIdRepository::class)
+                    ->onlyMethods($mockedMethods)
+                    ->setConstructorArgs([
+                        $this->entityManager,
+                    ])
+                    ->getMockForAbstractClass();
+    }
+
+
     public function testFindByIds(): void
     {
         $entityClass = 'abc';
         $ids = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $mappedIds = ['def', 'ghi'];
         $queryResult = [
@@ -58,13 +61,11 @@ class AbstractIdRepositoryTest extends TestCase
             $this->createMock(Combination::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -93,44 +94,32 @@ class AbstractIdRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var AbstractIdRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(AbstractIdRepository::class)
-                           ->onlyMethods(['getEntityClass', 'mapIdsToParameterValues'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMockForAbstractClass();
-        $repository->expects($this->once())
-                   ->method('getEntityClass')
-                   ->willReturn($entityClass);
-        $repository->expects($this->once())
-                   ->method('mapIdsToParameterValues')
-                   ->with($this->identicalTo($ids))
-                   ->willReturn($mappedIds);
+        $instance = $this->createInstance(['getEntityClass', 'mapIdsToParameterValues']);
+        $instance->expects($this->once())
+                 ->method('getEntityClass')
+                 ->willReturn($entityClass);
+        $instance->expects($this->once())
+                 ->method('mapIdsToParameterValues')
+                 ->with($this->identicalTo($ids))
+                 ->willReturn($mappedIds);
 
-        $result = $repository->findByIds($ids);
+        $result = $instance->findByIds($ids);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the findByIds method.
-     * @covers ::findByIds
-     */
     public function testFindByIdsWithoutIds(): void
     {
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        /* @var AbstractIdRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(AbstractIdRepository::class)
-                           ->onlyMethods(['getEntityClass', 'mapIdsToParameterValues'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMockForAbstractClass();
-        $repository->expects($this->never())
-                   ->method('getEntityClass');
-        $repository->expects($this->never())
-                   ->method('mapIdsToParameterValues');
+        $instance = $this->createInstance(['getEntityClass', 'mapIdsToParameterValues']);
+        $instance->expects($this->never())
+                 ->method('getEntityClass');
+        $instance->expects($this->never())
+                 ->method('mapIdsToParameterValues');
 
-        $result = $repository->findByIds([]);
+        $result = $instance->findByIds([]);
 
         $this->assertSame([], $result);
     }

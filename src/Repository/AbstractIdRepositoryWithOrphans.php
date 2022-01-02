@@ -49,8 +49,6 @@ abstract class AbstractIdRepositoryWithOrphans extends AbstractIdRepository
 
     /**
      * Adds the conditions to the query builder for detecting orphans.
-     * @param QueryBuilder $queryBuilder
-     * @param string $alias
      */
     abstract protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void;
 

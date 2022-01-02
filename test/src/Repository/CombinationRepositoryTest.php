@@ -15,7 +15,7 @@ use FactorioItemBrowser\Api\Database\Repository\CombinationRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the CombinationRepository class.
@@ -34,25 +34,17 @@ class CombinationRepositoryTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
-    /**
-     * @param array<string> $mockedMethods
-     * @return CombinationRepository&MockObject
-     */
-    private function createInstance(array $mockedMethods = []): CombinationRepository
+    private function createInstance(): CombinationRepository
     {
-        return $this->getMockBuilder(CombinationRepository::class)
-                    ->disableProxyingToOriginalMethods()
-                    ->onlyMethods($mockedMethods)
-                    ->setConstructorArgs([
-                        $this->entityManager,
-                    ])
-                    ->getMock();
+        return new CombinationRepository(
+            $this->entityManager,
+        );
     }
 
     public function testFindById(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
-        $combination = $this->createMock(Combination::class);
+        $combinationId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $combination = new Combination();
 
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
@@ -96,7 +88,7 @@ class CombinationRepositoryTest extends TestCase
 
     public function testFindByIdWithException(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
 
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
@@ -144,8 +136,8 @@ class CombinationRepositoryTest extends TestCase
         $latestUpdateCheckTime = $this->createMock(DateTime::class);
         $limit = 42;
         $queryResult = [
-            $this->createMock(Combination::class),
-            $this->createMock(Combination::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
 
         $query = $this->createMock(AbstractQuery::class);

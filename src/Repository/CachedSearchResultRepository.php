@@ -21,10 +21,6 @@ class CachedSearchResultRepository extends AbstractRepository
 {
     /**
      * Finds the cached search result. The returned may already be expired though.
-     * @param UuidInterface $combinationId
-     * @param string $locale
-     * @param UuidInterface $searchHash
-     * @return CachedSearchResult|null
      */
     public function find(UuidInterface $combinationId, string $locale, UuidInterface $searchHash): ?CachedSearchResult
     {
@@ -40,7 +36,7 @@ class CachedSearchResultRepository extends AbstractRepository
 
         try {
             return $queryBuilder->getQuery()->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException) {
             // Can never happen, we are searching for the primary keys.
             return null;
         }
@@ -48,7 +44,6 @@ class CachedSearchResultRepository extends AbstractRepository
 
     /**
      * Persists the specified cached search result into the database.
-     * @param CachedSearchResult $cachedSearchResult
      */
     public function persist(CachedSearchResult $cachedSearchResult): void
     {
@@ -69,7 +64,6 @@ class CachedSearchResultRepository extends AbstractRepository
 
     /**
      * Clears already expired search results from the database.
-     * @param DateTimeInterface $maxAge
      */
     public function clearExpiredResults(DateTimeInterface $maxAge): void
     {
@@ -83,7 +77,6 @@ class CachedSearchResultRepository extends AbstractRepository
 
     /**
      * Clears all search results of the specified combination, e.g. because it just got updated.
-     * @param UuidInterface $combinationId
      */
     public function clearResultsOfCombination(UuidInterface $combinationId): void
     {

@@ -21,7 +21,7 @@ use FactorioItemBrowser\Common\Constant\EntityType;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -50,7 +50,6 @@ class TranslationRepositoryTest extends TestCase
     private function createInstance(array $mockedMethods = []): TranslationRepository
     {
         return $this->getMockBuilder(TranslationRepository::class)
-                    ->disableProxyingToOriginalMethods()
                     ->onlyMethods($mockedMethods)
                     ->setConstructorArgs([
                         $this->entityManager,
@@ -94,23 +93,16 @@ class TranslationRepositoryTest extends TestCase
     {
         $locale = 'abc';
 
-        $namesByTypes = $this->createMock(NamesByTypes::class);
-        $namesByTypes->expects($this->once())
-                     ->method('isEmpty')
-                     ->willReturn(false);
-        $namesByTypes->expects($this->once())
-                     ->method('toArray')
-                     ->willReturn([
-                         EntityType::RECIPE => ['def', 'ghi'],
-                         EntityType::MACHINE => ['jkl'],
-                         EntityType::ITEM => ['mno', 'pqr']
-                     ]);
+        $namesByTypes = new NamesByTypes();
+        $namesByTypes->setNames(EntityType::RECIPE, ['def', 'ghi'])
+                     ->setNames(EntityType::MACHINE, ['jkl'])
+                     ->setNames(EntityType::ITEM, ['mno', 'pqr']);
 
         $expectedCondition = '((t.type IN (:types0) AND t.name IN (:names0))'
             . ' OR (t.type IN (:types1) AND t.name IN (:names1))'
             . ' OR (t.type IN (:types2) AND t.name IN (:names2)))';
 
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
             $this->createMock(Translation::class),
@@ -202,13 +194,8 @@ class TranslationRepositoryTest extends TestCase
     public function testFindByTypesAndNamesWithoutConditions(): void
     {
         $locale = 'abc';
-
-        $namesByTypes = $this->createMock(NamesByTypes::class);
-        $namesByTypes->expects($this->once())
-                     ->method('isEmpty')
-                     ->willReturn(true);
-
-        $combinationId = $this->createMock(UuidInterface::class);
+        $namesByTypes = new NamesByTypes();
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
@@ -226,11 +213,11 @@ class TranslationRepositoryTest extends TestCase
         $priority = 'CASE WHEN t.locale = :localePrimary THEN :priorityPrimary ELSE :prioritySecondary END';
         $searchField = "LOWER(CONCAT(t.value, '|', t.description))";
 
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
-            ['id' => $this->createMock(UuidInterface::class)],
-            ['id' => $this->createMock(UuidInterface::class)],
+            ['id' => Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef')],
+            ['id' => Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210')],
         ];
         $mappedResult = [
             $this->createMock(TranslationPriorityData::class),
@@ -340,7 +327,7 @@ class TranslationRepositoryTest extends TestCase
     public function testFindDataByKeywordsWithoutKeywords(): void
     {
         $locale = 'abc';
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
@@ -394,7 +381,7 @@ class TranslationRepositoryTest extends TestCase
      */
     public function testClearCrossTable(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = $this->createMock(Uuid::class);
         $combinationId->expects($this->once())
                       ->method('getBytes')
                       ->willReturn('abc');
@@ -416,7 +403,7 @@ class TranslationRepositoryTest extends TestCase
      */
     public function testPersistTranslationsToCombination(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
         $translations = [
             $this->createMock(Translation::class),
             $this->createMock(Translation::class),
@@ -438,11 +425,11 @@ class TranslationRepositoryTest extends TestCase
      */
     public function testInsertTranslations(): void
     {
-        $id1 = $this->createMock(UuidInterface::class);
+        $id1 = $this->createMock(Uuid::class);
         $id1->expects($this->once())
             ->method('getBytes')
             ->willReturn('abc');
-        $id2 = $this->createMock(UuidInterface::class);
+        $id2 = $this->createMock(Uuid::class);
         $id2->expects($this->once())
             ->method('getBytes')
             ->willReturn('def');
@@ -508,16 +495,16 @@ class TranslationRepositoryTest extends TestCase
      */
     public function testInsertIntoCrossTable(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = $this->createMock(Uuid::class);
         $combinationId->expects($this->atLeastOnce())
                       ->method('getBytes')
                       ->willReturn('abc');
 
-        $translationId1 = $this->createMock(UuidInterface::class);
+        $translationId1 = $this->createMock(Uuid::class);
         $translationId1->expects($this->once())
                        ->method('getBytes')
                        ->willReturn('def');
-        $translationId2 = $this->createMock(UuidInterface::class);
+        $translationId2 = $this->createMock(Uuid::class);
         $translationId2->expects($this->once())
                        ->method('getBytes')
                        ->willReturn('ghi');
@@ -548,7 +535,7 @@ class TranslationRepositoryTest extends TestCase
      */
     public function testInsertIntoCrossTableWithoutTranslations(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $instance = $this->createInstance(['buildParameterPlaceholders', 'executeNativeSql']);
         $instance->expects($this->never())

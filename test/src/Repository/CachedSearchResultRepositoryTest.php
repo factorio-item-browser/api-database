@@ -14,55 +14,53 @@ use FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the CachedSearchResultRepository class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository
+ * @covers \FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository
  */
 class CachedSearchResultRepositoryTest extends TestCase
 {
-    /**
-     * The mocked entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
     /**
-     * Tests the find method.
-     * @covers ::find
+     * @param array<string> $mockedMethods
+     * @return CachedSearchResultRepository&MockObject
      */
+    private function createInstance(array $mockedMethods = []): CachedSearchResultRepository
+    {
+        return $this->getMockBuilder(CachedSearchResultRepository::class)
+                    ->onlyMethods($mockedMethods)
+                    ->setConstructorArgs([
+                        $this->entityManager,
+                    ])
+                    ->getMock();
+    }
+
+
     public function testFind(): void
     {
         $locale = 'abc';
 
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
-        /* @var UuidInterface&MockObject $searchHash */
-        $searchHash = $this->createMock(UuidInterface::class);
-        /* @var CachedSearchResult&MockObject $queryResult */
-        $queryResult = $this->createMock(CachedSearchResult::class);
+        $combinationId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $searchHash = Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210');
+        $queryResult = new CachedSearchResult();
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getOneOrNullResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -107,32 +105,24 @@ class CachedSearchResultRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new CachedSearchResultRepository($this->entityManager);
-        $result = $repository->find($combinationId, $locale, $searchHash);
+        $instance = $this->createInstance();
+        $result = $instance->find($combinationId, $locale, $searchHash);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the find method.
-     * @covers ::find
-     */
     public function testFindWithException(): void
     {
         $locale = 'abc';
 
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
-        /* @var UuidInterface&MockObject $searchHash */
-        $searchHash = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $searchHash = Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210');
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getOneOrNullResult')
               ->willThrowException($this->createMock(NonUniqueResultException::class));
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -177,36 +167,22 @@ class CachedSearchResultRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new CachedSearchResultRepository($this->entityManager);
-        $result = $repository->find($combinationId, $locale, $searchHash);
+        $instance = $this->createInstance();
+        $result = $instance->find($combinationId, $locale, $searchHash);
 
         $this->assertNull($result);
     }
 
-    /**
-     * Tests the persist method.
-     * @covers ::persist
-     */
     public function testPersist(): void
     {
         $locale = 'abc';
+        $combinationId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $searchHash = Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210');
 
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
-        /* @var UuidInterface&MockObject $searchHash */
-        $searchHash = $this->createMock(UuidInterface::class);
-
-        /* @var CachedSearchResult&MockObject $cachedSearchResult */
-        $cachedSearchResult = $this->createMock(CachedSearchResult::class);
-        $cachedSearchResult->expects($this->once())
-                           ->method('getCombinationId')
-                           ->willReturn($combinationId);
-        $cachedSearchResult->expects($this->once())
-                           ->method('getLocale')
-                           ->willReturn($locale);
-        $cachedSearchResult->expects($this->once())
-                           ->method('getSearchHash')
-                           ->willReturn($searchHash);
+        $cachedSearchResult = new CachedSearchResult();
+        $cachedSearchResult->setCombinationId($combinationId)
+                           ->setLocale($locale)
+                           ->setSearchHash($searchHash);
 
         $this->entityManager->expects($this->once())
                             ->method('persist')
@@ -214,49 +190,30 @@ class CachedSearchResultRepositoryTest extends TestCase
         $this->entityManager->expects($this->once())
                             ->method('flush');
 
-        /* @var CachedSearchResultRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
-                           ->onlyMethods(['find'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('find')
-                   ->with(
-                       $this->identicalTo($combinationId),
-                       $this->identicalTo($locale),
-                       $this->identicalTo($searchHash)
-                   )
-                   ->willReturn(null);
+        $instance = $this->createInstance(['find']);
+        $instance->expects($this->once())
+                 ->method('find')
+                 ->with(
+                     $this->identicalTo($combinationId),
+                     $this->identicalTo($locale),
+                     $this->identicalTo($searchHash)
+                 )
+                 ->willReturn(null);
 
-        $repository->persist($cachedSearchResult);
+        $instance->persist($cachedSearchResult);
     }
 
-    /**
-     * Tests the persist method.
-     * @covers ::persist
-     */
     public function testPersistWithPersistedEntity(): void
     {
         $locale = 'abc';
+        $combinationId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $searchHash = Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210');
 
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
-        /* @var UuidInterface&MockObject $searchHash */
-        $searchHash = $this->createMock(UuidInterface::class);
+        $cachedSearchResult = new CachedSearchResult();
+        $cachedSearchResult->setCombinationId($combinationId)
+                           ->setLocale($locale)
+                           ->setSearchHash($searchHash);
 
-        /* @var CachedSearchResult&MockObject $cachedSearchResult */
-        $cachedSearchResult = $this->createMock(CachedSearchResult::class);
-        $cachedSearchResult->expects($this->once())
-                           ->method('getCombinationId')
-                           ->willReturn($combinationId);
-        $cachedSearchResult->expects($this->once())
-                           ->method('getLocale')
-                           ->willReturn($locale);
-        $cachedSearchResult->expects($this->once())
-                           ->method('getSearchHash')
-                           ->willReturn($searchHash);
-
-        /* @var CachedSearchResult&MockObject $persistedEntity */
         $persistedEntity = $this->createMock(CachedSearchResult::class);
         $persistedEntity->expects($this->once())
                         ->method('setLastSearchTime')
@@ -268,38 +225,27 @@ class CachedSearchResultRepositoryTest extends TestCase
         $this->entityManager->expects($this->once())
                             ->method('flush');
 
-        /* @var CachedSearchResultRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(CachedSearchResultRepository::class)
-                           ->onlyMethods(['find'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('find')
-                   ->with(
-                       $this->identicalTo($combinationId),
-                       $this->identicalTo($locale),
-                       $this->identicalTo($searchHash)
-                   )
-                   ->willReturn($persistedEntity);
+        $instance = $this->createInstance(['find']);
+        $instance->expects($this->once())
+                 ->method('find')
+                 ->with(
+                     $this->identicalTo($combinationId),
+                     $this->identicalTo($locale),
+                     $this->identicalTo($searchHash)
+                 )
+                 ->willReturn($persistedEntity);
 
-        $repository->persist($cachedSearchResult);
+        $instance->persist($cachedSearchResult);
     }
 
-    /**
-     * Tests the clearExpiredResults method.
-     * @covers ::clearExpiredResults
-     */
     public function testClearExpiredResults(): void
     {
-        /* @var DateTime&MockObject $maxAge */
-        $maxAge = $this->createMock(DateTime::class);
+        $maxAge = new DateTime('2038-01-19T03:14:07');
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('execute');
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('delete')
@@ -324,25 +270,18 @@ class CachedSearchResultRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new CachedSearchResultRepository($this->entityManager);
-        $repository->clearExpiredResults($maxAge);
+        $instance = $this->createInstance();
+        $instance->clearExpiredResults($maxAge);
     }
 
-    /**
-     * Tests the clearResultsOfCombination method.
-     * @covers ::clearResultsOfCombination
-     */
     public function testClearResultsOfCombination(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('execute');
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('delete')
@@ -368,22 +307,16 @@ class CachedSearchResultRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new CachedSearchResultRepository($this->entityManager);
-        $repository->clearResultsOfCombination($combinationId);
+        $instance = $this->createInstance();
+        $instance->clearResultsOfCombination($combinationId);
     }
 
-    /**
-     * Tests the clearAll method.
-     * @covers ::clearAll
-     */
     public function testClearAll(): void
     {
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('execute');
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('delete')
@@ -397,7 +330,7 @@ class CachedSearchResultRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new CachedSearchResultRepository($this->entityManager);
-        $repository->clearAll();
+        $instance = $this->createInstance();
+        $instance->clearAll();
     }
 }

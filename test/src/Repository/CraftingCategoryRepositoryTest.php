@@ -19,32 +19,27 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\CraftingCategoryRepository
+ * @covers \FactorioItemBrowser\Api\Database\Repository\CraftingCategoryRepository
  */
 class CraftingCategoryRepositoryTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * The mocked entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
-    /**
-     * Tests the findByNames method.
-     * @covers ::findByNames
-     */
+    private function createInstance(): CraftingCategoryRepository
+    {
+        return new CraftingCategoryRepository(
+            $this->entityManager,
+        );
+    }
+
     public function testFindByNames(): void
     {
         $names = ['abc', 'def'];
@@ -83,51 +78,42 @@ class CraftingCategoryRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new CraftingCategoryRepository($this->entityManager);
-        $result = $repository->findByNames($names);
+        $instance = $this->createInstance();
+        $result = $instance->findByNames($names);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the findByNames method.
-     * @covers ::findByNames
-     */
     public function testFindByNamesWithoutNames(): void
     {
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        $repository = new CraftingCategoryRepository($this->entityManager);
-        $result = $repository->findByNames([]);
+        $instance = $this->createInstance();
+        $result = $instance->findByNames([]);
 
         $this->assertSame([], $result);
     }
 
 
     /**
-     * Tests the getEntityClass method.
      * @throws ReflectionException
-     * @covers ::getEntityClass
      */
     public function testGetEntityClass(): void
     {
-        $repository = new CraftingCategoryRepository($this->entityManager);
-        $result = $this->invokeMethod($repository, 'getEntityClass');
+        $instance = $this->createInstance();
+        $result = $this->invokeMethod($instance, 'getEntityClass');
 
         $this->assertSame(CraftingCategory::class, $result);
     }
 
     /**
-     * Tests the addOrphanConditions method.
      * @throws ReflectionException
-     * @covers ::addOrphanConditions
      */
     public function testAddOrphanConditions(): void
     {
         $alias = 'abc';
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->exactly(2))
                      ->method('leftJoin')
@@ -150,7 +136,7 @@ class CraftingCategoryRepositoryTest extends TestCase
                      )
                      ->willReturnSelf();
 
-        $repository = new CraftingCategoryRepository($this->entityManager);
-        $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
+        $instance = $this->createInstance();
+        $this->invokeMethod($instance, 'addOrphanConditions', $queryBuilder, $alias);
     }
 }

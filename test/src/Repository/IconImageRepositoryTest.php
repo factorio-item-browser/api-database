@@ -18,51 +18,45 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\IconImageRepository
+ * @covers \FactorioItemBrowser\Api\Database\Repository\IconImageRepository
  */
 class IconImageRepositoryTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * The mocked entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
+    private function createInstance(): IconImageRepository
+    {
+        return new IconImageRepository(
+            $this->entityManager,
+        );
+    }
+
     /**
-     * Tests the getEntityClass method.
      * @throws ReflectionException
-     * @covers ::getEntityClass
      */
     public function testGetEntityClass(): void
     {
-        $repository = new IconImageRepository($this->entityManager);
-        $result = $this->invokeMethod($repository, 'getEntityClass');
+        $instance = $this->createInstance();
+        $result = $this->invokeMethod($instance, 'getEntityClass');
 
         $this->assertSame(IconImage::class, $result);
     }
 
     /**
-     * Tests the addOrphanConditions method.
      * @throws ReflectionException
-     * @covers ::addOrphanConditions
      */
     public function testAddOrphanConditions(): void
     {
         $alias = 'abc';
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('leftJoin')
@@ -73,7 +67,7 @@ class IconImageRepositoryTest extends TestCase
                      ->with($this->identicalTo('i.image IS NULL'))
                      ->willReturnSelf();
 
-        $repository = new IconImageRepository($this->entityManager);
-        $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
+        $instance = $this->createInstance();
+        $this->invokeMethod($instance, 'addOrphanConditions', $queryBuilder, $alias);
     }
 }

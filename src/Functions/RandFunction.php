@@ -19,9 +19,6 @@ use Doctrine\ORM\Query\SqlWalker;
 class RandFunction extends FunctionNode
 {
     /**
-     * Parses the function.
-     * @param Parser $parser
-     * @return void
      * @throws QueryException
      */
     public function parse(Parser $parser): void
@@ -31,11 +28,6 @@ class RandFunction extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 
-    /**
-     * Returns the SQL of the function.
-     * @param SqlWalker $sqlWalker
-     * @return string
-     */
     public function getSql(SqlWalker $sqlWalker): string
     {
         return 'RAND()';

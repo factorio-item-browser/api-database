@@ -5,74 +5,57 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Data;
 
 use FactorioItemBrowser\Api\Database\Data\RecipeData;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the RecipeData class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Data\RecipeData
+ * @covers \FactorioItemBrowser\Api\Database\Data\RecipeData
  */
 class RecipeDataTest extends TestCase
 {
-    /**
-     * Tests the setting and getting the id.
-     * @covers ::getId
-     * @covers ::setId
-     */
-    public function testSetAndGetId(): void
+    private function createInstance(): RecipeData
     {
-        /* @var UuidInterface&MockObject $id */
-        $id = $this->createMock(UuidInterface::class);
-        $data = new RecipeData();
-
-        $this->assertSame($data, $data->setId($id));
-        $this->assertSame($id, $data->getId());
+        return new RecipeData();
     }
 
-    /**
-     * Tests the setting and getting the name.
-     * @covers ::getName
-     * @covers ::setName
-     */
+    public function testSetAndGetId(): void
+    {
+        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        ;
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setId($id));
+        $this->assertSame($id, $instance->getId());
+    }
+
     public function testSetAndGetName(): void
     {
         $name = 'abc';
-        $data = new RecipeData();
+        $instance = $this->createInstance();
 
-        $this->assertSame($data, $data->setName($name));
-        $this->assertSame($name, $data->getName());
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($name, $instance->getName());
     }
 
-    /**
-     * Tests the setting and getting the mode.
-     * @covers ::getMode
-     * @covers ::setMode
-     */
     public function testSetAndGetMode(): void
     {
         $mode = 'abc';
-        $data = new RecipeData();
+        $instance = $this->createInstance();
 
-        $this->assertSame($data, $data->setMode($mode));
-        $this->assertSame($mode, $data->getMode());
+        $this->assertSame($instance, $instance->setMode($mode));
+        $this->assertSame($mode, $instance->getMode());
     }
 
-    /**
-     * Tests the setting and getting the item id.
-     * @covers ::getItemId
-     * @covers ::setItemId
-     */
     public function testSetAndGetItemId(): void
     {
-        /* @var UuidInterface&MockObject $itemId */
-        $itemId = $this->createMock(UuidInterface::class);
-        $data = new RecipeData();
+        $itemId = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $instance = $this->createInstance();
 
-        $this->assertSame($data, $data->setItemId($itemId));
-        $this->assertSame($itemId, $data->getItemId());
+        $this->assertSame($instance, $instance->setItemId($itemId));
+        $this->assertSame($itemId, $instance->getItemId());
     }
 }

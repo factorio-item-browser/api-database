@@ -17,7 +17,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 use ReflectionException;
 
 /**
@@ -46,7 +45,6 @@ class RecipeRepositoryTest extends TestCase
     private function createInstance(array $mockedMethods = []): RecipeRepository
     {
         return $this->getMockBuilder(RecipeRepository::class)
-                    ->disableProxyingToOriginalMethods()
                     ->onlyMethods($mockedMethods)
                     ->setConstructorArgs([
                         $this->entityManager,
@@ -57,8 +55,8 @@ class RecipeRepositoryTest extends TestCase
     public function testFindByIds(): void
     {
         $ids = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $mappedIds = ['def', 'ghi'];
         $queryResult = [
@@ -177,8 +175,8 @@ class RecipeRepositoryTest extends TestCase
     public function testRemoveIds(): void
     {
         $ids = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $mappedIds = ['abc', 'def'];
 
@@ -265,12 +263,11 @@ class RecipeRepositoryTest extends TestCase
     public function testFindDataByNames(): void
     {
         $names = ['abc', 'def'];
-
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
-            ['id' => $this->createMock(UuidInterface::class)],
-            ['id' => $this->createMock(UuidInterface::class)],
+            ['id' => Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef')],
+            ['id' => Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210')],
         ];
         $mappedResult = [
             $this->createMock(RecipeData::class),
@@ -343,7 +340,7 @@ class RecipeRepositoryTest extends TestCase
 
     public function testFindDataByNamesWithoutNames(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
@@ -359,11 +356,11 @@ class RecipeRepositoryTest extends TestCase
 
     public function testFindDataByIngredientItemIds(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $itemIds = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $data = [
             $this->createMock(RecipeData::class),
@@ -395,11 +392,11 @@ class RecipeRepositoryTest extends TestCase
 
     public function testFindDataByProductItemIds(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $itemIds = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $data = [
             $this->createMock(RecipeData::class),
@@ -436,16 +433,15 @@ class RecipeRepositoryTest extends TestCase
     {
         $recipeProperty = 'abc';
         $itemIds = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $mappedItemIds = ['def', 'ghi'];
-
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
-            ['id' => $this->createMock(UuidInterface::class)],
-            ['id' => $this->createMock(UuidInterface::class)],
+            ['id' => Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef')],
+            ['id' => Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210')],
         ];
         $mappedResult = [
             $this->createMock(RecipeData::class),
@@ -538,7 +534,7 @@ class RecipeRepositoryTest extends TestCase
     public function testFindDataByItemIdsWithoutItemIds(): void
     {
         $recipeProperty = 'abc';
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
@@ -557,11 +553,11 @@ class RecipeRepositoryTest extends TestCase
     public function testFindDataByKeywords(): void
     {
         $keywords = ['foo', 'b_a\\r%'];
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
-            ['id' => $this->createMock(UuidInterface::class)],
-            ['id' => $this->createMock(UuidInterface::class)],
+            ['id' => Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef')],
+            ['id' => Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210')],
         ];
         $mappedResult = [
             $this->createMock(RecipeData::class),
@@ -641,7 +637,7 @@ class RecipeRepositoryTest extends TestCase
 
     public function testFindDataByKeywordsWithoutKeywords(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
@@ -657,11 +653,11 @@ class RecipeRepositoryTest extends TestCase
 
     public function testFindAllData(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
-            ['id' => $this->createMock(UuidInterface::class)],
-            ['id' => $this->createMock(UuidInterface::class)],
+            ['id' => Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef')],
+            ['id' => Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210')],
         ];
         $mappedResult = [
             $this->createMock(RecipeData::class),
@@ -731,9 +727,8 @@ class RecipeRepositoryTest extends TestCase
      */
     public function testMapRecipeDataResult(): void
     {
-        $id1 = $this->createMock(UuidInterface::class);
-        $id2 = $this->createMock(UuidInterface::class);
-
+        $id1 = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $id2 = Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210');
         $itemId = Uuid::fromString('00000000-0000-0000-0000-000000000000');
 
         $machineData = [
@@ -788,8 +783,8 @@ class RecipeRepositoryTest extends TestCase
         $data = [$data1, $data2, $data3, $data4];
 
         $mappedRecipeIds = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $expectedRecipeIds = [$recipeId1, $recipeId2, $recipeId3, $recipeId4];
 

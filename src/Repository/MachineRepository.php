@@ -44,21 +44,12 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
         return Machine::class;
     }
 
-    /**
-     * Adds the conditions to the query builder for detecting orphans.
-     * @param QueryBuilder $queryBuilder
-     * @param string $alias
-     */
     protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
                      ->andWhere('c.id IS NULL');
     }
 
-    /**
-     * Removes the entities with the specified ids from the database.
-     * @param array<UuidInterface> $ids
-     */
     protected function removeIds(array $ids): void
     {
         // We have to clear the cross-table by reading the machines and clearing the collection first.
@@ -71,7 +62,6 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Finds the data of the machines with the specified names.
-     * @param UuidInterface $combinationId
      * @param array<string> $names
      * @return array<Machine>
      */
@@ -94,8 +84,6 @@ class MachineRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Finds the machines supporting the specified crafting categories.
-     * @param UuidInterface $combinationId
-     * @param string $craftingCategoryName
      * @return array<Machine>
      */
     public function findByCraftingCategoryName(UuidInterface $combinationId, string $craftingCategoryName): array

@@ -16,7 +16,7 @@ use FactorioItemBrowser\Api\Database\Repository\ItemRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -24,51 +24,46 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\ItemRepository
+ * @covers \FactorioItemBrowser\Api\Database\Repository\ItemRepository
  */
 class ItemRepositoryTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * The mocked entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
+    private function createInstance(): ItemRepository
+    {
+        return new ItemRepository(
+            $this->entityManager,
+        );
+    }
+
+
     /**
-     * Tests the getEntityClass method.
      * @throws ReflectionException
-     * @covers ::getEntityClass
      */
     public function testGetEntityClass(): void
     {
-        $repository = new ItemRepository($this->entityManager);
-        $result = $this->invokeMethod($repository, 'getEntityClass');
+        $instance = $this->createInstance();
+        $result = $this->invokeMethod($instance, 'getEntityClass');
 
         $this->assertSame(Item::class, $result);
     }
 
     /**
-     * Tests the addOrphanConditions method.
      * @throws ReflectionException
-     * @covers ::addOrphanConditions
      */
     public function testAddOrphanConditions(): void
     {
         $alias = 'abc';
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->exactly(3))
                      ->method('leftJoin')
@@ -100,44 +95,29 @@ class ItemRepositoryTest extends TestCase
                      )
                      ->willReturnSelf();
 
-        $repository = new ItemRepository($this->entityManager);
-        $this->invokeMethod($repository, 'addOrphanConditions', $queryBuilder, $alias);
+        $instance = $this->createInstance();
+        $this->invokeMethod($instance, 'addOrphanConditions', $queryBuilder, $alias);
     }
 
 
-    /**
-     * Tests the findByTypesAndNames method.
-     * @covers ::findByTypesAndNames
-     */
     public function testFindByTypesAndNames(): void
     {
-        /* @var NamesByTypes&MockObject $namesByTypes */
-        $namesByTypes = $this->createMock(NamesByTypes::class);
-        $namesByTypes->expects($this->once())
-                     ->method('isEmpty')
-                     ->willReturn(false);
-        $namesByTypes->expects($this->once())
-                     ->method('toArray')
-                     ->willReturn([
-                         'abc' => ['def', 'ghi'],
-                         'jkl' => ['mno'],
-                     ]);
+        $namesByTypes = new NamesByTypes();
+        $namesByTypes->setNames('abc', ['def', 'ghi'])
+                     ->setNames('jkl', ['mno']);
 
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
             $this->createMock(Item::class),
             $this->createMock(Item::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -197,59 +177,41 @@ class ItemRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
+        $instance = $this->createInstance();
+        $result = $instance->findByTypesAndNames($combinationId, $namesByTypes);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the findByTypesAndNames method.
-     * @covers ::findByTypesAndNames
-     */
     public function testFindByTypesAndNamesWithoutConditions(): void
     {
-        /* @var NamesByTypes&MockObject $namesByTypes */
-        $namesByTypes = $this->createMock(NamesByTypes::class);
-        $namesByTypes->expects($this->once())
-                     ->method('isEmpty')
-                     ->willReturn(true);
-
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $namesByTypes = new NamesByTypes();
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
+        $instance = $this->createInstance();
+        $result = $instance->findByTypesAndNames($combinationId, $namesByTypes);
 
         $this->assertSame([], $result);
     }
 
-    /**
-     * Tests the findByKeywords method.
-     * @covers ::findByKeywords
-     */
     public function testFindByKeywords(): void
     {
         $keywords = ['foo', 'b_a\\r%'];
-
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
             $this->createMock(Item::class),
             $this->createMock(Item::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -301,53 +263,40 @@ class ItemRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findByKeywords($combinationId, $keywords);
+        $instance = $this->createInstance();
+        $result = $instance->findByKeywords($combinationId, $keywords);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the findByKeywords method.
-     * @covers ::findByKeywords
-     */
     public function testFindByKeywordsWithoutKeywords(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findByKeywords($combinationId, []);
+        $instance = $this->createInstance();
+        $result = $instance->findByKeywords($combinationId, []);
 
         $this->assertSame([], $result);
     }
 
-    /**
-     * Tests the findRandom method.
-     * @covers ::findRandom
-     */
     public function testFindRandom(): void
     {
         $numberOfItems = 42;
-
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
             $this->createMock(Item::class),
             $this->createMock(Item::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -390,33 +339,26 @@ class ItemRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findRandom($combinationId, $numberOfItems);
+        $instance = $this->createInstance();
+        $result = $instance->findRandom($combinationId, $numberOfItems);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the findAll method.
-     * @covers ::findAll
-     */
     public function testFindAll(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
             $this->createMock(Item::class),
             $this->createMock(Item::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -458,8 +400,8 @@ class ItemRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new ItemRepository($this->entityManager);
-        $result = $repository->findAll($combinationId);
+        $instance = $this->createInstance();
+        $result = $instance->findAll($combinationId);
 
         $this->assertSame($queryResult, $result);
     }

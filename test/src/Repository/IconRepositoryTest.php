@@ -13,7 +13,7 @@ use FactorioItemBrowser\Api\Database\Repository\IconRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the IconRepository class.
@@ -24,55 +24,47 @@ use Ramsey\Uuid\UuidInterface;
  */
 class IconRepositoryTest extends TestCase
 {
-    /**
-     * The entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
     /**
-     * Tests the findByTypesAndNames method.
-     * @covers ::findByTypesAndNames
+     * @param array<string> $mockedMethods
+     * @return IconRepository&MockObject
      */
+    private function createInstance(array $mockedMethods = []): IconRepository
+    {
+        return $this->getMockBuilder(IconRepository::class)
+                    ->onlyMethods($mockedMethods)
+                    ->setConstructorArgs([
+                        $this->entityManager,
+                    ])
+                    ->getMock();
+    }
+
+
     public function testFindByTypesAndNames(): void
     {
-        /* @var NamesByTypes&MockObject $namesByTypes */
-        $namesByTypes = $this->createMock(NamesByTypes::class);
-        $namesByTypes->expects($this->once())
-                     ->method('isEmpty')
-                     ->willReturn(false);
-        $namesByTypes->expects($this->once())
-                     ->method('toArray')
-                     ->willReturn([
-                         'abc' => ['def', 'ghi'],
-                         'jkl' => ['mno'],
-                     ]);
+        $namesByTypes = new NamesByTypes();
+        $namesByTypes->setNames('abc', ['def', 'ghi'])
+                     ->setNames('jkl', ['mno']);
 
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $queryResult = [
             $this->createMock(Icon::class),
             $this->createMock(Icon::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -132,48 +124,33 @@ class IconRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new IconRepository($this->entityManager);
-        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
+        $instance = $this->createInstance();
+        $result = $instance->findByTypesAndNames($combinationId, $namesByTypes);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the findByTypesAndNames method.
-     * @covers ::findByTypesAndNames
-     */
     public function testFindByTypesAndNamesWithoutConditions(): void
     {
-        /* @var NamesByTypes&MockObject $namesByTypes */
-        $namesByTypes = $this->createMock(NamesByTypes::class);
-        $namesByTypes->expects($this->once())
-                     ->method('isEmpty')
-                     ->willReturn(true);
-
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $namesByTypes = new NamesByTypes();
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        $repository = new IconRepository($this->entityManager);
-        $result = $repository->findByTypesAndNames($combinationId, $namesByTypes);
+        $instance = $this->createInstance();
+        $result = $instance->findByTypesAndNames($combinationId, $namesByTypes);
 
         $this->assertSame([], $result);
     }
 
-    /**
-     * Tests the findByImageIds method.
-     * @covers ::findByImageIds
-     */
     public function testFindByImageIds(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $imageIds = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $mappedImageIds = ['abc', 'def'];
         $queryResult = [
@@ -181,13 +158,11 @@ class IconRepositoryTest extends TestCase
             $this->createMock(Icon::class),
         ];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -232,53 +207,36 @@ class IconRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var IconRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(IconRepository::class)
-                           ->onlyMethods(['mapIdsToParameterValues'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->once())
-                   ->method('mapIdsToParameterValues')
-                   ->with($this->identicalTo($imageIds))
-                   ->willReturn($mappedImageIds);
+        $instance = $this->createInstance(['mapIdsToParameterValues']);
+        $instance->expects($this->once())
+                 ->method('mapIdsToParameterValues')
+                 ->with($this->identicalTo($imageIds))
+                 ->willReturn($mappedImageIds);
 
-        $result = $repository->findByImageIds($combinationId, $imageIds);
+        $result = $instance->findByImageIds($combinationId, $imageIds);
 
         $this->assertSame($queryResult, $result);
     }
 
-    /**
-     * Tests the findByImageIds method.
-     * @covers ::findByImageIds
-     */
     public function testFindByImageIdsWithoutImageIds(): void
     {
-        /* @var UuidInterface&MockObject $combinationId */
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $this->entityManager->expects($this->never())
                             ->method('createQueryBuilder');
 
-        /* @var IconRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(IconRepository::class)
-                           ->onlyMethods(['mapIdsToParameterValues'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMock();
-        $repository->expects($this->never())
-                   ->method('mapIdsToParameterValues');
+        $instance = $this->createInstance(['mapIdsToParameterValues']);
+        $instance->expects($this->never())
+                 ->method('mapIdsToParameterValues');
 
-        $result = $repository->findByImageIds($combinationId, []);
+        $result = $instance->findByImageIds($combinationId, []);
 
         $this->assertSame([], $result);
     }
 
-    /**
-     * Tests the clearCombination method.
-     * @covers ::clearCombination
-     */
     public function testClearCombination(): void
     {
-        $combinationId = $this->createMock(UuidInterface::class);
+        $combinationId = Uuid::fromString('2f4a45fa-a509-a9d1-aae6-ffcf984a7a76');
 
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
@@ -309,7 +267,7 @@ class IconRepositoryTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        $repository = new IconRepository($this->entityManager);
-        $repository->clearCombination($combinationId);
+        $instance = $this->createInstance();
+        $instance->clearCombination($combinationId);
     }
 }

@@ -12,49 +12,39 @@ use PHPUnit\Framework\TestCase;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Data\TranslationPriorityData
+ * @covers \FactorioItemBrowser\Api\Database\Data\TranslationPriorityData
  */
 class TranslationPriorityDataTest extends TestCase
 {
-    /**
-     * Tests the setting and getting the type.
-     * @covers ::getType
-     * @covers ::setType
-     */
+    private function createInstance(): TranslationPriorityData
+    {
+        return new TranslationPriorityData();
+    }
+
     public function testSetAndGetType(): void
     {
         $type = 'abc';
-        $data = new TranslationPriorityData();
+        $instance = $this->createInstance();
 
-        $this->assertSame($data, $data->setType($type));
-        $this->assertSame($type, $data->getType());
+        $this->assertSame($instance, $instance->setType($type));
+        $this->assertSame($type, $instance->getType());
     }
 
-    /**
-     * Tests the setting and getting the name.
-     * @covers ::getName
-     * @covers ::setName
-     */
     public function testSetAndGetName(): void
     {
         $name = 'abc';
-        $data = new TranslationPriorityData();
+        $instance = $this->createInstance();
 
-        $this->assertSame($data, $data->setName($name));
-        $this->assertSame($name, $data->getName());
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($name, $instance->getName());
     }
 
-    /**
-     * Tests the setting and getting the priority.
-     * @covers ::getPriority
-     * @covers ::setPriority
-     */
     public function testSetAndGetPriority(): void
     {
         $priority = 42;
-        $data = new TranslationPriorityData();
+        $instance = $this->createInstance();
 
-        $this->assertSame($data, $data->setPriority($priority));
-        $this->assertSame($priority, $data->getPriority());
+        $this->assertSame($instance, $instance->setPriority($priority));
+        $this->assertSame($priority, $instance->getPriority());
     }
 }

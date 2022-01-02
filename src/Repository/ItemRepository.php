@@ -28,11 +28,6 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
         return Item::class;
     }
 
-    /**
-     * Adds the conditions to the query builder for detecting orphans.
-     * @param QueryBuilder $queryBuilder
-     * @param string $alias
-     */
     protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
@@ -45,8 +40,6 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Finds the items with the specified types and names.
-     * @param UuidInterface $combinationId
-     * @param NamesByTypes $namesByTypes
      * @return array<Item>
      */
     public function findByTypesAndNames(UuidInterface $combinationId, NamesByTypes $namesByTypes): array
@@ -74,7 +67,6 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Finds the items matching the specified keywords.
-     * @param UuidInterface $combinationId
      * @param array<string> $keywords
      * @return array<Item>
      */
@@ -100,8 +92,6 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Finds random items.
-     * @param UuidInterface $combinationId
-     * @param int $numberOfItems
      * @return array<Item>
      */
     public function findRandom(UuidInterface $combinationId, int $numberOfItems): array
@@ -119,7 +109,6 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Finds all items, sorted by their name.
-     * @param UuidInterface $combinationId
      * @return array<Item>
      */
     public function findAll(UuidInterface $combinationId): array

@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use FactorioItemBrowser\Api\Database\Repository\AbstractRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -17,70 +17,46 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\AbstractRepository
+ * @covers \FactorioItemBrowser\Api\Database\Repository\AbstractRepository
  */
 class AbstractRepositoryTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * The mocked entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
     /**
-     * Tests the constructing.
-     * @covers ::__construct
-     * @throws ReflectionException
+     * @param array<string> $mockedMethods
+     * @return AbstractRepository&MockObject
      */
-    public function testConstruct(): void
+    private function createInstance(array $mockedMethods = []): AbstractRepository
     {
-        /* @var AbstractRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(AbstractRepository::class)
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMockForAbstractClass();
-
-        $this->assertSame($this->entityManager, $this->extractProperty($repository, 'entityManager'));
+        return $this->getMockBuilder(AbstractRepository::class)
+                    ->onlyMethods($mockedMethods)
+                    ->setConstructorArgs([
+                        $this->entityManager,
+                    ])
+                    ->getMockForAbstractClass();
     }
 
+
     /**
-     * Tests the mapIdsToParameterValues method.
      * @throws ReflectionException
-     * @covers ::mapIdsToParameterValues
      */
     public function testMapIdsToParameterValues(): void
     {
-        $expectedResult = ['abc', 'def'];
+        $id1 = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $id2 = Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210');
+        $expectedResult = [$id1->getBytes(), $id2->getBytes()];
 
-        /* @var UuidInterface&MockObject $id1 */
-        $id1 = $this->createMock(UuidInterface::class);
-        $id1->expects($this->once())
-            ->method('getBytes')
-            ->willReturn('abc');
-
-        /* @var UuidInterface&MockObject $id2 */
-        $id2 = $this->createMock(UuidInterface::class);
-        $id2->expects($this->once())
-            ->method('getBytes')
-            ->willReturn('def');
-
-        /* @var AbstractRepository&MockObject $repository */
-        $repository = $this->getMockBuilder(AbstractRepository::class)
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMockForAbstractClass();
-
-        $result = $this->invokeMethod($repository, 'mapIdsToParameterValues', [$id1, $id2]);
+        $instance = $this->createInstance();
+        $result = $this->invokeMethod($instance, 'mapIdsToParameterValues', [$id1, $id2]);
 
         $this->assertSame($expectedResult, $result);
     }

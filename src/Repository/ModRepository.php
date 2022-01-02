@@ -25,11 +25,6 @@ class ModRepository extends AbstractIdRepositoryWithOrphans
         return Mod::class;
     }
 
-    /**
-     * Adds the conditions to the query builder for detecting orphans.
-     * @param QueryBuilder $queryBuilder
-     * @param string $alias
-     */
     protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
@@ -38,7 +33,6 @@ class ModRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Returns all mods used by the specified combination.
-     * @param UuidInterface $combinationId
      * @return array<Mod>
      */
     public function findByCombinationId(UuidInterface $combinationId): array

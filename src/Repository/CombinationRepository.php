@@ -22,8 +22,6 @@ class CombinationRepository extends AbstractRepository
 {
     /**
      * Finds the combination with the specified id.
-     * @param UuidInterface $id
-     * @return Combination|null
      */
     public function findById(UuidInterface $id): ?Combination
     {
@@ -35,7 +33,7 @@ class CombinationRepository extends AbstractRepository
 
         try {
             return $queryBuilder->getQuery()->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException) {
             // Will never happen, we are searching for the primary key.
             return null;
         }
@@ -43,9 +41,6 @@ class CombinationRepository extends AbstractRepository
 
     /**
      * Finds combinations which may be possible to be updated.
-     * @param DateTimeInterface $earliestUsageTime
-     * @param DateTimeInterface $latestUpdateCheckTime
-     * @param int $limit
      * @return array<Combination>
      */
     public function findPossibleCombinationsForUpdate(
@@ -69,7 +64,6 @@ class CombinationRepository extends AbstractRepository
 
     /**
      * Updates the last usage time of the specified combination.
-     * @param Combination $combination
      */
     public function updateLastUsageTime(Combination $combination): void
     {
@@ -77,7 +71,7 @@ class CombinationRepository extends AbstractRepository
             $combination->setLastUsageTime(new DateTime());
             $this->entityManager->persist($combination);
             $this->entityManager->flush();
-        } catch (Exception $e) {
+        } catch (Exception) {
             // Nothing to do.
         }
     }

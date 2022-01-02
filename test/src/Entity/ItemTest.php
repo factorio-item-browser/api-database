@@ -6,10 +6,8 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Item;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 
 /**
  * The PHPUnit test of the Item class.

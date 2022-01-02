@@ -24,11 +24,6 @@ class IconImageRepository extends AbstractIdRepositoryWithOrphans
         return IconImage::class;
     }
 
-    /**
-     * Adds the conditions to the query builder for detecting orphans.
-     * @param QueryBuilder $queryBuilder
-     * @param string $alias
-     */
     protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.icons", 'i')

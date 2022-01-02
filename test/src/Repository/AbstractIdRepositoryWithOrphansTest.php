@@ -11,7 +11,7 @@ use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Repository\AbstractIdRepositoryWithOrphans;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidInterface;
+use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -19,87 +19,73 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Repository\AbstractIdRepositoryWithOrphans
+ * @covers \FactorioItemBrowser\Api\Database\Repository\AbstractIdRepositoryWithOrphans
  */
 class AbstractIdRepositoryWithOrphansTest extends TestCase
 {
     use ReflectionTrait;
 
-    /**
-     * The mocked entity manager.
-     * @var EntityManagerInterface&MockObject
-     */
-    protected $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * Sets up the test case.
-     */
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
     /**
-     * Tests the removeOrphans method.
-     * @covers ::removeOrphans
+     * @param array<string> $mockedMethods
+     * @return AbstractIdRepositoryWithOrphans<object>&MockObject
      */
+    private function createInstance(array $mockedMethods = []): AbstractIdRepositoryWithOrphans
+    {
+        return $this->getMockBuilder(AbstractIdRepositoryWithOrphans::class)
+                    ->onlyMethods($mockedMethods)
+                    ->setConstructorArgs([
+                        $this->entityManager,
+                    ])
+                    ->getMockForAbstractClass();
+    }
+
     public function testRemoveOrphans(): void
     {
         $ids = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
 
-        /* @var AbstractIdRepositoryWithOrphans&MockObject $repository */
-        $repository = $this->getMockBuilder(AbstractIdRepositoryWithOrphans::class)
-                           ->onlyMethods(['findOrphanedIds', 'removeIds'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMockForAbstractClass();
-        $repository->expects($this->once())
-                   ->method('findOrphanedIds')
-                   ->willReturn($ids);
-        $repository->expects($this->once())
-                   ->method('removeIds')
-                   ->with($this->identicalTo($ids));
+        $instance = $this->createInstance(['findOrphanedIds', 'removeIds']);
+        $instance->expects($this->once())
+                  ->method('findOrphanedIds')
+                  ->willReturn($ids);
+        $instance->expects($this->once())
+                 ->method('removeIds')
+                 ->with($this->identicalTo($ids));
 
-        $repository->removeOrphans();
+        $instance->removeOrphans();
     }
 
-    /**
-     * Tests the removeOrphans method.
-     * @covers ::removeOrphans
-     */
     public function testRemoveOrphansWithoutIds(): void
     {
-        /* @var AbstractIdRepositoryWithOrphans&MockObject $repository */
-        $repository = $this->getMockBuilder(AbstractIdRepositoryWithOrphans::class)
-                           ->onlyMethods(['findOrphanedIds', 'removeIds'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMockForAbstractClass();
-        $repository->expects($this->once())
-                   ->method('findOrphanedIds')
-                   ->willReturn([]);
-        $repository->expects($this->never())
-                   ->method('removeIds');
+        $instance = $this->createInstance(['findOrphanedIds', 'removeIds']);
+        $instance->expects($this->once())
+                 ->method('findOrphanedIds')
+                 ->willReturn([]);
+        $instance->expects($this->never())
+                 ->method('removeIds');
 
-        $repository->removeOrphans();
+        $instance->removeOrphans();
     }
 
     /**
-     * Tests the findOrphanedIds method.
      * @throws ReflectionException
-     * @covers ::findOrphanedIds
      */
     public function testFindOrphanedIds(): void
     {
         $entityClass = 'abc';
 
-        /* @var UuidInterface&MockObject $id1 */
-        $id1 = $this->createMock(UuidInterface::class);
-        /* @var UuidInterface&MockObject $id2 */
-        $id2 = $this->createMock(UuidInterface::class);
+        $id1 = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $id2 = Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210');
 
         $queryResult = [
             ['id' => $id1],
@@ -107,14 +93,11 @@ class AbstractIdRepositoryWithOrphansTest extends TestCase
         ];
         $expectedResult = [$id1, $id2];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('getResult')
               ->willReturn($queryResult);
 
-
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('select')
@@ -132,42 +115,34 @@ class AbstractIdRepositoryWithOrphansTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var AbstractIdRepositoryWithOrphans&MockObject $repository */
-        $repository = $this->getMockBuilder(AbstractIdRepositoryWithOrphans::class)
-                           ->onlyMethods(['getEntityClass', 'addOrphanConditions'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMockForAbstractClass();
-        $repository->expects($this->once())
-                   ->method('getEntityClass')
-                   ->willReturn($entityClass);
-        $repository->expects($this->once())
-                   ->method('addOrphanConditions');
+        $instance = $this->createInstance(['getEntityClass', 'addOrphanConditions']);
+        $instance->expects($this->once())
+                  ->method('getEntityClass')
+                  ->willReturn($entityClass);
+        $instance->expects($this->once())
+                 ->method('addOrphanConditions');
 
-        $result = $this->invokeMethod($repository, 'findOrphanedIds');
+        $result = $this->invokeMethod($instance, 'findOrphanedIds');
 
         $this->assertSame($expectedResult, $result);
     }
 
     /**
-     * Tests the removeIds method.
      * @throws ReflectionException
-     * @covers ::removeIds
      */
     public function testRemoveIds(): void
     {
         $entityClass = 'abc';
         $ids = [
-            $this->createMock(UuidInterface::class),
-            $this->createMock(UuidInterface::class),
+            Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef'),
+            Uuid::fromString('fedcba98-7654-3210-fedc-ba9876543210'),
         ];
         $mappedIds = ['def', 'ghi'];
 
-        /* @var AbstractQuery&MockObject $query */
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())
               ->method('execute');
 
-        /* @var QueryBuilder&MockObject $queryBuilder */
         $queryBuilder = $this->createMock(QueryBuilder::class);
         $queryBuilder->expects($this->once())
                      ->method('delete')
@@ -189,19 +164,15 @@ class AbstractIdRepositoryWithOrphansTest extends TestCase
                             ->method('createQueryBuilder')
                             ->willReturn($queryBuilder);
 
-        /* @var AbstractIdRepositoryWithOrphans&MockObject $repository */
-        $repository = $this->getMockBuilder(AbstractIdRepositoryWithOrphans::class)
-                           ->onlyMethods(['getEntityClass', 'mapIdsToParameterValues'])
-                           ->setConstructorArgs([$this->entityManager])
-                           ->getMockForAbstractClass();
-        $repository->expects($this->once())
-                   ->method('getEntityClass')
-                   ->willReturn($entityClass);
-        $repository->expects($this->once())
-                   ->method('mapIdsToParameterValues')
-                   ->with($this->identicalTo($ids))
-                   ->willReturn($mappedIds);
+        $instance = $this->createInstance(['getEntityClass', 'mapIdsToParameterValues']);
+        $instance->expects($this->once())
+                 ->method('getEntityClass')
+                 ->willReturn($entityClass);
+        $instance->expects($this->once())
+                 ->method('mapIdsToParameterValues')
+                 ->with($this->identicalTo($ids))
+                 ->willReturn($mappedIds);
 
-        $this->invokeMethod($repository, 'removeIds', $ids);
+        $this->invokeMethod($instance, 'removeIds', $ids);
     }
 }

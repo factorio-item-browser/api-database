@@ -18,8 +18,7 @@ abstract class AbstractIdRepository extends AbstractRepository
 {
     /**
      * Returns the entity class this repository manages.
-     * @return string
-     * @phpstan-return class-string<TEntity>
+     * @return class-string<TEntity>
      */
     abstract protected function getEntityClass(): string;
 

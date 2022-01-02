@@ -31,11 +31,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
         return Translation::class;
     }
 
-    /**
-     * Adds the conditions to the query builder for detecting orphans.
-     * @param QueryBuilder $queryBuilder
-     * @param string $alias
-     */
     protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
@@ -44,9 +39,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Finds translations with the specified types and names.
-     * @param UuidInterface $combinationId
-     * @param string $locale The locale to prefer in the results.
-     * @param NamesByTypes $namesByTypes The names to search, grouped by their types.
      * @return array<Translation>
      */
     public function findByTypesAndNames(UuidInterface $combinationId, string $locale, NamesByTypes $namesByTypes): array
@@ -90,8 +82,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Finds the types and names matching the specified keywords.
-     * @param UuidInterface $combinationId
-     * @param string $locale
      * @param array<string> $keywords
      * @return array<TranslationPriorityData>
      */
@@ -157,7 +147,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Clears the cross table to the specified combination.
-     * @param UuidInterface $combinationId
      * @throws DBALException
      * @throws DriverException
      */
@@ -171,7 +160,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Persists the translations to the combination, using optimized queries.
-     * @param UuidInterface $combinationId
      * @param array<Translation> $translations
      * @throws DBALException
      * @throws DriverException
@@ -218,7 +206,6 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Inserts the translations into the cross table to the specified combination.
-     * @param UuidInterface $combinationId
      * @param array<Translation> $translations
      * @throws DBALException
      * @throws DriverException
@@ -256,10 +243,8 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
 
     /**
      * Executes a native query on the database.
-     * @param string $query
      * @param array<mixed> $parameters
      * @throws DBALException
-     * @throws DriverException
      */
     protected function executeNativeSql(string $query, array $parameters): void
     {

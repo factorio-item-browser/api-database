@@ -15,16 +15,8 @@ use Ramsey\Uuid\UuidInterface;
  */
 class AbstractRepository
 {
-    /**
-     * The entity manager.
-     * @var EntityManagerInterface
-     */
-    protected EntityManagerInterface $entityManager;
+    protected readonly EntityManagerInterface $entityManager;
 
-    /**
-     * Initializes the repository.
-     * @param EntityManagerInterface $entityManager
-     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;

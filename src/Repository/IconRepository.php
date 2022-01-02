@@ -19,8 +19,6 @@ class IconRepository extends AbstractRepository
 {
     /**
      * Finds the icons of the specified types and names.
-     * @param UuidInterface $combinationId
-     * @param NamesByTypes $namesByTypes
      * @return array<Icon>
      */
     public function findByTypesAndNames(UuidInterface $combinationId, NamesByTypes $namesByTypes): array
@@ -48,7 +46,6 @@ class IconRepository extends AbstractRepository
 
     /**
      * Finds the icons using one of the image ids.
-     * @param UuidInterface $combinationId
      * @param array<UuidInterface> $imageIds
      * @return array<Icon>
      */
@@ -71,7 +68,6 @@ class IconRepository extends AbstractRepository
 
     /**
      * Clears all icons of the specified combination.
-     * @param UuidInterface $combinationId
      */
     public function clearCombination(UuidInterface $combinationId): void
     {
