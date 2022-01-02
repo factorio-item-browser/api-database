@@ -13,8 +13,8 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Type\EnumTypeEntityType;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -33,7 +33,7 @@ use Ramsey\Uuid\UuidInterface;
 class Translation implements EntityWithId
 {
     #[Id]
-    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the translation.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the translation.'])]
     private UuidInterface $id;
 
     #[Column(length: 5, options: [

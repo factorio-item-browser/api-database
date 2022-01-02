@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Constant;
 
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
+
 /**
  * The interface holding the custom Doctrine types used in the entities.
  *
@@ -14,4 +16,5 @@ interface CustomTypes
 {
     public const TIMESTAMP = 'timestamp';
     public const TINYINT = 'tinyint';
+    public const UUID = UuidBinaryType::NAME;
 }

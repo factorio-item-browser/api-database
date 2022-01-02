@@ -17,8 +17,8 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Type\EnumTypeRecipeMode;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -39,7 +39,7 @@ class Recipe implements EntityWithId
     private const FACTOR_CRAFTING_TIME = 1000;
 
     #[Id]
-    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the recipe.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the recipe.'])]
     private UuidInterface $id;
 
     #[Column(length: 255, options: [

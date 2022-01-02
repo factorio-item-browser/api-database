@@ -12,8 +12,8 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Type\EnumTypeItemType;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -32,7 +32,7 @@ use Ramsey\Uuid\UuidInterface;
 class Item implements EntityWithId
 {
     #[Id]
-    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the item.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the item.'])]
     private UuidInterface $id;
 
     #[Column(type: EnumTypeItemType::NAME, options: ['comment' => 'The type of the item.'])]

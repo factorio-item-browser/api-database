@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -32,7 +32,7 @@ use Ramsey\Uuid\UuidInterface;
 class CraftingCategory implements EntityWithId
 {
     #[Id]
-    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the crafting category.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the crafting category.'])]
     private UuidInterface $id;
 
     #[Column(length: 255, options: [

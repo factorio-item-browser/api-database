@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -29,7 +29,7 @@ use Ramsey\Uuid\UuidInterface;
 class Mod implements EntityWithId
 {
     #[Id]
-    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the mod.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the mod.'])]
     private UuidInterface $id;
 
     #[Column(length: 255, options: [

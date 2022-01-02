@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Type\EnumTypeEnergyUsageUnit;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -40,7 +39,7 @@ class Machine implements EntityWithId
     private const FACTOR_ENERGY_USAGE = 1000;
 
     #[Id]
-    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the machine.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the machine.'])]
     private UuidInterface $id;
 
     #[Column(length: 255, options: [

@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -30,7 +29,7 @@ use Ramsey\Uuid\UuidInterface;
 class CachedSearchResult
 {
     #[Id]
-    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The id of the combination.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The id of the combination.'])]
     private UuidInterface $combinationId;
 
     #[Id]
@@ -38,7 +37,7 @@ class CachedSearchResult
     private string $locale = '';
 
     #[Id]
-    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The hash of the search.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The hash of the search.'])]
     private UuidInterface $searchHash;
 
     #[Column(type: Types::TEXT, length: 65535, options: [
