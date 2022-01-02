@@ -6,6 +6,13 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -14,75 +21,54 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Entity]
+#[Table(options: [
+    'charset' => 'utf8mb4',
+    'collate' => 'utf8mb4_bin',
+    'comment' => 'The table holding the icon image data.',
+])]
 class IconImage implements EntityWithId
 {
-    /**
-     * The internal id of the image.
-     * @var UuidInterface
-     */
-    protected UuidInterface $id;
+    #[Id]
+    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the image.'])]
+    private UuidInterface $id;
 
-    /**
-     * The contents of the image.
-     * @var string|resource
-     */
-    protected $contents = '';
+    /** @var string|resource */
+    #[Column(type: Types::BLOB, options: ['comment' => 'The contents of the image.'])]
+    private mixed $contents = '';
 
-    /**
-     * The size of the image.
-     * @var int
-     */
-    protected int $size = 0;
+    #[Column(type: 'smallint', options: [
+        'unsigned' => true,
+        'comment' => 'The size of the image.',
+    ])]
+    private int $size = 0;
 
-    /**
-     * The icons using the image.
-     * @var Collection<int, Icon>
-     */
-    protected Collection $icons;
+    /** @var Collection<int, Icon> */
+    #[OneToMany(mappedBy: 'image', targetEntity: Icon::class)]
+    private Collection $icons;
 
-    /**
-     * Initializes the entity.
-     */
     public function __construct()
     {
         $this->icons = new ArrayCollection();
     }
 
-    /**
-     * Sets the internal id of the icon.
-     * @param UuidInterface $id
-     * @return $this Implementing fluent interface.
-     */
     public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * Returns the internal id of the icon.
-     * @return UuidInterface
-     */
     public function getId(): UuidInterface
     {
         return $this->id;
     }
 
-    /**
-     * Sets the contents of the image.
-     * @param string $contents
-     * @return $this Implementing fluent interface.
-     */
     public function setContents(string $contents): self
     {
         $this->contents = $contents;
         return $this;
     }
 
-    /**
-     * Returns the contents of the image.
-     * @return string
-     */
     public function getContents(): string
     {
         if (is_resource($this->contents)) {
@@ -91,29 +77,19 @@ class IconImage implements EntityWithId
         return $this->contents;
     }
 
-    /**
-     * Sets the size of the image.
-     * @param int $size
-     * @return $this
-     */
     public function setSize(int $size): self
     {
         $this->size = $size;
         return $this;
     }
 
-    /**
-     * Returns the size of the image.
-     * @return int
-     */
     public function getSize(): int
     {
         return $this->size;
     }
 
     /**
-     * Returns the icons using this image.
-     * @return Collection<int, Icon>|Icon[]
+     * @return Collection<int, Icon>
      */
     public function getIcons(): Collection
     {

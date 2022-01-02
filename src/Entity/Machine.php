@@ -6,6 +6,18 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Type\EnumTypeEnergyUsageUnit;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -14,290 +26,194 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Entity]
+#[Table(options: [
+    'charset' => 'utf8mb4',
+    'collate' => 'utf8mb4_bin',
+    'comment' => 'The table holding the crafting machines of the recipes.',
+])]
+#[Index(columns: ['name'], name: 'idx_name')]
 class Machine implements EntityWithId
 {
-    /**
-     * The factor used for the crafting speed.
-     */
-    protected const FACTOR_CRAFTING_SPEED = 1000;
+    private const FACTOR_CRAFTING_SPEED = 1000;
+    private const FACTOR_ENERGY_USAGE = 1000;
 
-    /**
-     * The factor used for the energy usage.
-     */
-    protected const FACTOR_ENERGY_USAGE = 1000;
+    #[Id]
+    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the machine.'])]
+    private UuidInterface $id;
 
-    /**
-     * The value representing unlimited slots.
-     */
-    public const VALUE_UNLIMITED_SLOTS = 255;
+    #[Column(length: 255, options: [
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_bin',
+        'comment' => 'The name of the machine.',
+    ])]
+    private string $name;
 
-    /**
-     * The internal id of the machine.
-     * @var UuidInterface
-     */
-    protected UuidInterface $id;
+    /** @var Collection<int, CraftingCategory> */
+    #[ManyToMany(targetEntity: CraftingCategory::class)]
+    #[JoinTable(name: 'MachineXCraftingCategory')]
+    #[JoinColumn(name: 'machineId', nullable: false)]
+    #[InverseJoinColumn(name: 'craftingCategoryId', nullable: false)]
+    private Collection $craftingCategories;
 
-    /**
-     * The name of the machine.
-     * @var string
-     */
-    protected string $name;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The crafting speed of the machine.',
+    ])]
+    private int $craftingSpeed = self::FACTOR_CRAFTING_SPEED;
 
-    /**
-     * The crafting categories supported by the machine.
-     * @var Collection<int, CraftingCategory>
-     */
-    protected Collection $craftingCategories;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of item slots available in the machine, or 255 for unlimited.',
+    ])]
+    private int $numberOfItemSlots = 0;
 
-    /**
-     * The crafting speed of the machine.
-     * @var int
-     */
-    protected int $craftingSpeed = self::FACTOR_CRAFTING_SPEED;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of fluid input slots available in the machine.',
+    ])]
+    private int $numberOfFluidInputSlots = 0;
 
-    /**
-     * The number of item slots available in the machine.
-     * @var int
-     */
-    protected int $numberOfItemSlots = 0;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of fluid output slots available in the machine.',
+    ])]
+    private int $numberOfFluidOutputSlots = 0;
 
-    /**
-     * The number of fluid input slots available in the machine.
-     * @var int
-     */
-    protected int $numberOfFluidInputSlots = 0;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of module slots available in the machine.',
+    ])]
+    private int $numberOfModuleSlots = 0;
 
-    /**
-     * The number of fluid output slots available in the machine.
-     * @var int
-     */
-    protected int $numberOfFluidOutputSlots = 0;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The energy usage of the machine.',
+    ])]
+    private int $energyUsage = 0;
 
-    /**
-     * The number of module slots available in the machine.
-     * @var int
-     */
-    protected int $numberOfModuleSlots = 0;
+    #[Column(type: EnumTypeEnergyUsageUnit::NAME, options: ['comment' => 'The unit of the energy usage.'])]
+    private string $energyUsageUnit = '';
 
-    /**
-     * The energy usage of the machine.
-     * @var int
-     */
-    protected int $energyUsage = 0;
+    /** @var Collection<int, Combination> */
+    #[ManyToMany(targetEntity: Combination::class, mappedBy: 'machines')]
+    private Collection $combinations;
 
-    /**
-     * The unit of the energy usage.
-     * @var string
-     */
-    protected string $energyUsageUnit = '';
-
-    /**
-     * The combinations which are adding the machine.
-     * @var Collection<int, Combination>
-     */
-    protected Collection $combinations;
-
-    /**
-     * Initializes the entity.
-     */
     public function __construct()
     {
         $this->craftingCategories = new ArrayCollection();
         $this->combinations = new ArrayCollection();
     }
 
-    /**
-     * Sets the internal id of the machine.
-     * @param UuidInterface $id
-     * @return $this
-     */
     public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * Returns the internal id of the machine.
-     * @return UuidInterface
-     */
     public function getId(): UuidInterface
     {
         return $this->id;
     }
 
-    /**
-     * Sets the name of the machine.
-     * @param string $name
-     * @return $this
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * Returns the name of the machine.
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * Returns the crafting categories supported by the machine.
-     * @return Collection<int, CraftingCategory>|CraftingCategory[]
+     * @return Collection<int, CraftingCategory>
      */
     public function getCraftingCategories(): Collection
     {
         return $this->craftingCategories;
     }
 
-    /**
-     * Sets the crafting speed of the machine.
-     * @param float $craftingSpeed
-     * @return $this
-     */
     public function setCraftingSpeed(float $craftingSpeed): self
     {
         $this->craftingSpeed = (int) ($craftingSpeed * self::FACTOR_CRAFTING_SPEED);
         return $this;
     }
 
-    /**
-     * Returns the crafting speed of the machine.
-     * @return float
-     */
     public function getCraftingSpeed(): float
     {
         return $this->craftingSpeed / self::FACTOR_CRAFTING_SPEED;
     }
 
-    /**
-     * Sets the number of item slots available in the machine, or -1 if unlimited.
-     * @param int $numberOfItemSlots
-     * @return $this
-     */
     public function setNumberOfItemSlots(int $numberOfItemSlots): self
     {
         $this->numberOfItemSlots = $numberOfItemSlots;
         return $this;
     }
 
-    /**
-     * Returns the number of item slots available in the machine, or -1 if unlimited.
-     * @return int
-     */
     public function getNumberOfItemSlots(): int
     {
         return $this->numberOfItemSlots;
     }
 
-    /**
-     * Sets the number of fluid input slots available in the machine.
-     * @param int $numberOfFluidInputSlots
-     * @return $this
-     */
-    public function setNumberOfFluidInputSlots(int $numberOfFluidInputSlots)
+    public function setNumberOfFluidInputSlots(int $numberOfFluidInputSlots): self
     {
         $this->numberOfFluidInputSlots = $numberOfFluidInputSlots;
         return $this;
     }
 
-    /**
-     * Returns the number of fluid input slots available in the machine.
-     * @return int
-     */
     public function getNumberOfFluidInputSlots(): int
     {
         return $this->numberOfFluidInputSlots;
     }
 
-    /**
-     * Sets the number of fluid output slots available in the machine.
-     * @param int $numberOfFluidOutputSlots
-     * @return $this
-     */
-    public function setNumberOfFluidOutputSlots(int $numberOfFluidOutputSlots)
+    public function setNumberOfFluidOutputSlots(int $numberOfFluidOutputSlots): self
     {
         $this->numberOfFluidOutputSlots = $numberOfFluidOutputSlots;
         return $this;
     }
 
-    /**
-     * Returns the number of fluid output slots available in the machine.
-     * @return int
-     */
     public function getNumberOfFluidOutputSlots(): int
     {
         return $this->numberOfFluidOutputSlots;
     }
 
-    /**
-     * Sets the number of module slots available in the machine.
-     * @param int $numberOfModuleSlots
-     * @return $this
-     */
-    public function setNumberOfModuleSlots(int $numberOfModuleSlots)
+    public function setNumberOfModuleSlots(int $numberOfModuleSlots): self
     {
         $this->numberOfModuleSlots = $numberOfModuleSlots;
         return $this;
     }
 
-    /**
-     * Returns the number of module slots available in the machine.
-     * @return int
-     */
     public function getNumberOfModuleSlots(): int
     {
         return $this->numberOfModuleSlots;
     }
 
-    /**
-     * Sets the energy usage of the machine.
-     * @param float $energyUsage
-     * @return $this
-     */
     public function setEnergyUsage(float $energyUsage): self
     {
         $this->energyUsage = (int) ($energyUsage * self::FACTOR_ENERGY_USAGE);
         return $this;
     }
 
-    /**
-     * Returns the energy usage of the machine.
-     * @return float
-     */
     public function getEnergyUsage(): float
     {
         return $this->energyUsage / self::FACTOR_ENERGY_USAGE;
     }
 
-    /**
-     * Sets the unit of the energy usage.
-     * @param string $energyUsageUnit
-     * @return $this
-     */
     public function setEnergyUsageUnit(string $energyUsageUnit): self
     {
         $this->energyUsageUnit = $energyUsageUnit;
         return $this;
     }
 
-    /**
-     * Returns the unit of the energy usage.
-     * @return string
-     */
     public function getEnergyUsageUnit(): string
     {
         return $this->energyUsageUnit;
     }
 
     /**
-     * Returns the combinations which are adding the machine.
-     * @return Collection<int, Combination>|Combination[]
+     * @return Collection<int, Combination>
      */
     public function getCombinations(): Collection
     {

@@ -4,180 +4,127 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
+
 /**
  * The entity class of the recipe product database table.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Entity]
+#[Table(options: [
+    'charset' => 'utf8mb4',
+    'collate' => 'utf8mb4_bin',
+    'comment' => 'The table holding the products for the recipes.',
+])]
 class RecipeProduct
 {
-    /**
-     * The factor of the minimal amount.
-     */
-    protected const FACTOR_AMOUNT_MIN = 1000;
+    private const FACTOR_AMOUNT_MIN = 1000;
+    private const FACTOR_AMOUNT_MAX = 1000;
+    private const FACTOR_AMOUNT_PROBABILITY = 1000;
 
-    /**
-     * The factor of the maximal amount.
-     */
-    protected const FACTOR_AMOUNT_MAX = 1000;
+    #[Id]
+    #[ManyToOne(targetEntity: Recipe::class, inversedBy: 'products')]
+    #[JoinColumn(name: 'recipeId', nullable: false)]
+    private Recipe $recipe;
 
-    /**
-     * The factor of the probability.
-     */
-    protected const FACTOR_AMOUNT_PROBABILITY = 1000;
+    #[Id]
+    #[Column(name: '`order`', type: 'tinyint', options: [#
+        'unsigned' => true,
+        'comment' => 'The order of the product in the recipe.',
+    ])]
+    private int $order = 0;
 
-    /**
-     * The recipe of the result.
-     * @var Recipe
-     */
-    protected Recipe $recipe;
+    #[ManyToOne(targetEntity: Item::class, fetch: 'EAGER')]
+    #[JoinColumn(name: 'itemId', nullable: false)]
+    private Item $item;
 
-    /**
-     * The order of the product in the recipe.
-     * @var int
-     */
-    protected int $order = 0;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The minimal amount of the product in the recipe.',
+    ])]
+    private int $amountMin = 0;
 
-    /**
-     * The item of the result.
-     * @var Item
-     */
-    protected Item $item;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The maximal amount of the product in the recipe.',
+    ])]
+    private int $amountMax = 0;
 
-    /**
-     * The minimal amount of the product in the recipe.
-     * @var int
-     */
-    protected int $amountMin = 0;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The probability of the product in the recipe.',
+    ])]
+    private int $probability = 0;
 
-    /**
-     * The maximal amount of the product in the recipe.
-     * @var int
-     */
-    protected int $amountMax = 0;
-
-    /**
-     * The probability of the product in the recipe.
-     * @var int
-     */
-    protected int $probability = 0;
-
-    /**
-     * Sets the recipe of the result.
-     * @param Recipe $recipe
-     * @return $this Implementing fluent interface.
-     */
     public function setRecipe(Recipe $recipe): self
     {
         $this->recipe = $recipe;
         return $this;
     }
 
-    /**
-     * Returns the recipe of the result.
-     * @return Recipe
-     */
     public function getRecipe(): Recipe
     {
         return $this->recipe;
     }
 
-    /**
-     * Sets the order of the product in the recipe.
-     * @param int $order
-     * @return $this Implementing fluent interface.
-     */
     public function setOrder(int $order): self
     {
         $this->order = $order;
         return $this;
     }
 
-    /**
-     * Returns the order of the product in the recipe.
-     * @return int
-     */
     public function getOrder(): int
     {
         return $this->order;
     }
 
-    /**
-     * Sets the item of the result.
-     * @param Item $item
-     * @return $this Implementing fluent interface.
-     */
     public function setItem(Item $item): self
     {
         $this->item = $item;
         return $this;
     }
 
-    /**
-     * Returns the item of the result.
-     * @return Item
-     */
     public function getItem(): Item
     {
         return $this->item;
     }
 
-    /**
-     * Sets the minimal amount of the product in the recipe.
-     * @param float $amountMin
-     * @return $this Implementing fluent interface.
-     */
     public function setAmountMin(float $amountMin): self
     {
         $this->amountMin = (int) ($amountMin * self::FACTOR_AMOUNT_MIN);
         return $this;
     }
 
-    /**
-     * Returns the minimal amount of the product in the recipe.
-     * @return float
-     */
     public function getAmountMin(): float
     {
         return $this->amountMin / self::FACTOR_AMOUNT_MIN;
     }
 
-    /**
-     * Sets the maximal amount of the product in the recipe.
-     * @param float $amountMax
-     * @return $this Implementing fluent interface.
-     */
     public function setAmountMax(float $amountMax): self
     {
         $this->amountMax = (int) ($amountMax * self::FACTOR_AMOUNT_MAX);
         return $this;
     }
 
-    /**
-     * Returns the maximal amount of the product in the recipe.
-     * @return float
-     */
     public function getAmountMax(): float
     {
         return $this->amountMax / self::FACTOR_AMOUNT_MAX;
     }
 
-    /**
-     * Sets the probability of the product in the recipe.
-     * @param float $probability
-     * @return $this Implementing fluent interface.
-     */
     public function setProbability(float $probability): self
     {
         $this->probability = (int) ($probability * self::FACTOR_AMOUNT_PROBABILITY);
         return $this;
     }
 
-    /**
-     * Returns the probability of the product in the recipe.
-     * @return float
-     */
     public function getProbability(): float
     {
         return $this->probability / self::FACTOR_AMOUNT_PROBABILITY;
@@ -185,7 +132,6 @@ class RecipeProduct
 
     /**
      * Returns the amount calculated from the other amount values.
-     * @return float
      */
     public function getAmount(): float
     {

@@ -6,6 +6,14 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Type\EnumTypeItemType;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -14,103 +22,73 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Entity]
+#[Table(options: [
+    'charset' => 'utf8mb4',
+    'collate' => 'utf8mb4_bin',
+    'comment' => 'The table holding the items.',
+])]
+#[Index(columns: ['type', 'name'], name: 'idx_type_name')]
 class Item implements EntityWithId
 {
-    /**
-     * The internal id of the item.
-     * @var UuidInterface
-     */
-    protected UuidInterface $id;
+    #[Id]
+    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the item.'])]
+    private UuidInterface $id;
 
-    /**
-     * The type of the item.
-     * @var string
-     */
-    protected string $type = '';
+    #[Column(type: EnumTypeItemType::NAME, options: ['comment' => 'The type of the item.'])]
+    private string $type = '';
 
-    /**
-     * The unique name of the item.
-     * @var string
-     */
-    protected string $name = '';
+    #[Column(length: 255, options: [
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_bin',
+        'comment' => 'The unique name of the item.',
+    ])]
+    private string $name = '';
 
-    /**
-     * The combinations which are adding the item.
-     * @var Collection<int, Combination>
-     */
-    protected Collection $combinations;
+    /** @var Collection<int, Combination> */
+    #[ManyToMany(targetEntity: Combination::class, mappedBy: 'items')]
+    private Collection $combinations;
 
-    /**
-     * Initializes the entity.
-     */
     public function __construct()
     {
         $this->combinations = new ArrayCollection();
     }
 
-    /**
-     * Sets the internal id of the item.
-     * @param UuidInterface $id
-     * @return $this Implementing fluent interface.
-     */
     public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * Returns the internal id of the item.
-     * @return UuidInterface
-     */
     public function getId(): UuidInterface
     {
         return $this->id;
     }
 
-    /**
-     * Sets the type of the item.
-     * @param string $type
-     * @return $this Implementing fluent interface.
-     */
     public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
     }
 
-    /**
-     * Returns the type of the item.
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * Sets the unique name of the item.
-     * @param string $name
-     * @return $this Implementing fluent interface.
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * Returns the unique name of the item.
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * Returns the combinations which are adding the item.
-     * @return Collection<int, Combination>|Combination[]
+     * @return Collection<int, Combination>
      */
     public function getCombinations(): Collection
     {

@@ -16,7 +16,6 @@ interface EntityWithId
 {
     /**
      * Returns the internal id of the entity.
-     * @return UuidInterface
      */
     public function getId(): UuidInterface;
 }

@@ -6,6 +6,15 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Type\EnumTypeEntityType;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -14,233 +23,155 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Entity]
+#[Table(options: [
+    'charset' => 'utf8mb4',
+    'collate' => 'utf8mb4_bin',
+    'comment' => 'The table holding the localized translations of the items and recipes etc.',
+])]
+#[Index(columns: ['locale', 'type', 'name'], name: 'idx_locale_type_name')]
 class Translation implements EntityWithId
 {
-    /**
-     * The internal id of the translation.
-     * @var UuidInterface
-     */
-    protected UuidInterface $id;
+    #[Id]
+    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the translation.'])]
+    private UuidInterface $id;
 
-    /**
-     * The locale of the translation.
-     * @var string
-     */
-    protected string $locale = '';
+    #[Column(length: 5, options: [
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_bin',
+        'comment' => 'The locale of the translation.',
+    ])]
+    private string $locale = '';
 
-    /**
-     * The type of the translation.
-     * @var string
-     */
-    protected string $type = '';
+    #[Column(type: EnumTypeEntityType::NAME, options: ['comment' => 'The type of the translation.'])]
+    private string $type = '';
 
-    /**
-     * The name of the translation.
-     * @var string
-     */
-    protected string $name = '';
+    #[Column(length: 255, options: [
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_bin',
+        'comment' => 'The name of the translation.',
+    ])]
+    private string $name = '';
 
-    /**
-     * The actual translation.
-     * @var string
-     */
-    protected string $value = '';
+    #[Column(type: Types::TEXT, length: 65535, options: [
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_bin',
+        'comment' => 'The actual translation.',
+    ])]
+    private string $value = '';
 
-    /**
-     * The translated description.
-     * @var string
-     */
-    protected string $description = '';
+    #[Column(type: Types::TEXT, length: 65535, options: [
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_bin',
+        'comment' => 'The translated description.',
+    ])]
+    private string $description = '';
 
-    /**
-     * Whether this translation is duplicated by the recipe.
-     * @var bool
-     */
-    protected bool $isDuplicatedByRecipe = false;
+    #[Column(type: Types::BOOLEAN, options: ['comment' => 'Whether this translation is duplicated by the recipe.'])]
+    private bool $isDuplicatedByRecipe = false;
 
-    /**
-     * Whether this translation is duplicated by the machine.
-     * @var bool
-     */
-    protected bool $isDuplicatedByMachine = false;
+    #[Column(type: Types::BOOLEAN, options: ['comment' => 'Whether this translation is duplicated by the machine.'])]
+    private bool $isDuplicatedByMachine = false;
 
-    /**
-     * The combinations which are adding the translation.
-     * @var Collection<int, Combination>
-     */
-    protected Collection $combinations;
+    /** @var Collection<int, Combination> */
+    #[ManyToMany(targetEntity: Combination::class, mappedBy: 'translations')]
+    private Collection $combinations;
 
-    /**
-     * Initializes the entity.
-     */
     public function __construct()
     {
         $this->combinations = new ArrayCollection();
     }
 
-    /**
-     * Sets the internal id of the translation.
-     * @param UuidInterface $id
-     * @return $this Implementing fluent interface.
-     */
     public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * Returns the internal id of the translation.
-     * @return UuidInterface
-     */
     public function getId(): UuidInterface
     {
         return $this->id;
     }
 
-    /**
-     * Sets the locale of the translation.
-     * @param string $locale
-     * @return $this Implementing fluent interface.
-     */
     public function setLocale(string $locale): self
     {
         $this->locale = $locale;
         return $this;
     }
 
-    /**
-     * Returns the locale of the translation.
-     * @return string
-     */
     public function getLocale(): string
     {
         return $this->locale;
     }
 
-    /**
-     * Sets the type of the translation.
-     * @param string $type
-     * @return $this Implementing fluent interface.
-     */
     public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
     }
 
-    /**
-     * Returns the type of the translation.
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * Sets the name of the translation.
-     * @param string $name
-     * @return $this Implementing fluent interface.
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * Returns the name of the translation.
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Sets the value of the translation.
-     * @param string $value
-     * @return $this Implementing fluent interface.
-     */
     public function setValue(string $value): self
     {
         $this->value = $value;
         return $this;
     }
 
-    /**
-     * Returns the value of the translation.
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;
     }
 
-    /**
-     * Sets the translated description.
-     * @param string $description
-     * @return $this Implementing fluent interface.
-     */
     public function setDescription(string $description): self
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * Returns the translated description.
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * Sets whether this translation is duplicated by the recipe.
-     * @param bool $isDuplicatedByRecipe
-     * @return $this Implementing fluent interface.
-     */
     public function setIsDuplicatedByRecipe(bool $isDuplicatedByRecipe): self
     {
         $this->isDuplicatedByRecipe = $isDuplicatedByRecipe;
         return $this;
     }
 
-    /**
-     * Returns whether this translation is duplicated by the recipe.
-     * @return bool
-     */
     public function getIsDuplicatedByRecipe(): bool
     {
         return $this->isDuplicatedByRecipe;
     }
 
-    /**
-     * Sets whether this translation is duplicated by the machine.
-     * @param bool $isDuplicatedByMachine
-     * @return $this Implementing fluent interface.
-     */
     public function setIsDuplicatedByMachine(bool $isDuplicatedByMachine): self
     {
         $this->isDuplicatedByMachine = $isDuplicatedByMachine;
         return $this;
     }
 
-    /**
-     * Returns whether this translation is duplicated by the machine.
-     * @return bool
-     */
     public function getIsDuplicatedByMachine(): bool
     {
         return $this->isDuplicatedByMachine;
     }
 
     /**
-     * Returns the combinations which are adding the translation.
-     * @return Collection<int, Combination>|Combination[]
+     * @return Collection<int, Combination>
      */
     public function getCombinations(): Collection
     {

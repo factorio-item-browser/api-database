@@ -6,6 +6,19 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
+use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Type\EnumTypeRecipeMode;
+use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -14,64 +27,55 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
+#[Entity]
+#[Table(options: [
+    'charset' => 'utf8mb4',
+    'collate' => 'utf8mb4_bin',
+    'comment' => 'The table holding the recipes to craft the items.',
+])]
+#[Index(columns: ['name'], name: 'idx_name')]
 class Recipe implements EntityWithId
 {
-    /**
-     * The factor of the crafting time.
-     */
-    protected const FACTOR_CRAFTING_TIME = 1000;
+    private const FACTOR_CRAFTING_TIME = 1000;
 
-    /**
-     * The internal id of the recipe.
-     * @var UuidInterface
-     */
-    protected UuidInterface $id;
+    #[Id]
+    #[Column(type: UuidBinaryType::NAME, options: ['comment' => 'The internal id of the recipe.'])]
+    private UuidInterface $id;
 
-    /**
-     * The name of the recipe.
-     * @var string
-     */
-    protected string $name = '';
+    #[Column(length: 255, options: [
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_bin',
+        'comment' => 'The name of the recipe.',
+    ])]
+    private string $name = '';
 
-    /**
-     * The mode of the recipe.
-     * @var string
-     */
-    protected string $mode = '';
+    #[Column(type: EnumTypeRecipeMode::NAME, options: ['comment' => 'The mode of the recipe.'])]
+    private string $mode = '';
 
-    /**
-     * The required time in milliseconds to craft the recipe.
-     * @var int
-     */
-    protected int $craftingTime = 0;
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The required time in milliseconds to craft the recipe.',
+    ])]
+    private int $craftingTime = 0;
 
-    /**
-     * The crafting category of the recipe.
-     * @var CraftingCategory
-     */
-    protected CraftingCategory $craftingCategory;
+    #[ManyToOne(targetEntity: CraftingCategory::class)]
+    #[JoinColumn(name: 'craftingCategoryId', nullable: false)]
+    private CraftingCategory $craftingCategory;
 
-    /**
-     * The ingredients of the recipe.
-     * @var Collection<int, RecipeIngredient>
-     */
-    protected Collection $ingredients;
+    /** @var Collection<int, RecipeIngredient> */
+    #[OneToMany(mappedBy: 'recipe', targetEntity: RecipeIngredient::class)]
+    #[OrderBy(['order' => 'ASC'])]
+    private Collection $ingredients;
 
-    /**
-     * The products of the recipe.
-     * @var Collection<int, RecipeProduct>
-     */
-    protected Collection $products;
+    /** @var Collection<int, RecipeProduct> */
+    #[OneToMany(mappedBy: 'recipe', targetEntity: RecipeProduct::class)]
+    #[OrderBy(['order' => 'ASC'])]
+    private Collection $products;
 
-    /**
-     * The combinations which are adding the recipe.
-     * @var Collection<int, Combination>
-     */
-    protected Collection $combinations;
+    /** @var Collection<int, Combination> */
+    #[ManyToMany(targetEntity: Combination::class, mappedBy: 'recipes')]
+    private Collection $combinations;
 
-    /**
-     * Initializes the entity.
-     */
     public function __construct()
     {
         $this->ingredients = new ArrayCollection();
@@ -79,109 +83,63 @@ class Recipe implements EntityWithId
         $this->combinations = new ArrayCollection();
     }
 
-    /**
-     * Sets the internal id of the recipe.
-     * @param UuidInterface $id
-     * @return $this Implementing fluent interface.
-     */
     public function setId(UuidInterface $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * Returns the internal id of the recipe.
-     * @return UuidInterface
-     */
     public function getId(): UuidInterface
     {
         return $this->id;
     }
 
-    /**
-     * Sets the name of the recipe.
-     * @param string $name
-     * @return $this Implementing fluent interface.
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * Returns the name of the recipe.
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Sets the mode of the recipe.
-     * @param string $mode
-     * @return $this Implementing fluent interface.
-     */
     public function setMode(string $mode): self
     {
         $this->mode = $mode;
         return $this;
     }
 
-    /**
-     * Returns the mode of the recipe.
-     * @return string
-     */
     public function getMode(): string
     {
         return $this->mode;
     }
 
-    /**
-     * Sets the required time in seconds to craft the recipe.
-     * @param float $craftingTime
-     * @return $this Implementing fluent interface.
-     */
     public function setCraftingTime(float $craftingTime): self
     {
         $this->craftingTime = (int) ($craftingTime * self::FACTOR_CRAFTING_TIME);
         return $this;
     }
 
-    /**
-     * Returns the required time in seconds to craft the recipe.
-     * @return float
-     */
     public function getCraftingTime(): float
     {
         return $this->craftingTime / self::FACTOR_CRAFTING_TIME;
     }
 
-    /**
-     * Sets the crafting category of the recipe.
-     * @param CraftingCategory $craftingCategory
-     * @return $this
-     */
     public function setCraftingCategory(CraftingCategory $craftingCategory): self
     {
         $this->craftingCategory = $craftingCategory;
         return $this;
     }
 
-    /**
-     * Returns the crafting category of the recipe.
-     * @return CraftingCategory
-     */
     public function getCraftingCategory(): CraftingCategory
     {
         return $this->craftingCategory;
     }
 
     /**
-     * Returns the ingredients of the recipe.
-     * @return Collection<int, RecipeIngredient>|RecipeIngredient[]
+     * @return Collection<int, RecipeIngredient>
      */
     public function getIngredients(): Collection
     {
@@ -189,8 +147,7 @@ class Recipe implements EntityWithId
     }
 
     /**
-     * Returns the products of the recipe.
-     * @return Collection<int, RecipeProduct>|RecipeProduct[]
+     * @return Collection<int, RecipeProduct>
      */
     public function getProducts(): Collection
     {
@@ -198,8 +155,7 @@ class Recipe implements EntityWithId
     }
 
     /**
-     * Returns the combinations adding the recipe.
-     * @return Collection<int, Combination>|Combination[]
+     * @return Collection<int, Combination>
      */
     public function getCombinations(): Collection
     {
