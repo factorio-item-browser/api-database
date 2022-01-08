@@ -29,7 +29,7 @@ use Ramsey\Uuid\UuidInterface;
 class CachedSearchResult
 {
     #[Id]
-    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The id of the combination.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The id of the combination used for the search.'])]
     private UuidInterface $combinationId;
 
     #[Id]
@@ -42,7 +42,7 @@ class CachedSearchResult
 
     #[Column(type: Types::TEXT, length: 65535, options: [
         'charset' => 'utf8mb4',
-        'collation' => 'utf8mb4_bin',
+        'collation' => 'utf8mb4_general_ci',
         'comment' => 'The raw query string of the search.',
     ])]
     private string $searchQuery = '';
