@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
-use FactorioItemBrowser\Api\Database\Type\EnumTypeEntityType;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -41,9 +42,11 @@ class Translation implements EntityWithId
         'collation' => 'utf8mb4_bin',
         'comment' => 'The locale of the translation.',
     ])]
+    #[IncludeInIdCalculation]
     private string $locale = '';
 
-    #[Column(type: EnumTypeEntityType::NAME, options: ['comment' => 'The type of the translation.'])]
+    #[Column(type: CustomTypes::ENUM_ENTITY_TYPE, options: ['comment' => 'The type of the translation.'])]
+    #[IncludeInIdCalculation]
     private string $type = '';
 
     #[Column(length: 255, options: [
@@ -51,27 +54,24 @@ class Translation implements EntityWithId
         'collation' => 'utf8mb4_bin',
         'comment' => 'The name of the translation.',
     ])]
+    #[IncludeInIdCalculation]
     private string $name = '';
 
     #[Column(type: Types::TEXT, length: 65535, options: [
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_general_ci',
-        'comment' => 'The actual translation.',
+        'comment' => 'The translated label.',
     ])]
-    private string $value = '';
+    #[IncludeInIdCalculation]
+    private string $label = '';
 
     #[Column(type: Types::TEXT, length: 65535, options: [
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_general_ci',
         'comment' => 'The translated description.',
     ])]
+    #[IncludeInIdCalculation]
     private string $description = '';
-
-    #[Column(type: Types::BOOLEAN, options: ['comment' => 'Whether this translation is duplicated by the recipe.'])]
-    private bool $isDuplicatedByRecipe = false;
-
-    #[Column(type: Types::BOOLEAN, options: ['comment' => 'Whether this translation is duplicated by the machine.'])]
-    private bool $isDuplicatedByMachine = false;
 
     /** @var Collection<int, Combination> */
     #[ManyToMany(targetEntity: Combination::class, mappedBy: 'translations')]
@@ -95,7 +95,7 @@ class Translation implements EntityWithId
 
     public function setLocale(string $locale): self
     {
-        $this->locale = $locale;
+        $this->locale = Validator::validateString($locale, 5);
         return $this;
     }
 
@@ -117,7 +117,7 @@ class Translation implements EntityWithId
 
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->name = Validator::validateString($name);
         return $this;
     }
 
@@ -126,48 +126,26 @@ class Translation implements EntityWithId
         return $this->name;
     }
 
-    public function setValue(string $value): self
+    public function setLabel(string $label): self
     {
-        $this->value = $value;
+        $this->label = Validator::validateText($label);
         return $this;
     }
 
-    public function getValue(): string
+    public function getLabel(): string
     {
-        return $this->value;
+        return $this->label;
     }
 
     public function setDescription(string $description): self
     {
-        $this->description = $description;
+        $this->description = Validator::validateText($description);
         return $this;
     }
 
     public function getDescription(): string
     {
         return $this->description;
-    }
-
-    public function setIsDuplicatedByRecipe(bool $isDuplicatedByRecipe): self
-    {
-        $this->isDuplicatedByRecipe = $isDuplicatedByRecipe;
-        return $this;
-    }
-
-    public function getIsDuplicatedByRecipe(): bool
-    {
-        return $this->isDuplicatedByRecipe;
-    }
-
-    public function setIsDuplicatedByMachine(bool $isDuplicatedByMachine): self
-    {
-        $this->isDuplicatedByMachine = $isDuplicatedByMachine;
-        return $this;
-    }
-
-    public function getIsDuplicatedByMachine(): bool
-    {
-        return $this->isDuplicatedByMachine;
     }
 
     /**

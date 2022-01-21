@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use FactorioItemBrowser\Api\Database\Entity\Category;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
+use FactorioItemBrowser\Api\Database\Helper\IdCalculator;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -18,98 +20,79 @@ use Ramsey\Uuid\Uuid;
  */
 class MachineTest extends TestCase
 {
-    private function createInstance(): Machine
+    public function test(): void
     {
-        return new Machine();
-    }
+        $id = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
+        $name = 'abc';
+        $speed = 13.37;
+        $numberOfItemSlots = 12;
+        $numberOfFluidInputSlots = 34;
+        $numberOfFluidOutputSlots = 56;
+        $numberOfModuleSlots = 78;
+        $energyUsage = 73.31;
+        $energyUsageUnit = 'def';
 
-    public function testConstruct(): void
-    {
-        $instance = $this->createInstance();
+        $instance = new Machine();
 
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCategories());
         $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
-        $this->assertInstanceOf(ArrayCollection::class, $instance->getCraftingCategories());
-    }
-
-    public function testSetAndGetId(): void
-    {
-        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setId($id));
         $this->assertSame($id, $instance->getId());
-    }
-
-    public function testSetAndGetName(): void
-    {
-        $name = 'abc';
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setName($name));
         $this->assertSame($name, $instance->getName());
-    }
 
-    public function testSetAndGetCraftingSpeed(): void
-    {
-        $craftingSpeed = 13.37;
-        $instance = $this->createInstance();
-
-        $this->assertSame($instance, $instance->setCraftingSpeed($craftingSpeed));
-        $this->assertSame($craftingSpeed, $instance->getCraftingSpeed());
-    }
-
-
-    public function testSetAndGetNumberOfItemSlots(): void
-    {
-        $numberOfItemSlots = 42;
-        $instance = $this->createInstance();
+        $this->assertSame($instance, $instance->setSpeed($speed));
+        $this->assertSame($speed, $instance->getSpeed());
 
         $this->assertSame($instance, $instance->setNumberOfItemSlots($numberOfItemSlots));
         $this->assertSame($numberOfItemSlots, $instance->getNumberOfItemSlots());
-    }
-
-    public function testSetAndGetNumberOfFluidInputSlots(): void
-    {
-        $numberOfFluidInputSlots = 42;
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setNumberOfFluidInputSlots($numberOfFluidInputSlots));
         $this->assertSame($numberOfFluidInputSlots, $instance->getNumberOfFluidInputSlots());
-    }
-
-    public function testSetAndGetNumberOfFluidOutputSlots(): void
-    {
-        $numberOfFluidOutputSlots = 42;
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setNumberOfFluidOutputSlots($numberOfFluidOutputSlots));
         $this->assertSame($numberOfFluidOutputSlots, $instance->getNumberOfFluidOutputSlots());
-    }
-
-    public function testSetAndGetNumberOfModuleSlots(): void
-    {
-        $numberOfModuleSlots = 42;
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setNumberOfModuleSlots($numberOfModuleSlots));
         $this->assertSame($numberOfModuleSlots, $instance->getNumberOfModuleSlots());
-    }
-
-    public function testSetAndGetEnergyUsage(): void
-    {
-        $energyUsage = 13.37;
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setEnergyUsage($energyUsage));
         $this->assertSame($energyUsage, $instance->getEnergyUsage());
-    }
-
-    public function testSetAndGetEnergyUsageUnit(): void
-    {
-        $energyUsageUnit = 'abc';
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setEnergyUsageUnit($energyUsageUnit));
         $this->assertSame($energyUsageUnit, $instance->getEnergyUsageUnit());
+    }
+
+    public function testIdCalculation(): void
+    {
+        $category1 = new Category();
+        $category1->setType('abc')
+                  ->setName('def');
+
+        $category2 = new Category();
+        $category2->setType('ghi')
+                  ->setName('jkl');
+
+        $instance = new Machine();
+        $instance->setId(Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450'))
+                 ->setName('abc')
+                 ->setSpeed(13.37)
+                 ->setNumberOfItemSlots(12)
+                 ->setNumberOfFluidInputSlots(34)
+                 ->setNumberOfFluidOutputSlots(56)
+                 ->setNumberOfModuleSlots(78)
+                 ->setEnergyUsage(73.31)
+                 ->setEnergyUsageUnit('def');
+        $instance->getCategories()->add($category1);
+        $instance->getCategories()->add($category2);
+
+        $expectedId = '70d915cd-b6fb-dbc0-f2ba-e7cf7caca827';
+
+        $idCalculator = new IdCalculator();
+        $result = $idCalculator->calculateId($instance);
+
+        $this->assertSame($expectedId, $result->toString());
     }
 }

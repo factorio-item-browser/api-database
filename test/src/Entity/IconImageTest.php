@@ -6,7 +6,7 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use BluePsyduck\TestHelper\ReflectionTrait;
 use Doctrine\Common\Collections\ArrayCollection;
-use FactorioItemBrowser\Api\Database\Entity\IconImage;
+use FactorioItemBrowser\Api\Database\Entity\IconData;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use ReflectionException;
@@ -16,15 +16,15 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @covers \FactorioItemBrowser\Api\Database\Entity\IconImage
+ * @covers \FactorioItemBrowser\Api\Database\Entity\IconData
  */
 class IconImageTest extends TestCase
 {
     use ReflectionTrait;
 
-    private function createInstance(): IconImage
+    private function createInstance(): IconData
     {
-        return new IconImage();
+        return new IconData();
     }
 
     public function testConstruct(): void

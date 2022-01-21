@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
-use FactorioItemBrowser\Api\Database\Entity\IconImage;
+use FactorioItemBrowser\Api\Database\Entity\IconData;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -14,14 +14,14 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @extends AbstractIdRepositoryWithOrphans<IconImage>
- * @method IconImage[] findByIds(UuidInterface[] $ids)
+ * @extends AbstractIdRepositoryWithOrphans<IconData>
+ * @method IconData[] findByIds(UuidInterface[] $ids)
  */
 class IconImageRepository extends AbstractIdRepositoryWithOrphans
 {
     protected function getEntityClass(): string
     {
-        return IconImage::class;
+        return IconData::class;
     }
 
     protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void

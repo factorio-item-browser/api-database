@@ -13,11 +13,13 @@ use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * The entity of the crafting category database table.
+ * The entity representing a category of a recipe or machine.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
@@ -26,28 +28,33 @@ use Ramsey\Uuid\UuidInterface;
 #[Table(options: [
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_bin',
-    'comment' => 'The table holding the crafting categories.',
+    'comment' => 'The table holding the categories of recipes and machines.',
 ])]
-#[Index(columns: ['name'])]
-class CraftingCategory implements EntityWithId
+#[Index(columns: ['type', 'name'])]
+class Category implements EntityWithId
 {
     #[Id]
-    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the crafting category.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the category.'])]
     private UuidInterface $id;
+
+    #[Column(type: CustomTypes::ENUM_CATEGORY_TYPE, options: ['comment' => 'The type of the category.'])]
+    #[IncludeInIdCalculation]
+    private string $type;
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_bin',
-        'comment' => 'The name of the crafting category.',
+        'comment' => 'The name of the category.',
     ])]
-    private string $name = '';
+    #[IncludeInIdCalculation]
+    private string $name;
 
     /** @var Collection<int, Machine> */
-    #[ManyToMany(targetEntity: Machine::class, mappedBy: 'craftingCategories')]
+    #[ManyToMany(targetEntity: Machine::class, mappedBy: 'categories')]
     private Collection $machines;
 
     /** @var Collection<int, Recipe> */
-    #[OneToMany(mappedBy: 'craftingCategory', targetEntity: Recipe::class)]
+    #[OneToMany(mappedBy: 'category', targetEntity: Recipe::class)]
     private Collection $recipes;
 
     public function __construct()
@@ -67,9 +74,20 @@ class CraftingCategory implements EntityWithId
         return $this->id;
     }
 
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->name = Validator::validateString($name);
         return $this;
     }
 

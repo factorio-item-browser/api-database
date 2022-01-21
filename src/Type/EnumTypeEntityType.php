@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Type;
 
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Common\Constant\EntityType;
 
 /**
@@ -14,19 +15,20 @@ use FactorioItemBrowser\Common\Constant\EntityType;
  */
 class EnumTypeEntityType extends AbstractEnumType
 {
-    /**
-     * The name of the enum.
-     */
-    public const NAME = 'enum_entity_type';
-
-    /**
-     * The values of the num.
-     */
+    public const NAME = CustomTypes::ENUM_ENTITY_TYPE;
     public const VALUES = [
         EntityType::MOD,
+
         EntityType::ITEM,
         EntityType::FLUID,
+        'resource',
+
         EntityType::MACHINE,
-        EntityType::RECIPE,
+
+        'recipe',
+        'mining',
+        'rocket-launch',
+
+        'technology',
     ];
 }

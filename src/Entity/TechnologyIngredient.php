@@ -11,12 +11,10 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
-use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
-use FactorioItemBrowser\Api\Database\Helper\Validator;
 
 /**
- * The entity representing an ingredient of a recipe.
+ * The entity representing a research ingredient of a technology.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
@@ -25,51 +23,48 @@ use FactorioItemBrowser\Api\Database\Helper\Validator;
 #[Table(options: [
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_bin',
-    'comment' => 'The table holding the ingredients for the recipes.',
+    'comment' => 'The table holding the research ingredients of technologies.',
 ])]
-class RecipeIngredient
+class TechnologyIngredient
 {
     private const FACTOR_AMOUNT = 1000;
 
     #[Id]
-    #[ManyToOne(targetEntity: RecipeData::class, inversedBy: 'ingredients')]
-    #[JoinColumn(name: 'recipeDataId', nullable: false)]
-    private RecipeData $recipeData;
+    #[ManyToOne(targetEntity: TechnologyData::class, inversedBy: 'ingredients')]
+    #[JoinColumn(name: 'technologyDataId', nullable: false)]
+    private TechnologyData $technologyData;
 
     #[Id]
-    #[Column(name: '`order`', type: CustomTypes::TINYINT, options: [#
+    #[Column(name: '`order`', type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
-        'comment' => 'The order of the ingredient in the recipe.',
+        'comment' => 'The order of the ingredient in the technology.',
     ])]
-    #[IncludeInIdCalculation]
     private int $order = 0;
 
     #[ManyToOne(targetEntity: Item::class, fetch: 'EAGER')]
     #[JoinColumn(name: 'itemId', nullable: false)]
-    #[IncludeInIdCalculation]
     private Item $item;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
-        'comment' => 'The amount required for the recipe.',
+        'comment' => 'The amount required for the technology.',
     ])]
-    #[IncludeInIdCalculation]
     private int $amount = 0;
 
-    public function setRecipeData(RecipeData $recipeData): self
+    public function setTechnologyData(TechnologyData $technologyData): self
     {
-        $this->recipeData = $recipeData;
+        $this->technologyData = $technologyData;
         return $this;
     }
 
-    public function getRecipeData(): RecipeData
+    public function getTechnologyData(): TechnologyData
     {
-        return $this->recipeData;
+        return $this->technologyData;
     }
 
     public function setOrder(int $order): self
     {
-        $this->order = Validator::validateTinyInteger($order);
+        $this->order = $order;
         return $this;
     }
 
@@ -91,7 +86,7 @@ class RecipeIngredient
 
     public function setAmount(float $amount): self
     {
-        $this->amount = Validator::validateInteger((int) ($amount * self::FACTOR_AMOUNT));
+        $this->amount = (int) ($amount * self::FACTOR_AMOUNT);
         return $this;
     }
 

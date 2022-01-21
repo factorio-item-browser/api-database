@@ -11,11 +11,13 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * The entity class of the Mod database table.
+ * The entity representing a mod.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
@@ -37,6 +39,7 @@ class Mod implements EntityWithId
         'collation' => 'utf8mb4_bin',
         'comment' => 'The name of the mod.',
     ])]
+    #[IncludeInIdCalculation]
     private string $name = '';
 
     #[Column(length: 16, options: [
@@ -44,6 +47,7 @@ class Mod implements EntityWithId
         'collation' => 'utf8mb4_bin',
         'comment' => 'The version of the mod.',
     ])]
+    #[IncludeInIdCalculation]
     private string $version = '';
 
     #[Column(length: 255, options: [
@@ -75,7 +79,7 @@ class Mod implements EntityWithId
 
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->name = Validator::validateString($name);
         return $this;
     }
 
@@ -86,7 +90,7 @@ class Mod implements EntityWithId
 
     public function setVersion(string $version): self
     {
-        $this->version = $version;
+        $this->version = Validator::validateString($version, 16);
         return $this;
     }
 
@@ -97,7 +101,7 @@ class Mod implements EntityWithId
 
     public function setAuthor(string $author): self
     {
-        $this->author = $author;
+        $this->author = Validator::validateString($author);
         return $this;
     }
 

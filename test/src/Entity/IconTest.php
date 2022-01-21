@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use FactorioItemBrowser\Api\Database\Entity\Icon;
-use FactorioItemBrowser\Api\Database\Entity\IconImage;
+use FactorioItemBrowser\Api\Database\Entity\IconData;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
 use PHPUnit\Framework\TestCase;
 
@@ -51,7 +51,7 @@ class IconTest extends TestCase
 
     public function testSetAndGetImage(): void
     {
-        $image = new IconImage();
+        $image = new IconData();
         $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setImage($image));

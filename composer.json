@@ -16,7 +16,7 @@
     "ext-pdo": "*",
     "bluepsyduck/laminas-autowire-factory": "^2.0",
     "doctrine/orm": "^2.6",
-    "factorio-item-browser/common": "^1.0",
+    "factorio-item-browser/common": "^1.4",
     "ramsey/uuid-doctrine": "^1.5",
     "roave/psr-container-doctrine": "^3.0"
   },

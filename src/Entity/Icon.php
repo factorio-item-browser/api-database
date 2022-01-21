@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
-use FactorioItemBrowser\Api\Database\Type\EnumTypeEntityType;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * The entity of the icon database table.
@@ -22,40 +26,48 @@ use FactorioItemBrowser\Api\Database\Type\EnumTypeEntityType;
 #[Table(options: [
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_bin',
-    'comment' => 'The table holding the icons of the items and recipes.',
+    'comment' => 'The table holding the icons of the entities.',
 ])]
-class Icon
+class Icon implements EntityWithId
 {
     #[Id]
-    #[ManyToOne(targetEntity: Combination::class)]
-    #[JoinColumn(name: 'combinationId', nullable: false)]
-    protected Combination $combination;
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the icon.'])]
+    private UuidInterface $id;
 
     #[Id]
-    #[Column(type: EnumTypeEntityType::NAME, options: ['comment' => "The type of the icon's prototype."])]
+    #[Column(type: CustomTypes::ENUM_ENTITY_TYPE, options: ['comment' => "The type of the icon."])]
     private string $type = '';
 
     #[Id]
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_bin',
-        'comment' => "The name of the icon's prototype.",
+        'comment' => "The name of the icon.",
     ])]
     private string $name = '';
 
-    #[ManyToOne(targetEntity: IconImage::class)]
-    #[JoinColumn(name: 'imageId', nullable: false)]
-    private IconImage $image;
+    #[ManyToOne(targetEntity: IconData::class)]
+    #[JoinColumn(name: 'dataId', nullable: false)]
+    private IconData $data;
 
-    public function setCombination(Combination $combination): self
+    /** @var Collection<int, Combination> */
+    #[ManyToMany(targetEntity: Combination::class, mappedBy: 'items')]
+    private Collection $combinations;
+
+    public function __construct()
     {
-        $this->combination = $combination;
+        $this->combinations = new ArrayCollection();
+    }
+
+    public function setId(UuidInterface $id): self
+    {
+        $this->id = $id;
         return $this;
     }
 
-    public function getCombination(): Combination
+    public function getId(): UuidInterface
     {
-        return $this->combination;
+        return $this->id;
     }
 
     public function setType(string $type): self
@@ -80,14 +92,22 @@ class Icon
         return $this->name;
     }
 
-    public function setImage(IconImage $image): self
+    public function setData(IconData $data): self
     {
-        $this->image = $image;
+        $this->data = $data;
         return $this;
     }
 
-    public function getImage(): IconImage
+    public function getData(): IconData
     {
-        return $this->image;
+        return $this->data;
+    }
+
+    /**
+     * @return Collection<int, Combination>
+     */
+    public function getCombinations(): Collection
+    {
+        return $this->combinations;
     }
 }

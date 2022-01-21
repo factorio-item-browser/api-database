@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * The entity of the icon image database table.
+ * The entity representing the actual icon data.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
@@ -27,10 +24,10 @@ use Ramsey\Uuid\UuidInterface;
     'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the icon image data.',
 ])]
-class IconImage implements EntityWithId
+class IconData implements EntityWithId
 {
     #[Id]
-    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the image.'])]
+    #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the icon data.'])]
     private UuidInterface $id;
 
     /** @var string|resource */
@@ -42,15 +39,6 @@ class IconImage implements EntityWithId
         'comment' => 'The size of the image.',
     ])]
     private int $size = 0;
-
-    /** @var Collection<int, Icon> */
-    #[OneToMany(mappedBy: 'image', targetEntity: Icon::class)]
-    private Collection $icons;
-
-    public function __construct()
-    {
-        $this->icons = new ArrayCollection();
-    }
 
     public function setId(UuidInterface $id): self
     {
@@ -86,13 +74,5 @@ class IconImage implements EntityWithId
     public function getSize(): int
     {
         return $this->size;
-    }
-
-    /**
-     * @return Collection<int, Icon>
-     */
-    public function getIcons(): Collection
-    {
-        return $this->icons;
     }
 }

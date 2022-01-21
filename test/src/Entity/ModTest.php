@@ -6,6 +6,7 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
+use FactorioItemBrowser\Api\Database\Helper\IdCalculator;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -18,51 +19,66 @@ use Ramsey\Uuid\Uuid;
  */
 class ModTest extends TestCase
 {
-    private function createInstance(): Mod
+    public function test(): void
     {
-        return new Mod();
-    }
+        $id = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
+        $name = 'abc';
+        $version = '1.2.3';
+        $author = 'def';
 
-    public function testConstruct(): void
-    {
-        $instance = $this->createInstance();
+        $instance = new Mod();
 
         $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
-    }
-
-    public function testSetAndGetId(): void
-    {
-        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setId($id));
         $this->assertSame($id, $instance->getId());
-    }
-
-    public function testSetAndGetName(): void
-    {
-        $name = 'abc';
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setName($name));
         $this->assertSame($name, $instance->getName());
-    }
-
-    public function testSetAndGetVersion(): void
-    {
-        $version = '1.2.3';
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setVersion($version));
         $this->assertSame($version, $instance->getVersion());
-    }
-
-    public function testSetAndGetAuthor(): void
-    {
-        $author = 'abc';
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setAuthor($author));
         $this->assertSame($author, $instance->getAuthor());
+    }
+
+
+    public function testValidation(): void
+    {
+        $name = str_repeat('abcde', 256);
+        $expectedName = str_repeat('abcde', 51);
+        $version = str_repeat('ab', 32);
+        $expectedVersion = str_repeat('ab', 8);
+        $author = str_repeat('abcde', 256);
+        $expectedAuthor = str_repeat('abcde', 51);
+
+        $instance = new Mod();
+
+        $this->assertSame($instance, $instance->setName($name));
+        $this->assertSame($expectedName, $instance->getName());
+
+        $this->assertSame($instance, $instance->setVersion($version));
+        $this->assertSame($expectedVersion, $instance->getVersion());
+
+        $this->assertSame($instance, $instance->setAuthor($author));
+        $this->assertSame($expectedAuthor, $instance->getAuthor());
+    }
+
+    public function testIdCalculation(): void
+    {
+        $instance = new Mod();
+        $instance->setId(Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450'))
+                 ->setName('abc')
+                 ->setVersion('1.2.3')
+                 ->setAuthor('def')
+            ;
+
+        $expectedId = '4e4706ad-431d-98f3-c249-7d163e731151';
+
+        $idCalculator = new IdCalculator();
+        $result = $idCalculator->calculateId($instance);
+
+        $this->assertSame($expectedId, $result->toString());
     }
 }

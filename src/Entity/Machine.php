@@ -16,12 +16,14 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
-use FactorioItemBrowser\Api\Database\Type\EnumTypeEnergyUsageUnit;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
+use FactorioItemBrowser\Common\Constant\EnergyUsageUnit;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * The entity of the machine database table.
+ * The entity representing a crafting machine, miner or pump.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
@@ -30,12 +32,12 @@ use Ramsey\Uuid\UuidInterface;
 #[Table(options: [
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_bin',
-    'comment' => 'The table holding the crafting machines of the recipes.',
+    'comment' => 'The table holding the crafting machines of recipes.',
 ])]
 #[Index(columns: ['name'])]
 class Machine implements EntityWithId
 {
-    private const FACTOR_CRAFTING_SPEED = 1000;
+    private const FACTOR_SPEED = 1000;
     private const FACTOR_ENERGY_USAGE = 1000;
     public const VALUE_UNLIMITED_SLOTS = 255;
 
@@ -48,53 +50,62 @@ class Machine implements EntityWithId
         'collation' => 'utf8mb4_bin',
         'comment' => 'The name of the machine.',
     ])]
+    #[IncludeInIdCalculation]
     private string $name;
 
-    /** @var Collection<int, CraftingCategory> */
-    #[ManyToMany(targetEntity: CraftingCategory::class)]
-    #[JoinTable(name: 'MachineXCraftingCategory')]
+    /** @var Collection<int, Category> */
+    #[ManyToMany(targetEntity: Category::class)]
+    #[JoinTable(name: 'MachineXCategory')]
     #[JoinColumn(name: 'machineId', nullable: false)]
-    #[InverseJoinColumn(name: 'craftingCategoryId', nullable: false)]
-    private Collection $craftingCategories;
+    #[InverseJoinColumn(name: 'categoryId', nullable: false)]
+    #[IncludeInIdCalculation]
+    private Collection $categories;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
-        'comment' => 'The crafting speed of the machine.',
+        'comment' => 'The speed of the machine.',
     ])]
-    private int $craftingSpeed = self::FACTOR_CRAFTING_SPEED;
+    #[IncludeInIdCalculation]
+    private int $speed = 0;
 
     #[Column(type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
         'comment' => 'The number of item slots available in the machine, or 255 for unlimited.',
     ])]
+    #[IncludeInIdCalculation]
     private int $numberOfItemSlots = 0;
 
     #[Column(type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
         'comment' => 'The number of fluid input slots available in the machine.',
     ])]
+    #[IncludeInIdCalculation]
     private int $numberOfFluidInputSlots = 0;
 
     #[Column(type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
         'comment' => 'The number of fluid output slots available in the machine.',
     ])]
+    #[IncludeInIdCalculation]
     private int $numberOfFluidOutputSlots = 0;
 
     #[Column(type: CustomTypes::TINYINT, options: [
         'unsigned' => true,
         'comment' => 'The number of module slots available in the machine.',
     ])]
+    #[IncludeInIdCalculation]
     private int $numberOfModuleSlots = 0;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The energy usage of the machine.',
     ])]
+    #[IncludeInIdCalculation]
     private int $energyUsage = 0;
 
-    #[Column(type: EnumTypeEnergyUsageUnit::NAME, options: ['comment' => 'The unit of the energy usage.'])]
-    private string $energyUsageUnit = '';
+    #[Column(type: CustomTypes::ENUM_ENERGY_USAGE_UNIT_TYPE, options: ['comment' => 'The unit of the energy usage.'])]
+    #[IncludeInIdCalculation]
+    private string $energyUsageUnit = EnergyUsageUnit::WATT;
 
     /** @var Collection<int, Combination> */
     #[ManyToMany(targetEntity: Combination::class, mappedBy: 'machines')]
@@ -102,7 +113,7 @@ class Machine implements EntityWithId
 
     public function __construct()
     {
-        $this->craftingCategories = new ArrayCollection();
+        $this->categories = new ArrayCollection();
         $this->combinations = new ArrayCollection();
     }
 
@@ -119,7 +130,7 @@ class Machine implements EntityWithId
 
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->name = Validator::validateString($name);
         return $this;
     }
 
@@ -129,27 +140,27 @@ class Machine implements EntityWithId
     }
 
     /**
-     * @return Collection<int, CraftingCategory>
+     * @return Collection<int, Category>
      */
-    public function getCraftingCategories(): Collection
+    public function getCategories(): Collection
     {
-        return $this->craftingCategories;
+        return $this->categories;
     }
 
-    public function setCraftingSpeed(float $craftingSpeed): self
+    public function setSpeed(float $speed): self
     {
-        $this->craftingSpeed = (int) ($craftingSpeed * self::FACTOR_CRAFTING_SPEED);
+        $this->speed = Validator::validateInteger((int) ($speed * self::FACTOR_SPEED));
         return $this;
     }
 
-    public function getCraftingSpeed(): float
+    public function getSpeed(): float
     {
-        return $this->craftingSpeed / self::FACTOR_CRAFTING_SPEED;
+        return $this->speed / self::FACTOR_SPEED;
     }
 
     public function setNumberOfItemSlots(int $numberOfItemSlots): self
     {
-        $this->numberOfItemSlots = $numberOfItemSlots;
+        $this->numberOfItemSlots = Validator::validateTinyInteger($numberOfItemSlots);
         return $this;
     }
 
@@ -160,7 +171,7 @@ class Machine implements EntityWithId
 
     public function setNumberOfFluidInputSlots(int $numberOfFluidInputSlots): self
     {
-        $this->numberOfFluidInputSlots = $numberOfFluidInputSlots;
+        $this->numberOfFluidInputSlots = Validator::validateTinyInteger($numberOfFluidInputSlots);
         return $this;
     }
 
@@ -171,7 +182,7 @@ class Machine implements EntityWithId
 
     public function setNumberOfFluidOutputSlots(int $numberOfFluidOutputSlots): self
     {
-        $this->numberOfFluidOutputSlots = $numberOfFluidOutputSlots;
+        $this->numberOfFluidOutputSlots = Validator::validateTinyInteger($numberOfFluidOutputSlots);
         return $this;
     }
 
@@ -182,7 +193,7 @@ class Machine implements EntityWithId
 
     public function setNumberOfModuleSlots(int $numberOfModuleSlots): self
     {
-        $this->numberOfModuleSlots = $numberOfModuleSlots;
+        $this->numberOfModuleSlots = Validator::validateTinyInteger($numberOfModuleSlots);
         return $this;
     }
 
@@ -193,7 +204,7 @@ class Machine implements EntityWithId
 
     public function setEnergyUsage(float $energyUsage): self
     {
-        $this->energyUsage = (int) ($energyUsage * self::FACTOR_ENERGY_USAGE);
+        $this->energyUsage = Validator::validateInteger((int) ($energyUsage * self::FACTOR_ENERGY_USAGE));
         return $this;
     }
 

@@ -11,10 +11,12 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 
 /**
- * The entity class of the recipe product database table.
+ * The entity representing a product of a recipe.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
@@ -32,53 +34,58 @@ class RecipeProduct
     private const FACTOR_AMOUNT_PROBABILITY = 1000;
 
     #[Id]
-    #[ManyToOne(targetEntity: Recipe::class, inversedBy: 'products')]
-    #[JoinColumn(name: 'recipeId', nullable: false)]
-    private Recipe $recipe;
+    #[ManyToOne(targetEntity: RecipeData::class, inversedBy: 'products')]
+    #[JoinColumn(name: 'recipeDataId', nullable: false)]
+    private RecipeData $recipeData;
 
     #[Id]
     #[Column(name: '`order`', type: CustomTypes::TINYINT, options: [#
         'unsigned' => true,
         'comment' => 'The order of the product in the recipe.',
     ])]
+    #[IncludeInIdCalculation]
     private int $order = 0;
 
     #[ManyToOne(targetEntity: Item::class, fetch: 'EAGER')]
     #[JoinColumn(name: 'itemId', nullable: false)]
+    #[IncludeInIdCalculation]
     private Item $item;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The minimal amount of the product in the recipe.',
     ])]
+    #[IncludeInIdCalculation]
     private int $amountMin = 0;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The maximal amount of the product in the recipe.',
     ])]
+    #[IncludeInIdCalculation]
     private int $amountMax = 0;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The probability of the product in the recipe.',
     ])]
+    #[IncludeInIdCalculation]
     private int $probability = 0;
 
-    public function setRecipe(Recipe $recipe): self
+    public function setRecipeData(RecipeData $recipeData): self
     {
-        $this->recipe = $recipe;
+        $this->recipeData = $recipeData;
         return $this;
     }
 
-    public function getRecipe(): Recipe
+    public function getRecipeData(): RecipeData
     {
-        return $this->recipe;
+        return $this->recipeData;
     }
 
     public function setOrder(int $order): self
     {
-        $this->order = $order;
+        $this->order = Validator::validateTinyInteger($order);
         return $this;
     }
 
@@ -100,7 +107,7 @@ class RecipeProduct
 
     public function setAmountMin(float $amountMin): self
     {
-        $this->amountMin = (int) ($amountMin * self::FACTOR_AMOUNT_MIN);
+        $this->amountMin = Validator::validateInteger((int) ($amountMin * self::FACTOR_AMOUNT_MIN));
         return $this;
     }
 
@@ -111,7 +118,7 @@ class RecipeProduct
 
     public function setAmountMax(float $amountMax): self
     {
-        $this->amountMax = (int) ($amountMax * self::FACTOR_AMOUNT_MAX);
+        $this->amountMax = Validator::validateInteger((int) ($amountMax * self::FACTOR_AMOUNT_MAX));
         return $this;
     }
 
@@ -122,7 +129,7 @@ class RecipeProduct
 
     public function setProbability(float $probability): self
     {
-        $this->probability = (int) ($probability * self::FACTOR_AMOUNT_PROBABILITY);
+        $this->probability = Validator::validateInteger((int) ($probability * self::FACTOR_AMOUNT_PROBABILITY));
         return $this;
     }
 
@@ -136,6 +143,7 @@ class RecipeProduct
      */
     public function getAmount(): float
     {
-        return ($this->getAmountMin() + $this->getAmountMax()) / 2 * $this->getProbability();
+        $amount = ($this->getAmountMin() + $this->getAmountMax()) / 2 * $this->getProbability();
+        return ((int) ($amount * 1000)) / 1000;
     }
 }

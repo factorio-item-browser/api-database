@@ -7,6 +7,7 @@ namespace FactorioItemBrowser\Api\Database\Entity;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
@@ -14,13 +15,12 @@ use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * The entity representing the Combination database table.
+ * The entity representing a combination of mods.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
@@ -55,12 +55,24 @@ class Combination implements EntityWithId
     ])]
     private ?UuidInterface $lastUpdateHash = null;
 
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of mods in the combination.',
+    ])]
+    private int $numberOfMods;
+
     /** @var Collection<int, Mod> */
     #[ManyToMany(targetEntity: Mod::class)]
     #[JoinTable(name: 'CombinationXMod')]
     #[JoinColumn(name: 'combinationId', nullable: false)]
     #[InverseJoinColumn(name: 'modId', nullable: false)]
     private Collection $mods;
+
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of items in the combination.',
+    ])]
+    private int $numberOfItems;
 
     /** @var Collection<int, Item> */
     #[ManyToMany(targetEntity: Item::class)]
@@ -69,12 +81,24 @@ class Combination implements EntityWithId
     #[InverseJoinColumn(name: 'itemId', nullable: false)]
     private Collection $items;
 
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of machines in the combination.',
+    ])]
+    private int $numberOfMachines;
+
     /** @var Collection<int, Machine> */
     #[ManyToMany(targetEntity: Machine::class)]
     #[JoinTable(name: 'CombinationXMachine')]
     #[JoinColumn(name: 'combinationId', nullable: false)]
     #[InverseJoinColumn(name: 'machineId', nullable: false)]
     private Collection $machines;
+
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of recipes in the combination.',
+    ])]
+    private int $numberOfRecipes;
 
     /** @var Collection<int, Recipe> */
     #[ManyToMany(targetEntity: Recipe::class)]
@@ -83,6 +107,25 @@ class Combination implements EntityWithId
     #[InverseJoinColumn(name: 'recipeId', nullable: false)]
     private Collection $recipes;
 
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of technologies in the combination.',
+    ])]
+    private int $numberOfTechnologies;
+
+    /** @var Collection<int, Technology> */
+    #[ManyToMany(targetEntity: Technology::class)]
+    #[JoinTable(name: 'CombinationXTechnology')]
+    #[JoinColumn(name: 'combinationId', nullable: false)]
+    #[InverseJoinColumn(name: 'technologyId', nullable: false)]
+    private Collection $technologies;
+
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of translations in the combination.',
+    ])]
+    private int $numberOfTranslations;
+
     /** @var Collection<int, Translation> */
     #[ManyToMany(targetEntity: Translation::class)]
     #[JoinTable(name: 'CombinationXTranslation')]
@@ -90,8 +133,17 @@ class Combination implements EntityWithId
     #[InverseJoinColumn(name: 'translationId', nullable: false)]
     private Collection $translations;
 
+    #[Column(type: Types::INTEGER, options: [
+        'unsigned' => true,
+        'comment' => 'The number of icons in the combination.',
+    ])]
+    private int $numberOfIcons;
+
     /** @var Collection<int, Icon> */
-    #[OneToMany(mappedBy: 'combination', targetEntity: Icon::class)]
+    #[ManyToMany(targetEntity: Icon::class)]
+    #[JoinTable(name: 'CombinationXIcon')]
+    #[JoinColumn(name: 'combinationId', nullable: false)]
+    #[InverseJoinColumn(name: 'iconId', nullable: false)]
     private Collection $icons;
 
     public function __construct()
@@ -100,6 +152,7 @@ class Combination implements EntityWithId
         $this->items = new ArrayCollection();
         $this->recipes = new ArrayCollection();
         $this->machines = new ArrayCollection();
+        $this->technologies = new ArrayCollection();
         $this->translations = new ArrayCollection();
         $this->icons = new ArrayCollection();
     }
@@ -159,12 +212,34 @@ class Combination implements EntityWithId
         return $this->lastUpdateHash;
     }
 
+    public function setNumberOfMods(int $numberOfMods): self
+    {
+        $this->numberOfMods = $numberOfMods;
+        return $this;
+    }
+
+    public function getNumberOfMods(): int
+    {
+        return $this->numberOfMods;
+    }
+
     /**
      * @return Collection<int, Mod>
      */
     public function getMods(): Collection
     {
         return $this->mods;
+    }
+
+    public function setNumberOfItems(int $numberOfItems): self
+    {
+        $this->numberOfItems = $numberOfItems;
+        return $this;
+    }
+
+    public function getNumberOfItems(): int
+    {
+        return $this->numberOfItems;
     }
 
     /**
@@ -175,12 +250,34 @@ class Combination implements EntityWithId
         return $this->items;
     }
 
+    public function setNumberOfMachines(int $numberOfMachines): self
+    {
+        $this->numberOfMachines = $numberOfMachines;
+        return $this;
+    }
+
+    public function getNumberOfMachines(): int
+    {
+        return $this->numberOfMachines;
+    }
+
     /**
      * @return Collection<int, Machine>
      */
     public function getMachines(): Collection
     {
         return $this->machines;
+    }
+
+    public function setNumberOfRecipes(int $numberOfRecipes): self
+    {
+        $this->numberOfRecipes = $numberOfRecipes;
+        return $this;
+    }
+
+    public function getNumberOfRecipes(): int
+    {
+        return $this->numberOfRecipes;
     }
 
     /**
@@ -191,12 +288,53 @@ class Combination implements EntityWithId
         return $this->recipes;
     }
 
+    public function setNumberOfTechnologies(int $numberOfTechnologies): self
+    {
+        $this->numberOfTechnologies = $numberOfTechnologies;
+        return $this;
+    }
+
+    public function getNumberOfTechnologies(): int
+    {
+        return $this->numberOfTechnologies;
+    }
+
+    /**
+     * @return Collection<int, Technology>
+     */
+    public function getTechnologies(): Collection
+    {
+        return $this->technologies;
+    }
+
+    public function setNumberOfTranslations(int $numberOfTranslations): self
+    {
+        $this->numberOfTranslations = $numberOfTranslations;
+        return $this;
+    }
+
+    public function getNumberOfTranslations(): int
+    {
+        return $this->numberOfTranslations;
+    }
+
     /**
      * @return Collection<int, Translation>
      */
     public function getTranslations(): Collection
     {
         return $this->translations;
+    }
+
+    public function setNumberOfIcons(int $numberOfIcons): self
+    {
+        $this->numberOfIcons = $numberOfIcons;
+        return $this;
+    }
+
+    public function getNumberOfIcons(): int
+    {
+        return $this->numberOfIcons;
     }
 
     /**

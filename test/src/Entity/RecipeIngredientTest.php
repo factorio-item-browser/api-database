@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use FactorioItemBrowser\Api\Database\Entity\Item;
-use FactorioItemBrowser\Api\Database\Entity\Recipe;
+use FactorioItemBrowser\Api\Database\Entity\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
+use FactorioItemBrowser\Api\Database\Helper\IdCalculator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,44 +19,61 @@ use PHPUnit\Framework\TestCase;
  */
 class RecipeIngredientTest extends TestCase
 {
-    private function createInstance(): RecipeIngredient
+    public function test(): void
     {
-        return new RecipeIngredient();
-    }
-
-    public function testSetAndGetRecipe(): void
-    {
-        $recipe = new Recipe();
-        $instance = $this->createInstance();
-
-        $this->assertSame($instance, $instance->setRecipe($recipe));
-        $this->assertSame($recipe, $instance->getRecipe());
-    }
-
-    public function testSetAndGetOrder(): void
-    {
+        $recipeData = new RecipeData();
         $order = 42;
-        $instance = $this->createInstance();
+        $item = new Item();
+        $amount = 13.37;
+
+        $instance = new RecipeIngredient();
+
+        $this->assertSame($instance, $instance->setRecipeData($recipeData));
+        $this->assertSame($recipeData, $instance->getRecipeData());
 
         $this->assertSame($instance, $instance->setOrder($order));
         $this->assertSame($order, $instance->getOrder());
-    }
-
-    public function testSetAndGetItem(): void
-    {
-        $item = new Item();
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setItem($item));
         $this->assertSame($item, $instance->getItem());
-    }
-
-    public function testSetAndGetAmount(): void
-    {
-        $amount = 13.37;
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setAmount($amount));
         $this->assertSame($amount, $instance->getAmount());
+    }
+
+    public function testValidation(): void
+    {
+        $order = 1337;
+        $expectedOrder = 255;
+
+        $amount = 123456789.123;
+        $expectedAmount = 4294967.295;
+
+        $instance = new RecipeIngredient();
+
+        $this->assertSame($instance, $instance->setOrder($order));
+        $this->assertSame($expectedOrder, $instance->getOrder());
+
+        $this->assertSame($instance, $instance->setAmount($amount));
+        $this->assertSame($expectedAmount, $instance->getAmount());
+    }
+
+    public function testIdCalculation(): void
+    {
+        $item = new Item();
+        $item->setType('abc')
+             ->setName('def');
+
+        $instance = new RecipeIngredient();
+        $instance->setOrder(42)
+                 ->setItem($item)
+                 ->setAmount(13.37);
+
+        $expectedId = '3e3db094-bce2-9604-172e-e1ba54e72f78';
+
+        $idCalculator = new IdCalculator();
+        $result = $idCalculator->calculateId($instance);
+
+        $this->assertSame($expectedId, $result->toString());
     }
 }

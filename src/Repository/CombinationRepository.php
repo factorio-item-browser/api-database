@@ -31,14 +31,7 @@ class CombinationRepository extends AbstractRepository
                      ->andWhere('c.id = :id')
                      ->setParameter('id', $id, UuidBinaryType::NAME);
 
-        try {
-            /** @var Combination $queryResult */
-            $queryResult = $queryBuilder->getQuery()->getOneOrNullResult();
-            return $queryResult;
-        } catch (NonUniqueResultException) {
-            // Will never happen, we are searching for the primary key.
-            return null;
-        }
+        return $this->unwrapOneOrNullResult($queryBuilder->getQuery(), Combination::class);
     }
 
     /**

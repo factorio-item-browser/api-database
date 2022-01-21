@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use FactorioItemBrowser\Api\Database\Entity\Item;
+use FactorioItemBrowser\Api\Database\Entity\Category;
 use FactorioItemBrowser\Api\Database\Helper\IdCalculator;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
 /**
- * The PHPUnit test of the Item class.
+ * The PHPUnit test of the Category class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @covers \FactorioItemBrowser\Api\Database\Entity\Item
+ * @covers \FactorioItemBrowser\Api\Database\Entity\Category
  */
-class ItemTest extends TestCase
+class CategoryTest extends TestCase
 {
     public function test(): void
     {
@@ -25,9 +25,10 @@ class ItemTest extends TestCase
         $type = 'abc';
         $name = 'def';
 
-        $instance = new Item();
+        $instance = new Category();
 
-        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getRecipes());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getMachines());
 
         $this->assertSame($instance, $instance->setId($id));
         $this->assertSame($id, $instance->getId());
@@ -39,13 +40,12 @@ class ItemTest extends TestCase
         $this->assertSame($name, $instance->getName());
     }
 
-
     public function testValidation(): void
     {
         $name = str_repeat('abcde', 256);
         $expectedName = str_repeat('abcde', 51);
 
-        $instance = new Item();
+        $instance = new Category();
 
         $this->assertSame($instance, $instance->setName($name));
         $this->assertSame($expectedName, $instance->getName());
@@ -53,7 +53,7 @@ class ItemTest extends TestCase
 
     public function testIdCalculation(): void
     {
-        $instance = new Item();
+        $instance = new Category();
         $instance->setId(Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450'))
                  ->setType('abc')
                  ->setName('def');

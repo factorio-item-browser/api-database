@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -32,5 +34,22 @@ class AbstractRepository
         return array_map(function (UuidInterface $id): string {
             return $id->getBytes();
         }, $ids);
+    }
+
+    /**
+     * Unwraps the query, catching the impossible non-unique exception and transforming it to null.
+     * @template T of object
+     * @param AbstractQuery $query
+     * @param class-string<T> $className
+     * @return ?T
+     */
+    protected function unwrapOneOrNullResult(AbstractQuery $query, string $className): mixed
+    {
+        try {
+            $result = $query->getOneOrNullResult();
+            return $result instanceof $className ? $result : null;
+        } catch (NonUniqueResultException) {
+            return null;
+        }
     }
 }

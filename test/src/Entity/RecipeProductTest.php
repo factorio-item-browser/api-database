@@ -6,7 +6,9 @@ namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
+use FactorioItemBrowser\Api\Database\Entity\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
+use FactorioItemBrowser\Api\Database\Helper\IdCalculator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,72 +20,83 @@ use PHPUnit\Framework\TestCase;
  */
 class RecipeProductTest extends TestCase
 {
-    private function createInstance(): RecipeProduct
+    public function test(): void
     {
-        return new RecipeProduct();
-    }
-
-    public function testSetAndGetRecipe(): void
-    {
-        $recipe = new Recipe();
-        $instance = $this->createInstance();
-
-        $this->assertSame($instance, $instance->setRecipe($recipe));
-        $this->assertSame($recipe, $instance->getRecipe());
-    }
-
-    public function testSetAndGetOrder(): void
-    {
+        $recipeData = new RecipeData();
         $order = 42;
-        $instance = $this->createInstance();
+        $item = new Item();
+        $amountMin = 13.37;
+        $amountMax = 73.31;
+        $probability = 0.21;
+        $expectedAmount = 9.101;
+
+        $instance = new RecipeProduct();
+
+        $this->assertSame($instance, $instance->setRecipeData($recipeData));
+        $this->assertSame($recipeData, $instance->getRecipeData());
 
         $this->assertSame($instance, $instance->setOrder($order));
         $this->assertSame($order, $instance->getOrder());
-    }
-
-    public function testSetAndGetItem(): void
-    {
-        $item = new Item();
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setItem($item));
         $this->assertSame($item, $instance->getItem());
-    }
-
-    public function testSetAndGetAmountMin(): void
-    {
-        $amountMin = 13.37;
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setAmountMin($amountMin));
         $this->assertSame($amountMin, $instance->getAmountMin());
-    }
-
-    public function testSetAndGetAmountMax(): void
-    {
-        $amountMax = 13.37;
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setAmountMax($amountMax));
         $this->assertSame($amountMax, $instance->getAmountMax());
-    }
-
-    public function testSetAndGetProbability(): void
-    {
-        $probability = 13.37;
-        $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setProbability($probability));
         $this->assertSame($probability, $instance->getProbability());
+
+        $this->assertSame($expectedAmount, $instance->getAmount());
     }
 
-    public function testGetAmount(): void
+    public function testValidation(): void
     {
-        $recipeProduct = $this->createInstance();
-        $recipeProduct->setAmountMin(42)
-                      ->setAmountMax(21)
-                      ->setProbability(0.25);
+        $order = 1337;
+        $expectedOrder = 255;
+        $amountMin = 123456789.123465;
+        $expectedAmountMin = 4294967.295;
+        $amountMax = 987654321.987654;
+        $expectedAmountMax = 4294967.295;
+        $probability = 0.123456789;
+        $expectedProbability = 0.123;
 
-        $this->assertSame(7.875, $recipeProduct->getAmount());
+        $instance = new RecipeProduct();
+
+        $this->assertSame($instance, $instance->setOrder($order));
+        $this->assertSame($expectedOrder, $instance->getOrder());
+
+        $this->assertSame($instance, $instance->setAmountMin($amountMin));
+        $this->assertSame($expectedAmountMin, $instance->getAmountMin());
+
+        $this->assertSame($instance, $instance->setAmountMax($amountMax));
+        $this->assertSame($expectedAmountMax, $instance->getAmountMax());
+
+        $this->assertSame($instance, $instance->setProbability($probability));
+        $this->assertSame($expectedProbability, $instance->getProbability());
+    }
+
+    public function testIdCalculation(): void
+    {
+        $item = new Item();
+        $item->setType('abc')
+             ->setName('def');
+
+        $instance = new RecipeProduct();
+        $instance->setOrder(42)
+                 ->setItem($item)
+                 ->setAmountMin(13.37)
+                 ->setAmountMax(73.31)
+                 ->setProbability(0.21);
+
+        $expectedId = '13dfacfe-67ee-a30d-9b9f-c009893448c7';
+
+        $idCalculator = new IdCalculator();
+        $result = $idCalculator->calculateId($instance);
+
+        $this->assertSame($expectedId, $result->toString());
     }
 }

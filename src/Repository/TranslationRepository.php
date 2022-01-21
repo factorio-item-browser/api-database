@@ -184,16 +184,14 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
             $parameters[] = $translation->getLocale();
             $parameters[] = $translation->getType();
             $parameters[] = $translation->getName();
-            $parameters[] = $translation->getValue();
+            $parameters[] = $translation->getLabel();
             $parameters[] = $translation->getDescription();
-            $parameters[] = $translation->getIsDuplicatedByMachine();
-            $parameters[] = $translation->getIsDuplicatedByRecipe();
         }
 
         $this->executeNativeSql(
             'INSERT IGNORE INTO `Translation` '
-                . '(`id`,`locale`,`type`,`name`,`value`,`description`,`isDuplicatedByMachine`,`isDuplicatedByRecipe`) '
-                . "VALUES {$this->buildParameterPlaceholders(count($translations), 8)}",
+                . '(`id`,`locale`,`type`,`name`,`value`,`description`) '
+                . "VALUES {$this->buildParameterPlaceholders(count($translations), 6)}",
             $parameters
         );
     }

@@ -12,12 +12,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
-use FactorioItemBrowser\Api\Database\Type\EnumTypeItemType;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * The entity class if the item database table.
+ * The entity representing an item, fluid or resource.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
@@ -35,14 +36,16 @@ class Item implements EntityWithId
     #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the item.'])]
     private UuidInterface $id;
 
-    #[Column(type: EnumTypeItemType::NAME, options: ['comment' => 'The type of the item.'])]
+    #[Column(type: CustomTypes::ENUM_ITEM_TYPE, options: ['comment' => 'The type of the item.'])]
+    #[IncludeInIdCalculation]
     private string $type = '';
 
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_bin',
-        'comment' => 'The unique name of the item.',
+        'comment' => 'The name of the item.',
     ])]
+    #[IncludeInIdCalculation]
     private string $name = '';
 
     /** @var Collection<int, Combination> */
@@ -78,7 +81,7 @@ class Item implements EntityWithId
 
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->name = Validator::validateString($name);
         return $this;
     }
 
