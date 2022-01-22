@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -36,6 +37,9 @@ class Combination implements EntityWithId
     #[Id]
     #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the combination.'])]
     private UuidInterface $id;
+
+    #[Column(type: CustomTypes::TINYINT, options: ['comment' => 'The version of data.'])]
+    private int $dataVersion;
 
     #[Column(type: CustomTypes::TIMESTAMP, options: ['comment' => 'The time when the combination was imported.'])]
     private DateTimeInterface $importTime;
@@ -168,6 +172,17 @@ class Combination implements EntityWithId
         return $this->id;
     }
 
+    public function setDataVersion(int $dataVersion): self
+    {
+        $this->dataVersion = Validator::validateTinyInteger($dataVersion);
+        return $this;
+    }
+
+    public function getDataVersion(): int
+    {
+        return $this->dataVersion;
+    }
+
     public function setImportTime(DateTimeInterface $importTime): self
     {
         $this->importTime = $importTime;
@@ -214,7 +229,7 @@ class Combination implements EntityWithId
 
     public function setNumberOfMods(int $numberOfMods): self
     {
-        $this->numberOfMods = $numberOfMods;
+        $this->numberOfMods = Validator::validateInteger($numberOfMods);
         return $this;
     }
 
@@ -233,7 +248,7 @@ class Combination implements EntityWithId
 
     public function setNumberOfItems(int $numberOfItems): self
     {
-        $this->numberOfItems = $numberOfItems;
+        $this->numberOfItems = Validator::validateInteger($numberOfItems);
         return $this;
     }
 
@@ -252,7 +267,7 @@ class Combination implements EntityWithId
 
     public function setNumberOfMachines(int $numberOfMachines): self
     {
-        $this->numberOfMachines = $numberOfMachines;
+        $this->numberOfMachines = Validator::validateInteger($numberOfMachines);
         return $this;
     }
 
@@ -271,7 +286,7 @@ class Combination implements EntityWithId
 
     public function setNumberOfRecipes(int $numberOfRecipes): self
     {
-        $this->numberOfRecipes = $numberOfRecipes;
+        $this->numberOfRecipes = Validator::validateInteger($numberOfRecipes);
         return $this;
     }
 
@@ -290,7 +305,7 @@ class Combination implements EntityWithId
 
     public function setNumberOfTechnologies(int $numberOfTechnologies): self
     {
-        $this->numberOfTechnologies = $numberOfTechnologies;
+        $this->numberOfTechnologies = Validator::validateInteger($numberOfTechnologies);
         return $this;
     }
 
@@ -309,7 +324,7 @@ class Combination implements EntityWithId
 
     public function setNumberOfTranslations(int $numberOfTranslations): self
     {
-        $this->numberOfTranslations = $numberOfTranslations;
+        $this->numberOfTranslations = Validator::validateInteger($numberOfTranslations);
         return $this;
     }
 
@@ -328,7 +343,7 @@ class Combination implements EntityWithId
 
     public function setNumberOfIcons(int $numberOfIcons): self
     {
-        $this->numberOfIcons = $numberOfIcons;
+        $this->numberOfIcons = Validator::validateInteger($numberOfIcons);
         return $this;
     }
 

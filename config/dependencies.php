@@ -19,8 +19,8 @@ return [
     'dependencies' => [
         'factories'  => [
             Repository\CachedSearchResultRepository::class => AutoWireFactory::class,
+            Repository\CategoryRepository::class => AutoWireFactory::class,
             Repository\CombinationRepository::class => AutoWireFactory::class,
-            Repository\CraftingCategoryRepository::class => AutoWireFactory::class,
             Repository\IconImageRepository::class => AutoWireFactory::class,
             Repository\IconRepository::class => AutoWireFactory::class,
             Repository\ItemRepository::class => AutoWireFactory::class,

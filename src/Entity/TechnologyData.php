@@ -28,7 +28,7 @@ use Ramsey\Uuid\UuidInterface;
     'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the actual data of technologies.',
 ])]
-class TechnologyData
+class TechnologyData implements EntityWithId
 {
     private const FACTOR_TIME = 1000;
 
