@@ -18,6 +18,8 @@ use Roave\PsrContainerDoctrine\EntityManagerFactory;
 return [
     'dependencies' => [
         'factories'  => [
+            Helper\IdCalculator::class => AutoWireFactory::class,
+
             Repository\CachedSearchResultRepository::class => AutoWireFactory::class,
             Repository\CategoryRepository::class => AutoWireFactory::class,
             Repository\CombinationRepository::class => AutoWireFactory::class,

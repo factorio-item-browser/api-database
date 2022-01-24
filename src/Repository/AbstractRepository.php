@@ -17,11 +17,9 @@ use Ramsey\Uuid\UuidInterface;
  */
 class AbstractRepository
 {
-    protected readonly EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
     }
 
     /**
@@ -47,7 +45,7 @@ class AbstractRepository
     {
         try {
             $result = $query->getOneOrNullResult();
-            return $result instanceof $className ? $result : null;
+            return ($result instanceof $className) ? $result : null;
         } catch (NonUniqueResultException) {
             return null;
         }

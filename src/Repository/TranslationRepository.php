@@ -10,6 +10,10 @@ use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 use FactorioItemBrowser\Common\Constant\EntityType;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
@@ -20,17 +24,23 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @extends AbstractIdRepositoryWithOrphans<Translation>
- * @method Translation[] findByIds(UuidInterface[] $ids)
+ * @implements FindByIdsInterface<Translation>
  */
-class TranslationRepository extends AbstractIdRepositoryWithOrphans
+class TranslationRepository extends AbstractRepository implements
+    FindByIdsInterface,
+    RemoveOrphansInterface
 {
+    /** @use FindByIdsTrait<Translation> */
+    use FindByIdsTrait;
+    /** @use RemoveOrphansTrait<Translation> */
+    use RemoveOrphansTrait;
+
     protected function getEntityClass(): string
     {
         return Translation::class;
     }
 
-    protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
+    protected function addRemoveOrphansConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
                      ->andWhere('c.id IS NULL');
@@ -140,106 +150,5 @@ class TranslationRepository extends AbstractIdRepositoryWithOrphans
             $result[] = $data;
         }
         return $result;
-    }
-
-    /**
-     * Clears the cross table to the specified combination.
-     * @throws DBALException
-     */
-    public function clearCrossTable(UuidInterface $combinationId): void
-    {
-        $this->executeNativeSql(
-            'DELETE FROM `CombinationXTranslation` WHERE `combinationId` = ?',
-            [$combinationId->getBytes()]
-        );
-    }
-
-    /**
-     * Persists the translations to the combination, using optimized queries.
-     * @param array<Translation> $translations
-     * @throws DBALException
-     */
-    public function persistTranslationsToCombination(UuidInterface $combinationId, array $translations): void
-    {
-        foreach (array_chunk($translations, 1024) as $chunkedTranslations) {
-            $this->insertTranslations($chunkedTranslations);
-            $this->insertIntoCrossTable($combinationId, $chunkedTranslations);
-        }
-    }
-
-    /**
-     * Inserts the translations into the database.
-     * @param array<Translation> $translations
-     * @throws DBALException
-     */
-    protected function insertTranslations(array $translations): void
-    {
-        if (count($translations) === 0) {
-            return;
-        }
-
-        $parameters = [];
-        foreach ($translations as $translation) {
-            $parameters[] = $translation->getId()->getBytes();
-            $parameters[] = $translation->getLocale();
-            $parameters[] = $translation->getType();
-            $parameters[] = $translation->getName();
-            $parameters[] = $translation->getLabel();
-            $parameters[] = $translation->getDescription();
-        }
-
-        $this->executeNativeSql(
-            'INSERT IGNORE INTO `Translation` '
-                . '(`id`,`locale`,`type`,`name`,`value`,`description`) '
-                . "VALUES {$this->buildParameterPlaceholders(count($translations), 6)}",
-            $parameters
-        );
-    }
-
-    /**
-     * Inserts the translations into the cross table to the specified combination.
-     * @param array<Translation> $translations
-     * @throws DBALException
-     */
-    protected function insertIntoCrossTable(UuidInterface $combinationId, array $translations): void
-    {
-        if (count($translations) === 0) {
-            return;
-        }
-
-        $parameters = [];
-        foreach ($translations as $translation) {
-            $parameters[] = $combinationId->getBytes();
-            $parameters[] = $translation->getId()->getBytes();
-        }
-
-        $this->executeNativeSql(
-            'INSERT IGNORE INTO `CombinationXTranslation` (`combinationId`, `translationId`) '
-            . "VALUES {$this->buildParameterPlaceholders(count($translations), 2)}",
-            $parameters
-        );
-    }
-
-    /**
-     * Builds the placeholders for all the parameters to insert.
-     * @param positive-int $numberOfRows
-     * @param positive-int $numberOfValues
-     * @return string
-     */
-    protected function buildParameterPlaceholders(int $numberOfRows, int $numberOfValues): string
-    {
-        $line = '(' . implode(',', array_fill(0, $numberOfValues, '?')) . ')';
-        return implode(',', array_fill(0, $numberOfRows, $line));
-    }
-
-    /**
-     * Executes a native query on the database.
-     * @param array<mixed> $parameters
-     * @throws DBALException
-     */
-    protected function executeNativeSql(string $query, array $parameters): void
-    {
-        $statement = $this->entityManager->getConnection()->prepare($query);
-        $statement->execute($parameters);
     }
 }

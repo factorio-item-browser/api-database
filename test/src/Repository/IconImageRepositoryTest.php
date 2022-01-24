@@ -7,7 +7,7 @@ namespace FactorioItemBrowserTest\Api\Database\Repository;
 use BluePsyduck\TestHelper\ReflectionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use FactorioItemBrowser\Api\Database\Entity\IconImage;
+use FactorioItemBrowser\Api\Database\Entity\IconData;
 use FactorioItemBrowser\Api\Database\Repository\IconImageRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -47,7 +47,7 @@ class IconImageRepositoryTest extends TestCase
         $instance = $this->createInstance();
         $result = $this->invokeMethod($instance, 'getEntityClass');
 
-        $this->assertSame(IconImage::class, $result);
+        $this->assertSame(IconData::class, $result);
     }
 
     /**

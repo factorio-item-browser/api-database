@@ -5,10 +5,17 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
-use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Entity\Item;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
@@ -18,17 +25,37 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @extends AbstractIdRepositoryWithOrphans<Item>
- * @method Item[] findByIds(UuidInterface[] $ids)
+ * @implements FindAllInterface<Item>
+ * @implements FindByIdsInterface<Item>
+ * @implements FindByTypesAndNamesInterface<Item>
  */
-class ItemRepository extends AbstractIdRepositoryWithOrphans
+class ItemRepository extends AbstractRepository implements
+    FindAllInterface,
+    FindByIdsInterface,
+    FindByTypesAndNamesInterface,
+    RemoveOrphansInterface
 {
+    /** @use FindAllTrait<Item> */
+    use FindAllTrait;
+    /** @use FindByIdsTrait<Item> */
+    use FindByIdsTrait;
+    /** @use FindByTypesAndNamesTrait<Item> */
+    use FindByTypesAndNamesTrait;
+    /** @use RemoveOrphansTrait<Item> */
+    use RemoveOrphansTrait;
+
     protected function getEntityClass(): string
     {
         return Item::class;
     }
 
-    protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
+    protected function extendQueryForFindAll(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->addOrderBy("{$alias}.name", 'ASC')
+                     ->addOrderBy("{$alias}.type", 'ASC');
+    }
+
+    protected function addRemoveOrphansConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
                      ->leftJoin(RecipeIngredient::class, 'ri', 'WITH', "ri.item = {$alias}.id")
@@ -36,35 +63,6 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
                      ->andWhere('c.id IS NULL')
                      ->andWhere('ri.item IS NULL')
                      ->andWhere('rp.item IS NULL');
-    }
-
-    /**
-     * Finds the items with the specified types and names.
-     * @return array<Item>
-     */
-    public function findByTypesAndNames(UuidInterface $combinationId, NamesByTypes $namesByTypes): array
-    {
-        if ($namesByTypes->isEmpty()) {
-            return [];
-        }
-
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('i')
-                     ->from(Item::class, 'i')
-                     ->innerJoin('i.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
-
-        $index = 0;
-        foreach ($namesByTypes->toArray() as $type => $names) {
-            $queryBuilder->orWhere("i.type = :type{$index} AND i.name IN (:names{$index})")
-                         ->setParameter("type{$index}", $type)
-                         ->setParameter("names{$index}", array_values($names));
-            ++$index;
-        }
-
-        /** @var array<Item> $queryResult */
-        $queryResult = $queryBuilder->getQuery()->getResult();
-        return $queryResult;
     }
 
     /**
@@ -107,25 +105,6 @@ class ItemRepository extends AbstractIdRepositoryWithOrphans
                      ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->addOrderBy('rand')
                      ->setMaxResults($numberOfItems);
-
-        /** @var array<Item> $queryResult */
-        $queryResult = $queryBuilder->getQuery()->getResult();
-        return $queryResult;
-    }
-
-    /**
-     * Finds all items, sorted by their name.
-     * @return array<Item>
-     */
-    public function findAll(UuidInterface $combinationId): array
-    {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('i')
-                     ->from(Item::class, 'i')
-                     ->innerJoin('i.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-                     ->addOrderBy('i.name', 'ASC')
-                     ->addOrderBy('i.type', 'ASC');
 
         /** @var array<Item> $queryResult */
         $queryResult = $queryBuilder->getQuery()->getResult();

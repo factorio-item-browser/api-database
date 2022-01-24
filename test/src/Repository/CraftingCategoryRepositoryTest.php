@@ -9,7 +9,7 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
-use FactorioItemBrowser\Api\Database\Repository\CraftingCategoryRepository;
+use FactorioItemBrowser\Api\Database\Repository\CategoryRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -19,7 +19,7 @@ use ReflectionException;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @covers \FactorioItemBrowser\Api\Database\Repository\CraftingCategoryRepository
+ * @covers \FactorioItemBrowser\Api\Database\Repository\CategoryRepository
  */
 class CraftingCategoryRepositoryTest extends TestCase
 {
@@ -33,9 +33,9 @@ class CraftingCategoryRepositoryTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
 
-    private function createInstance(): CraftingCategoryRepository
+    private function createInstance(): CategoryRepository
     {
-        return new CraftingCategoryRepository(
+        return new CategoryRepository(
             $this->entityManager,
         );
     }

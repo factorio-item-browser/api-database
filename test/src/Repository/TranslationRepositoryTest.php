@@ -439,7 +439,7 @@ class TranslationRepositoryTest extends TestCase
                      ->setLocale('ghi')
                      ->setType('jkl')
                      ->setName('mno')
-                     ->setValue('pqr')
+                     ->setLabel('pqr')
                      ->setDescription('stu')
                      ->setIsDuplicatedByMachine(true)
                      ->setIsDuplicatedByRecipe(false);
@@ -449,7 +449,7 @@ class TranslationRepositoryTest extends TestCase
                      ->setLocale('vwx')
                      ->setType('yza')
                      ->setName('bcd')
-                     ->setValue('efg')
+                     ->setLabel('efg')
                      ->setDescription('hij')
                      ->setIsDuplicatedByMachine(false)
                      ->setIsDuplicatedByRecipe(true);

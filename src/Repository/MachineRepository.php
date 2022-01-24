@@ -6,6 +6,10 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
@@ -15,49 +19,42 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @extends AbstractIdRepositoryWithOrphans<Machine>
+ * @implements FindByIdsInterface<Machine>
  */
-class MachineRepository extends AbstractIdRepositoryWithOrphans
+class MachineRepository extends AbstractRepository implements
+    FindByIdsInterface,
+    RemoveOrphansInterface
 {
-    /**
-     * Returns the entities with the specified ids.
-     * @param array<UuidInterface> $ids
-     * @return array<Machine>
-     */
-    public function findByIds(array $ids): array
-    {
-        if (count($ids) === 0) {
-            return [];
-        }
-
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('m', 'cc')
-                     ->from(Machine::class, 'm')
-                     ->leftJoin('m.craftingCategories', 'cc')
-                     ->andWhere('m.id IN (:ids)')
-                     ->setParameter('ids', $this->mapIdsToParameterValues($ids));
-
-        /** @var array<Machine> $queryResult */
-        $queryResult = $queryBuilder->getQuery()->getResult();
-        return $queryResult;
-    }
+    /** @use FindByIdsTrait<Machine> */
+    use FindByIdsTrait;
+    /** @use RemoveOrphansTrait<Machine> */
+    use RemoveOrphansTrait;
 
     protected function getEntityClass(): string
     {
         return Machine::class;
     }
 
-    protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
+    protected function extendQueryForFindByIds(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->addSelect('c')
+                     ->leftJoin("{$alias}.categories", 'c');
+    }
+
+    protected function addRemoveOrphansConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
                      ->andWhere('c.id IS NULL');
     }
 
+    /**
+     * @param array<UuidInterface> $ids
+     */
     protected function removeIds(array $ids): void
     {
         // We have to clear the cross-table by reading the machines and clearing the collection first.
         foreach ($this->findByIds($ids) as $machine) {
-            $machine->getCraftingCategories()->clear();
+            $machine->getCategories()->clear();
             $this->entityManager->remove($machine);
         }
         $this->entityManager->flush();

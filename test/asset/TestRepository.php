@@ -2,48 +2,56 @@
 
 declare(strict_types=1);
 
-namespace FactorioItemBrowser\Api\Database\Repository;
+namespace FactorioItemBrowserTestAsset\Api\Database;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use FactorioItemBrowser\Api\Database\Entity\Category;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
+use stdClass;
 
 /**
- * The repository class of the crafting category database table.
+ * The test repository implementing all the feature traits.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @implements FindByIdsInterface<Category>
- * @implements FindByTypesAndNamesInterface<Category>
+ * @implements FindAllInterface<stdClass>
+ * @implements FindByIdsInterface<stdClass>
+ * @implements FindByTypesAndNamesInterface<stdClass>
  */
-class CategoryRepository extends AbstractRepository implements
+class TestRepository implements
+    FindAllInterface,
     FindByIdsInterface,
     FindByTypesAndNamesInterface,
     RemoveOrphansInterface
 {
-    /** @use FindByIdsTrait<Category> */
+    /** @use FindAllTrait<stdClass> */
+    use FindAllTrait;
+    /** @use FindByIdsTrait<stdClass> */
     use FindByIdsTrait;
-    /** @use FindByTypesAndNamesTrait<Category> */
+    /** @use FindByTypesAndNamesTrait<stdClass> */
     use FindByTypesAndNamesTrait;
-    /** @use RemoveOrphansTrait<Category> */
+    /** @use RemoveOrphansTrait<stdClass> */
     use RemoveOrphansTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {
-        return Category::class;
+        return stdClass::class;
     }
 
     protected function addRemoveOrphansConditions(QueryBuilder $queryBuilder, string $alias): void
     {
-        $queryBuilder->leftJoin("{$alias}.machines", 'm')
-                     ->leftJoin("{$alias}.recipes", 'r')
-                     ->andWhere('m.id IS NULL')
-                     ->andWhere('r.id IS NULL');
     }
 }

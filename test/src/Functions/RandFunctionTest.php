@@ -17,18 +17,15 @@ use PHPUnit\Framework\TestCase;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @coversDefaultClass \FactorioItemBrowser\Api\Database\Functions\RandFunction
+ * @covers \FactorioItemBrowser\Api\Database\Functions\RandFunction
  */
 class RandFunctionTest extends TestCase
 {
     /**
-     * Tests the parse method.
      * @throws QueryException
-     * @covers ::parse
      */
     public function testParse(): void
     {
-        /* @var Parser&MockObject $parser */
         $parser = $this->createMock(Parser::class);
         $parser->expects($this->exactly(3))
                ->method('match')
@@ -43,13 +40,8 @@ class RandFunctionTest extends TestCase
         $function->parse($parser);
     }
 
-    /**
-     * Tests the getSql method.
-     * @covers ::getSql
-     */
     public function testGetSql(): void
     {
-        /* @var SqlWalker&MockObject $sqlWalker */
         $sqlWalker = $this->createMock(SqlWalker::class);
 
         $function = new RandFunction('foo');
