@@ -28,6 +28,7 @@ return [
             Repository\ItemRepository::class => AutoWireFactory::class,
             Repository\MachineRepository::class => AutoWireFactory::class,
             Repository\ModRepository::class => AutoWireFactory::class,
+            Repository\RecipeDataRepository::class => AutoWireFactory::class,
             Repository\RecipeRepository::class => AutoWireFactory::class,
             Repository\TranslationRepository::class => AutoWireFactory::class,
 

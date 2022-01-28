@@ -9,6 +9,9 @@ use FactorioItemBrowser\Api\Database\Data\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -19,10 +22,15 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
- * @extends AbstractIdRepositoryWithOrphans<Recipe>
+ * @implements FindByIdsInterface<Recipe>
  */
-class RecipeRepository extends AbstractIdRepositoryWithOrphans
+class RecipeRepository extends AbstractRepository implements
+    FindByIdsInterface,
+    RemoveOrphansInterface
 {
+    /** @use RemoveOrphansTrait<Recipe> */
+    use RemoveOrphansTrait;
+
     /**
      * @param array<UuidInterface> $ids
      * @return array<Recipe>
@@ -53,12 +61,15 @@ class RecipeRepository extends AbstractIdRepositoryWithOrphans
         return Recipe::class;
     }
 
-    protected function addOrphanConditions(QueryBuilder $queryBuilder, string $alias): void
+    protected function addRemoveOrphansConditions(QueryBuilder $queryBuilder, string $alias): void
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
                      ->andWhere('c.id IS NULL');
     }
 
+    /**
+     * @param array<UuidInterface> $ids
+     */
     protected function removeIds(array $ids): void
     {
         $entityClasses = [
