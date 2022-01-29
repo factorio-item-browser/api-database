@@ -30,6 +30,8 @@ return [
             Repository\ModRepository::class => AutoWireFactory::class,
             Repository\RecipeDataRepository::class => AutoWireFactory::class,
             Repository\RecipeRepository::class => AutoWireFactory::class,
+            Repository\TechnologyDataRepository::class => AutoWireFactory::class,
+            Repository\TechnologyRepository::class => AutoWireFactory::class,
             Repository\TranslationRepository::class => AutoWireFactory::class,
 
             // 3rd-party dependencies
