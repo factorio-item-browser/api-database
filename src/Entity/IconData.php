@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\UuidInterface;
 
@@ -28,6 +33,7 @@ class IconData implements EntityWithId
 {
     #[Id]
     #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the icon data.'])]
+    #[IncludeInIdCalculation]
     private UuidInterface $id;
 
     /** @var string|resource */
@@ -39,6 +45,15 @@ class IconData implements EntityWithId
         'comment' => 'The size of the image.',
     ])]
     private int $size = 0;
+
+    /** @var Collection<int, Icon> */
+    #[OneToMany(mappedBy: 'dataId', targetEntity: Combination::class)]
+    private Collection $icons;
+
+    public function __construct()
+    {
+        $this->icons = new ArrayCollection();
+    }
 
     public function setId(UuidInterface $id): self
     {
@@ -74,5 +89,13 @@ class IconData implements EntityWithId
     public function getSize(): int
     {
         return $this->size;
+    }
+
+    /**
+     * @return Collection<int, Icon>
+     */
+    public function getIcons(): Collection
+    {
+        return $this->icons;
     }
 }

@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use Ramsey\Uuid\UuidInterface;
 
@@ -36,6 +37,7 @@ class Icon implements EntityWithId
 
     #[Id]
     #[Column(type: CustomTypes::ENUM_ENTITY_TYPE, options: ['comment' => "The type of the icon."])]
+    #[IncludeInIdCalculation]
     private string $type = '';
 
     #[Id]
@@ -44,10 +46,12 @@ class Icon implements EntityWithId
         'collation' => 'utf8mb4_bin',
         'comment' => "The name of the icon.",
     ])]
+    #[IncludeInIdCalculation]
     private string $name = '';
 
     #[ManyToOne(targetEntity: IconData::class)]
     #[JoinColumn(name: 'dataId', nullable: false)]
+    #[IncludeInIdCalculation]
     private IconData $data;
 
     /** @var Collection<int, Combination> */

@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
+use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
@@ -14,36 +20,31 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
+ *
+ * @implements FindByIdsInterface<Icon>
+ * @implements FindByTypesAndNamesInterface<Icon>
  */
-class IconRepository extends AbstractRepository
+class IconRepository extends AbstractRepository implements
+    FindByIdsInterface,
+    FindByTypesAndNamesInterface,
+    RemoveOrphansInterface
 {
-    /**
-     * Finds the icons of the specified types and names.
-     * @return array<Icon>
-     */
-    public function findByTypesAndNames(UuidInterface $combinationId, NamesByTypes $namesByTypes): array
+    /** @use FindByIdsTrait<Icon> */
+    use FindByIdsTrait;
+    /** @use FindByTypesAndNamesTrait<Icon> */
+    use FindByTypesAndNamesTrait;
+    /** @use RemoveOrphansTrait<Icon> */
+    use RemoveOrphansTrait;
+
+    protected function getEntityClass(): string
     {
-        if ($namesByTypes->isEmpty()) {
-            return [];
-        }
+        return Icon::class;
+    }
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('i')
-                     ->from(Icon::class, 'i')
-                     ->innerJoin('i.combination', 'c', 'WITH', 'c.id = :combinationId')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
-
-        $index = 0;
-        foreach ($namesByTypes->toArray() as $type => $names) {
-            $queryBuilder->orWhere("i.type = :type{$index} AND i.name IN (:names{$index})")
-                         ->setParameter("type{$index}", $type)
-                         ->setParameter("names{$index}", array_values($names));
-            ++$index;
-        }
-
-        /** @var array<Icon> $queryResult */
-        $queryResult = $queryBuilder->getQuery()->getResult();
-        return $queryResult;
+    protected function addRemoveOrphansConditions(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->leftJoin("{$alias}.combinations", 'c')
+                     ->andWhere('c.id IS NULL');
     }
 
     /**
@@ -70,15 +71,4 @@ class IconRepository extends AbstractRepository
         return $queryResult;
     }
 
-    /**
-     * Clears all icons of the specified combination.
-     */
-    public function clearCombination(UuidInterface $combinationId): void
-    {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete(Icon::class, 'i')
-                     ->andWhere('i.combination = :combinationId')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
-        $queryBuilder->getQuery()->execute();
-    }
 }
