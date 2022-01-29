@@ -37,7 +37,7 @@ class TechnologyData implements EntityWithId
     private UuidInterface $id;
 
     /** @var Collection<int, TechnologyIngredient> */
-    #[OneToMany(mappedBy: 'technologyData', targetEntity: TechnologyIngredient::class)]
+    #[OneToMany(mappedBy: 'technologyData', targetEntity: TechnologyIngredient::class, cascade: ['all'])]
     #[OrderBy(['order' => 'ASC'])]
     private Collection $ingredients;
 
