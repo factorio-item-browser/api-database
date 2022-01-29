@@ -13,7 +13,7 @@ namespace FactorioItemBrowser\Api\Database\Collection;
 class NamesByTypes
 {
     /**
-     * @var array<string, array<string>>
+     * @var array<string, array<string, boolean>>
      */
     private array $values = [];
 
@@ -22,7 +22,14 @@ class NamesByTypes
      */
     public function addName(string $type, string $name): self
     {
-        $this->values[$type][] = $name;
+        if ($name === '') {
+            unset($this->values[$type][$name]);
+            if (count($this->values[$type] ?? []) === 0) {
+                unset($this->values[$type]);
+            }
+        } else {
+            $this->values[$type][$name] = true;
+        }
         return $this;
     }
 
@@ -32,10 +39,13 @@ class NamesByTypes
      */
     public function setNames(string $type, array $names): self
     {
-        if (count($names) > 0) {
-            $this->values[$type] = $names;
-        } else {
+        if (count($names) === 0) {
             unset($this->values[$type]);
+        } else {
+            $this->values[$type] = [];
+            foreach ($names as $name) {
+                $this->values[$type][$name] = true;
+            }
         }
         return $this;
     }
@@ -46,7 +56,7 @@ class NamesByTypes
      */
     public function getNames(string $type): array
     {
-        return $this->values[$type] ?? [];
+        return array_keys($this->values[$type] ?? []);
     }
 
     /**
@@ -54,7 +64,17 @@ class NamesByTypes
      */
     public function hasName(string $type, string $name): bool
     {
-        return in_array($name, $this->values[$type] ?? [], true);
+        return $this->values[$type][$name] ?? false;
+    }
+
+    /**
+     * Clears all values from the collection.
+     * @return $this
+     */
+    public function clear(): self
+    {
+        $this->values = [];
+        return $this;
     }
 
     /**
@@ -71,6 +91,6 @@ class NamesByTypes
      */
     public function toArray(): array
     {
-        return $this->values;
+        return array_map(fn($names) => array_keys($names), $this->values);
     }
 }

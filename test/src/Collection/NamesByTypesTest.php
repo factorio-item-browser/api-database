@@ -35,11 +35,19 @@ class NamesByTypesTest extends TestCase
         $this->assertTrue($instance->hasName('abc', 'def'));
         $this->assertFalse($instance->hasName('abc', 'jkl'));
 
-        $this->assertSame($instance, $instance->addName('abc', 'jkl'));
-        $this->assertSame(['abc' => ['def', 'ghi', 'jkl']], $instance->toArray());
+        $this->assertSame($instance, $instance->setNames('abc', ['def', 'jkl']));
+        $this->assertSame(['abc' => ['def', 'jkl']], $instance->toArray());
+
+        $this->assertSame($instance, $instance->addName('abc', 'mno'));
+        $this->assertSame(['abc' => ['def', 'jkl', 'mno']], $instance->toArray());
 
         $instance->setNames('abc', []);
         $this->assertTrue($instance->isEmpty());
         $this->assertSame([], $instance->toArray());
+
+        $this->assertSame($instance, $instance->setNames('abc', ['def', 'jkl']));
+        $this->assertFalse($instance->isEmpty());
+        $this->assertSame($instance, $instance->clear());
+        $this->assertTrue($instance->isEmpty());
     }
 }
