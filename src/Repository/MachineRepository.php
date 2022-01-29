@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
@@ -21,7 +22,7 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @implements FindByIdsInterface<Machine>
  */
-class MachineRepository extends AbstractRepository implements
+class MachineRepository implements
     FindByIdsInterface,
     RemoveOrphansInterface
 {
@@ -29,6 +30,11 @@ class MachineRepository extends AbstractRepository implements
     use FindByIdsTrait;
     /** @use RemoveOrphansTrait<Machine> */
     use RemoveOrphansTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {

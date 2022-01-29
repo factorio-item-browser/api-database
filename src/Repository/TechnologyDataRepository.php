@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use FactorioItemBrowser\Api\Database\Entity\TechnologyData;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
@@ -16,11 +17,16 @@ use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
  *
  * @implements FindByIdsInterface<TechnologyData>
  */
-class TechnologyDataRepository extends AbstractRepository implements
+class TechnologyDataRepository implements
     FindByIdsInterface
 {
     /** @use FindByIdsTrait<TechnologyData> */
     use FindByIdsTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {

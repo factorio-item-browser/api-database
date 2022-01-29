@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use FactorioItemBrowser\Api\Database\Entity\Combination;
@@ -18,8 +19,13 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class CombinationRepository extends AbstractRepository
+class CombinationRepository
 {
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
+
     /**
      * Finds the combination with the specified id.
      */
@@ -31,7 +37,13 @@ class CombinationRepository extends AbstractRepository
                      ->andWhere('c.id = :id')
                      ->setParameter('id', $id, UuidBinaryType::NAME);
 
-        return $this->unwrapOneOrNullResult($queryBuilder->getQuery(), Combination::class);
+        try {
+            /** @var Combination $result */
+            $result = $queryBuilder->getQuery()->getOneOrNullResult();
+            return $result;
+        } catch (NonUniqueResultException) {
+            return null;
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Data\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
@@ -25,7 +26,7 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @implements FindByIdsInterface<Recipe>
  */
-class RecipeRepository extends AbstractRepository implements
+class RecipeRepository implements
     FindByIdsInterface,
     RemoveOrphansInterface
 {
@@ -33,6 +34,11 @@ class RecipeRepository extends AbstractRepository implements
     use FindByIdsTrait;
     /** @use RemoveOrphansTrait<Recipe> */
     use RemoveOrphansTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {

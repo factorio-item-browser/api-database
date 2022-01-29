@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\IconData;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
@@ -19,7 +20,7 @@ use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
  *
  * @implements FindByIdsInterface<IconData>
  */
-class IconDataRepository extends AbstractRepository implements
+class IconDataRepository implements
     FindByIdsInterface,
     RemoveOrphansInterface
 {
@@ -27,6 +28,11 @@ class IconDataRepository extends AbstractRepository implements
     use FindByIdsTrait;
     /** @use RemoveOrphansTrait<IconData> */
     use RemoveOrphansTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {

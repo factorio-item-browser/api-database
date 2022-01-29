@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Entity;
 
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -39,7 +40,7 @@ class Combination implements EntityWithId
     private UuidInterface $id;
 
     #[Column(type: CustomTypes::TINYINT, options: ['comment' => 'The version of data.'])]
-    private int $dataVersion;
+    private int $dataVersion = 0;
 
     #[Column(type: CustomTypes::TIMESTAMP, options: ['comment' => 'The time when the combination was imported.'])]
     private DateTimeInterface $importTime;
@@ -63,7 +64,7 @@ class Combination implements EntityWithId
         'unsigned' => true,
         'comment' => 'The number of mods in the combination.',
     ])]
-    private int $numberOfMods;
+    private int $numberOfMods = 0;
 
     /** @var Collection<int, Mod> */
     #[ManyToMany(targetEntity: Mod::class)]
@@ -76,7 +77,7 @@ class Combination implements EntityWithId
         'unsigned' => true,
         'comment' => 'The number of items in the combination.',
     ])]
-    private int $numberOfItems;
+    private int $numberOfItems = 0;
 
     /** @var Collection<int, Item> */
     #[ManyToMany(targetEntity: Item::class)]
@@ -89,7 +90,7 @@ class Combination implements EntityWithId
         'unsigned' => true,
         'comment' => 'The number of machines in the combination.',
     ])]
-    private int $numberOfMachines;
+    private int $numberOfMachines = 0;
 
     /** @var Collection<int, Machine> */
     #[ManyToMany(targetEntity: Machine::class)]
@@ -102,7 +103,7 @@ class Combination implements EntityWithId
         'unsigned' => true,
         'comment' => 'The number of recipes in the combination.',
     ])]
-    private int $numberOfRecipes;
+    private int $numberOfRecipes = 0;
 
     /** @var Collection<int, Recipe> */
     #[ManyToMany(targetEntity: Recipe::class)]
@@ -115,7 +116,7 @@ class Combination implements EntityWithId
         'unsigned' => true,
         'comment' => 'The number of technologies in the combination.',
     ])]
-    private int $numberOfTechnologies;
+    private int $numberOfTechnologies = 0;
 
     /** @var Collection<int, Technology> */
     #[ManyToMany(targetEntity: Technology::class)]
@@ -128,7 +129,7 @@ class Combination implements EntityWithId
         'unsigned' => true,
         'comment' => 'The number of translations in the combination.',
     ])]
-    private int $numberOfTranslations;
+    private int $numberOfTranslations = 0;
 
     /** @var Collection<int, Translation> */
     #[ManyToMany(targetEntity: Translation::class)]
@@ -141,7 +142,7 @@ class Combination implements EntityWithId
         'unsigned' => true,
         'comment' => 'The number of icons in the combination.',
     ])]
-    private int $numberOfIcons;
+    private int $numberOfIcons = 0;
 
     /** @var Collection<int, Icon> */
     #[ManyToMany(targetEntity: Icon::class)]
@@ -159,6 +160,9 @@ class Combination implements EntityWithId
         $this->technologies = new ArrayCollection();
         $this->translations = new ArrayCollection();
         $this->icons = new ArrayCollection();
+
+        $this->lastUsageTime = new DateTime();
+        $this->importTime = new DateTime();
     }
 
     public function setId(UuidInterface $id): self

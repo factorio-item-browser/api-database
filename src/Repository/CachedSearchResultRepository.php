@@ -6,7 +6,9 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
@@ -17,8 +19,13 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  */
-class CachedSearchResultRepository extends AbstractRepository
+class CachedSearchResultRepository
 {
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
+
     /**
      * Finds the cached search result. The returned may already be expired though.
      */
@@ -39,7 +46,6 @@ class CachedSearchResultRepository extends AbstractRepository
             $queryResult = $queryBuilder->getQuery()->getOneOrNullResult();
             return $queryResult;
         } catch (NonUniqueResultException) {
-            // Can never happen, we are searching for the primary keys.
             return null;
         }
     }
@@ -85,7 +91,7 @@ class CachedSearchResultRepository extends AbstractRepository
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->delete(CachedSearchResult::class, 'csr')
                      ->andWhere('csr.combinationId = :combinationId')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME);
+                     ->setParameter('combinationId', $combinationId, CustomTypes::UUID);
 
         $queryBuilder->getQuery()->execute();
     }

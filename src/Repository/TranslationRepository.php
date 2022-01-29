@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
@@ -26,7 +27,7 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @implements FindByIdsInterface<Translation>
  */
-class TranslationRepository extends AbstractRepository implements
+class TranslationRepository implements
     FindByIdsInterface,
     RemoveOrphansInterface
 {
@@ -34,6 +35,11 @@ class TranslationRepository extends AbstractRepository implements
     use FindByIdsTrait;
     /** @use RemoveOrphansTrait<Translation> */
     use RemoveOrphansTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {

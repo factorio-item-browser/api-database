@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Mod;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllInterface;
@@ -22,7 +23,7 @@ use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
  * @implements FindAllInterface<Mod>
  * @implements FindByIdsInterface<Mod>
  */
-class ModRepository extends AbstractRepository implements
+class ModRepository implements
     FindAllInterface,
     FindByIdsInterface,
     RemoveOrphansInterface
@@ -33,6 +34,11 @@ class ModRepository extends AbstractRepository implements
     use FindByIdsTrait;
     /** @use RemoveOrphansTrait<Mod> */
     use RemoveOrphansTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {

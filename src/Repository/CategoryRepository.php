@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Category;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
@@ -22,7 +23,7 @@ use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
  * @implements FindByIdsInterface<Category>
  * @implements FindByTypesAndNamesInterface<Category>
  */
-class CategoryRepository extends AbstractRepository implements
+class CategoryRepository implements
     FindByIdsInterface,
     FindByTypesAndNamesInterface,
     RemoveOrphansInterface
@@ -33,6 +34,11 @@ class CategoryRepository extends AbstractRepository implements
     use FindByTypesAndNamesTrait;
     /** @use RemoveOrphansTrait<Category> */
     use RemoveOrphansTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {

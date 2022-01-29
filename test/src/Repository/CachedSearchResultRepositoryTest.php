@@ -9,6 +9,7 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Entity\CachedSearchResult;
 use FactorioItemBrowser\Api\Database\Repository\CachedSearchResultRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -296,7 +297,7 @@ class CachedSearchResultRepositoryTest extends TestCase
                      ->with(
                          $this->identicalTo('combinationId'),
                          $this->identicalTo($combinationId),
-                         $this->identicalTo(UuidBinaryType::NAME)
+                         $this->identicalTo(CustomTypes::UUID)
                      )
                      ->willReturnSelf();
         $queryBuilder->expects($this->once())

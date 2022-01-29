@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
@@ -24,7 +25,7 @@ use Ramsey\Uuid\UuidInterface;
  * @implements FindByIdsInterface<Icon>
  * @implements FindByTypesAndNamesInterface<Icon>
  */
-class IconRepository extends AbstractRepository implements
+class IconRepository implements
     FindByIdsInterface,
     FindByTypesAndNamesInterface,
     RemoveOrphansInterface
@@ -35,6 +36,11 @@ class IconRepository extends AbstractRepository implements
     use FindByTypesAndNamesTrait;
     /** @use RemoveOrphansTrait<Icon> */
     use RemoveOrphansTrait;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager
+    ) {
+    }
 
     protected function getEntityClass(): string
     {
