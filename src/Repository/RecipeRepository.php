@@ -10,6 +10,7 @@ use FactorioItemBrowser\Api\Database\Entity\Recipe;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
@@ -28,33 +29,10 @@ class RecipeRepository extends AbstractRepository implements
     FindByIdsInterface,
     RemoveOrphansInterface
 {
+    /** @use FindByIdsTrait<Recipe> */
+    use FindByIdsTrait;
     /** @use RemoveOrphansTrait<Recipe> */
     use RemoveOrphansTrait;
-
-    /**
-     * @param array<UuidInterface> $ids
-     * @return array<Recipe>
-     */
-    public function findByIds(array $ids): array
-    {
-        if (count($ids) === 0) {
-            return [];
-        }
-
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('r', 'ri', 'rii', 'rp', 'rpi')
-                     ->from(Recipe::class, 'r')
-                     ->leftJoin('r.ingredients', 'ri')
-                     ->leftJoin('ri.item', 'rii')
-                     ->leftJoin('r.products', 'rp')
-                     ->leftJoin('rp.item', 'rpi')
-                     ->andWhere('r.id IN (:ids)')
-                     ->setParameter('ids', $this->mapIdsToParameterValues($ids));
-
-        /** @var array<Recipe> $queryResult */
-        $queryResult = $queryBuilder->getQuery()->getResult();
-        return $queryResult;
-    }
 
     protected function getEntityClass(): string
     {
@@ -65,26 +43,6 @@ class RecipeRepository extends AbstractRepository implements
     {
         $queryBuilder->leftJoin("{$alias}.combinations", 'c')
                      ->andWhere('c.id IS NULL');
-    }
-
-    /**
-     * @param array<UuidInterface> $ids
-     */
-    protected function removeIds(array $ids): void
-    {
-        $entityClasses = [
-            RecipeIngredient::class => 'recipe',
-            RecipeProduct::class => 'recipe',
-            Recipe::class => 'id',
-        ];
-
-        foreach ($entityClasses as $entityClass => $property) {
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->delete($entityClass, 'e')
-                         ->andWhere("e.{$property} IN (:ids)")
-                         ->setParameter('ids', $this->mapIdsToParameterValues($ids));
-            $queryBuilder->getQuery()->execute();
-        }
     }
 
     /**
