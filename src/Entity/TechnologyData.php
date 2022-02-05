@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Helper\Validator;
 use Ramsey\Uuid\UuidInterface;
@@ -40,12 +41,14 @@ class TechnologyData implements EntityWithId
     /** @var Collection<int, TechnologyIngredient> */
     #[OneToMany(mappedBy: 'technologyData', targetEntity: TechnologyIngredient::class, cascade: ['all'])]
     #[OrderBy(['order' => 'ASC'])]
+    #[IncludeInIdCalculation]
     private Collection $ingredients;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The number of researches required to unlock the technology.',
     ])]
+    #[IncludeInIdCalculation]
     private int $count = 0;
 
     #[Column(length: 255, options: [
@@ -53,24 +56,28 @@ class TechnologyData implements EntityWithId
         'collation' => 'utf8mb4_bin',
         'comment' => 'The formula to calculate the research count in case the technology has multiple levels.',
     ])]
+    #[IncludeInIdCalculation]
     private string $countFormula = '';
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The time required for each research.',
     ])]
+    #[IncludeInIdCalculation]
     private int $time = 0;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The level of the technology.',
     ])]
+    #[IncludeInIdCalculation]
     private int $level = 0;
 
     #[Column(type: Types::INTEGER, options: [
         'unsigned' => true,
         'comment' => 'The maximal level of the technology.',
     ])]
+    #[IncludeInIdCalculation]
     private int $maxLevel = 0;
 
     public function __construct()

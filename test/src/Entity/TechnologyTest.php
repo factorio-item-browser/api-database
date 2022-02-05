@@ -102,7 +102,7 @@ class TechnologyTest extends TestCase
         $instance->getPrerequisites()->add($prerequisite1);
         $instance->getPrerequisites()->add($prerequisite2);
 
-        $expectedId = '0968bb8a-d429-232c-1ae7-2af9883fb4b4';
+        $expectedId = 'bb6088db-9f66-b1b1-9fa7-ef26ab5684a8';
 
         $idCalculator = new IdCalculator();
         $result = $idCalculator->calculateId($instance);

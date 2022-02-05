@@ -125,7 +125,7 @@ class TechnologyDataTest extends TestCase
         $instance->getIngredients()->add($ingredient1);
         $instance->getIngredients()->add($ingredient2);
 
-        $expectedId = 'd7517139-8898-7e93-3198-0363e24189ce';
+        $expectedId = '1da35bb6-132b-2a79-6faa-89346c20fe34';
 
         $idCalculator = new IdCalculator();
         $result = $idCalculator->calculateId($instance);
