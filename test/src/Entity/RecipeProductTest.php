@@ -20,63 +20,81 @@ use PHPUnit\Framework\TestCase;
  */
 class RecipeProductTest extends TestCase
 {
-    public function test(): void
+    private function createInstance(): RecipeProduct
     {
-        $recipeData = new RecipeData();
-        $order = 42;
-        $item = new Item();
-        $amountMin = 13.37;
-        $amountMax = 73.31;
-        $probability = 0.21;
-        $expectedAmount = 9.101;
-
-        $instance = new RecipeProduct();
-
-        $this->assertSame($instance, $instance->setRecipeData($recipeData));
-        $this->assertSame($recipeData, $instance->getRecipeData());
-
-        $this->assertSame($instance, $instance->setOrder($order));
-        $this->assertSame($order, $instance->getOrder());
-
-        $this->assertSame($instance, $instance->setItem($item));
-        $this->assertSame($item, $instance->getItem());
-
-        $this->assertSame($instance, $instance->setAmountMin($amountMin));
-        $this->assertSame($amountMin, $instance->getAmountMin());
-
-        $this->assertSame($instance, $instance->setAmountMax($amountMax));
-        $this->assertSame($amountMax, $instance->getAmountMax());
-
-        $this->assertSame($instance, $instance->setProbability($probability));
-        $this->assertSame($probability, $instance->getProbability());
-
-        $this->assertSame($expectedAmount, $instance->getAmount());
+        return new RecipeProduct();
     }
 
-    public function testValidation(): void
+    public function testRecipeData(): void
     {
-        $order = 1337;
-        $expectedOrder = 255;
-        $amountMin = 123456789.123465;
-        $expectedAmountMin = 4294967.295;
-        $amountMax = 987654321.987654;
-        $expectedAmountMax = 4294967.295;
-        $probability = 0.123456789;
-        $expectedProbability = 0.123;
+        $value = new RecipeData();
+        $instance = $this->createInstance();
 
-        $instance = new RecipeProduct();
+        $this->assertSame($instance, $instance->setRecipeData($value));
+        $this->assertSame($value, $instance->getRecipeData());
+    }
 
-        $this->assertSame($instance, $instance->setOrder($order));
-        $this->assertSame($expectedOrder, $instance->getOrder());
+    public function testOrder(): void
+    {
+        $value = 42;
+        $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setAmountMin($amountMin));
-        $this->assertSame($expectedAmountMin, $instance->getAmountMin());
+        $this->assertSame($instance, $instance->setOrder($value));
+        $this->assertSame($value, $instance->getOrder());
 
-        $this->assertSame($instance, $instance->setAmountMax($amountMax));
-        $this->assertSame($expectedAmountMax, $instance->getAmountMax());
+        $this->assertSame(255, $instance->setOrder(1337)->getOrder());
+    }
 
-        $this->assertSame($instance, $instance->setProbability($probability));
-        $this->assertSame($expectedProbability, $instance->getProbability());
+    public function testItem(): void
+    {
+        $value = new Item();
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setItem($value));
+        $this->assertSame($value, $instance->getItem());
+    }
+
+    public function testAmountMin(): void
+    {
+        $value = 13.37;
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setAmountMin($value));
+        $this->assertSame($value, $instance->getAmountMin());
+
+        $this->assertSame(4294967.295, $instance->setAmountMin(123456789.123465)->getAmountMin());
+    }
+
+    public function testAmountMax(): void
+    {
+        $value = 13.37;
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setAmountMax($value));
+        $this->assertSame($value, $instance->getAmountMax());
+
+        $this->assertSame(4294967.295, $instance->setAmountMax(123456789.123465)->getAmountMax());
+    }
+
+    public function testProbability(): void
+    {
+        $value = 13.37;
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setProbability($value));
+        $this->assertSame($value, $instance->getProbability());
+
+        $this->assertSame(4294967.295, $instance->setProbability(123456789.123465)->getProbability());
+    }
+
+    public function testAmount(): void
+    {
+        $instance = $this->createInstance();
+        $instance->setAmountMin(42)
+                 ->setAmountMax(21)
+                 ->setProbability(0.25);
+
+        $this->assertSame(7.875, $instance->getAmount());
     }
 
     public function testIdCalculation(): void

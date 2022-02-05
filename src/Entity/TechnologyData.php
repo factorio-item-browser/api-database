@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -98,7 +99,7 @@ class TechnologyData implements EntityWithId
 
     public function setCount(int $count): self
     {
-        $this->count = $count;
+        $this->count = Validator::validateInteger($count);
         return $this;
     }
 
@@ -109,7 +110,7 @@ class TechnologyData implements EntityWithId
 
     public function setCountFormula(string $countFormula): self
     {
-        $this->countFormula = $countFormula;
+        $this->countFormula = Validator::validateString($countFormula);
         return $this;
     }
 
@@ -120,7 +121,7 @@ class TechnologyData implements EntityWithId
 
     public function setTime(float $time): self
     {
-        $this->time = (int) ($time * self::FACTOR_TIME);
+        $this->time = Validator::validateInteger((int) ($time * self::FACTOR_TIME));
         return $this;
     }
 
@@ -131,7 +132,7 @@ class TechnologyData implements EntityWithId
 
     public function setLevel(int $level): self
     {
-        $this->level = $level;
+        $this->level = Validator::validateInteger($level);
         return $this;
     }
 
@@ -142,7 +143,7 @@ class TechnologyData implements EntityWithId
 
     public function setMaxLevel(int $maxLevel): self
     {
-        $this->maxLevel = $maxLevel;
+        $this->maxLevel = Validator::validateInteger($maxLevel);
         return $this;
     }
 

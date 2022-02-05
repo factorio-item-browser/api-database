@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use FactorioItemBrowser\Api\Database\Entity\CraftingCategory;
+use FactorioItemBrowser\Api\Database\Entity\Category;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
+use FactorioItemBrowser\Api\Database\Entity\RecipeData;
+use FactorioItemBrowser\Api\Database\Helper\IdCalculator;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -28,8 +30,6 @@ class RecipeTest extends TestCase
     {
         $instance = $this->createInstance();
 
-        $this->assertInstanceOf(ArrayCollection::class, $instance->getIngredients());
-        $this->assertInstanceOf(ArrayCollection::class, $instance->getProducts());
         $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
     }
 
@@ -42,6 +42,16 @@ class RecipeTest extends TestCase
         $this->assertSame($id, $instance->getId());
     }
 
+    public function testType(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setType($value));
+        $this->assertSame($value, $instance->getType());
+    }
+
+
     public function testSetAndGetName(): void
     {
         $name = 'abc';
@@ -49,32 +59,59 @@ class RecipeTest extends TestCase
 
         $this->assertSame($instance, $instance->setName($name));
         $this->assertSame($name, $instance->getName());
+
+        $this->assertSame(str_repeat('abcde', 51), $instance->setName(str_repeat('abcde', 256))->getName());
     }
 
-    public function testSetAndGetMode(): void
+    public function testCategory(): void
     {
-        $mode = 'abc';
+        $value = new Category();
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setMode($mode));
-        $this->assertSame($mode, $instance->getMode());
+        $this->assertSame($instance, $instance->setCategory($value));
+        $this->assertSame($value, $instance->getCategory());
     }
 
-    public function testSetAndGetCraftingTime(): void
+    public function testNormalData(): void
     {
-        $craftingTime = 13.37;
+        $value = new RecipeData();
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setCraftingTime($craftingTime));
-        $this->assertSame($craftingTime, $instance->getCraftingTime());
+        $this->assertSame($instance, $instance->setNormalData($value));
+        $this->assertSame($value, $instance->getNormalData());
     }
 
-    public function testSetAndGetCraftingCategory(): void
+    public function testExpensiveData(): void
     {
-        $craftingCategory = new CraftingCategory();
+        $value = new RecipeData();
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setCraftingCategory($craftingCategory));
-        $this->assertSame($craftingCategory, $instance->getCraftingCategory());
+        $this->assertSame($instance, $instance->setExpensiveData($value));
+        $this->assertSame($value, $instance->getExpensiveData());
+    }
+
+    public function testIdCalculation(): void
+    {
+        $category = new Category();
+        $category->setType('abc')
+                 ->setName('def');
+        $normalData = new RecipeData();
+        $normalData->setTime(4.2);
+        $expensiveData = new RecipeData();
+        $expensiveData->setTime(13.37);
+
+        $instance = $this->createInstance();
+        $instance->setType('ghi')
+                 ->setName('jkl')
+                 ->setCategory($category)
+                 ->setNormalData($normalData)
+                 ->setExpensiveData($expensiveData);
+
+        $expectedId = '1e373a5c-503f-ac25-ca1a-d1c95a77c05a';
+
+        $idCalculator = new IdCalculator();
+        $result = $idCalculator->calculateId($instance);
+
+        $this->assertSame($expectedId, $result->toString());
     }
 }

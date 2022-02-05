@@ -19,36 +19,45 @@ use Ramsey\Uuid\Uuid;
  */
 class ItemTest extends TestCase
 {
-    public function test(): void
+    private function createInstance(): Item
     {
-        $id = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
-        $type = 'abc';
-        $name = 'def';
-
-        $instance = new Item();
-
-        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
-
-        $this->assertSame($instance, $instance->setId($id));
-        $this->assertSame($id, $instance->getId());
-
-        $this->assertSame($instance, $instance->setType($type));
-        $this->assertSame($type, $instance->getType());
-
-        $this->assertSame($instance, $instance->setName($name));
-        $this->assertSame($name, $instance->getName());
+        return new Item();
     }
 
-
-    public function testValidation(): void
+    public function testConstruct(): void
     {
-        $name = str_repeat('abcde', 256);
-        $expectedName = str_repeat('abcde', 51);
+        $instance = $this->createInstance();
 
-        $instance = new Item();
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
+    }
 
-        $this->assertSame($instance, $instance->setName($name));
-        $this->assertSame($expectedName, $instance->getName());
+    public function testId(): void
+    {
+        $value = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setId($value));
+        $this->assertSame($value, $instance->getId());
+    }
+
+    public function testType(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setType($value));
+        $this->assertSame($value, $instance->getType());
+    }
+
+    public function testName(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setName($value));
+        $this->assertSame($value, $instance->getName());
+
+        $this->assertSame(str_repeat('abcde', 51), $instance->setName(str_repeat('abcde', 256))->getName());
     }
 
     public function testIdCalculation(): void

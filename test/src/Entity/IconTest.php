@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 use FactorioItemBrowser\Api\Database\Entity\IconData;
-use FactorioItemBrowser\Api\Database\Entity\Combination;
+use FactorioItemBrowser\Api\Database\Helper\IdCalculator;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The PHPUnit test of the Icon class.
@@ -22,39 +24,68 @@ class IconTest extends TestCase
     {
         return new Icon();
     }
-    public function testSetAndGetCombination(): void
+
+    public function testConstruct(): void
     {
-        $combination = new Combination();
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setCombination($combination));
-        $this->assertSame($combination, $instance->getCombination());
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
     }
 
-    public function testSetAndGetType(): void
+    public function testId(): void
     {
-        $type = 'abc';
+        $value = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setType($type));
-        $this->assertSame($type, $instance->getType());
+        $this->assertSame($instance, $instance->setId($value));
+        $this->assertSame($value, $instance->getId());
     }
 
-    public function testSetAndGetName(): void
+    public function testType(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setType($value));
+        $this->assertSame($value, $instance->getType());
+    }
+
+    public function testName(): void
     {
         $name = 'abc';
         $instance = $this->createInstance();
 
         $this->assertSame($instance, $instance->setName($name));
         $this->assertSame($name, $instance->getName());
+
+        $this->assertSame(str_repeat('abcde', 51), $instance->setName(str_repeat('abcde', 256))->getName());
     }
 
-    public function testSetAndGetImage(): void
+    public function testData(): void
     {
-        $image = new IconData();
+        $value = new IconData();
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setImage($image));
-        $this->assertSame($image, $instance->getImage());
+        $this->assertSame($instance, $instance->setData($value));
+        $this->assertSame($value, $instance->getData());
+    }
+
+    public function testIdCalculation(): void
+    {
+        $iconData = new IconData();
+        $iconData->setId(Uuid::fromString('1964982c-6dee-4938-bcdc-6f84f0681d8f'));
+
+        $instance = $this->createInstance();
+        $instance->setId(Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450'))
+                 ->setType('abc')
+                 ->setName('def')
+                 ->setData($iconData);
+
+        $expectedId = '9e790f9d-88d3-1b1e-2ae3-bd6f6c2e4ee1';
+
+        $idCalculator = new IdCalculator();
+        $result = $idCalculator->calculateId($instance);
+
+        $this->assertSame($expectedId, $result->toString());
     }
 }

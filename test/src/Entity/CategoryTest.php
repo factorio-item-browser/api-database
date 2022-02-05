@@ -19,41 +19,51 @@ use Ramsey\Uuid\Uuid;
  */
 class CategoryTest extends TestCase
 {
-    public function test(): void
+    private function createInstance(): Category
     {
-        $id = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
-        $type = 'abc';
-        $name = 'def';
+        return new Category();
+    }
 
-        $instance = new Category();
+    public function testConstruct(): void
+    {
+        $instance = $this->createInstance();
 
         $this->assertInstanceOf(ArrayCollection::class, $instance->getRecipes());
         $this->assertInstanceOf(ArrayCollection::class, $instance->getMachines());
-
-        $this->assertSame($instance, $instance->setId($id));
-        $this->assertSame($id, $instance->getId());
-
-        $this->assertSame($instance, $instance->setType($type));
-        $this->assertSame($type, $instance->getType());
-
-        $this->assertSame($instance, $instance->setName($name));
-        $this->assertSame($name, $instance->getName());
     }
 
-    public function testValidation(): void
+    public function testId(): void
     {
-        $name = str_repeat('abcde', 256);
-        $expectedName = str_repeat('abcde', 51);
+        $value = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
+        $instance = $this->createInstance();
 
-        $instance = new Category();
+        $this->assertSame($instance, $instance->setId($value));
+        $this->assertSame($value, $instance->getId());
+    }
 
-        $this->assertSame($instance, $instance->setName($name));
-        $this->assertSame($expectedName, $instance->getName());
+    public function testType(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setType($value));
+        $this->assertSame($value, $instance->getType());
+    }
+
+    public function testName(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setName($value));
+        $this->assertSame($value, $instance->getName());
+
+        $this->assertSame(str_repeat('abcde', 51), $instance->setName(str_repeat('abcde', 256))->getName());
     }
 
     public function testIdCalculation(): void
     {
-        $instance = new Category();
+        $instance = $this->createInstance();
         $instance->setId(Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450'))
                  ->setType('abc')
                  ->setName('def');

@@ -15,4 +15,11 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class IncludeInIdCalculation
 {
+    /**
+     * @param array<string>|null $keysToUse
+     */
+    public function __construct(
+        public readonly ?array $keysToUse = null
+    ) {
+    }
 }

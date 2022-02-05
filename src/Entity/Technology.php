@@ -15,7 +15,10 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeCollectionPropertiesInIdCalculation;
+use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -41,14 +44,17 @@ class Technology implements EntityWithId
         'collation' => 'utf8mb4_bin',
         'comment' => 'The name of the technology.',
     ])]
+    #[IncludeInIdCalculation]
     private string $name = '';
 
     #[ManyToOne(targetEntity: TechnologyData::class)]
     #[JoinColumn(name: 'normalDataId', nullable: false)]
+    #[IncludeInIdCalculation]
     private TechnologyData $normalData;
 
     #[ManyToOne(targetEntity: TechnologyData::class)]
     #[JoinColumn(name: 'expensiveDataId', nullable: false)]
+    #[IncludeInIdCalculation]
     private TechnologyData $expensiveData;
 
     /** @var Collection<int, Technology> */
@@ -56,6 +62,7 @@ class Technology implements EntityWithId
     #[JoinTable(name: 'TechnologyPrerequisite')]
     #[JoinColumn(name: 'technologyId', nullable: false)]
     #[InverseJoinColumn(name: 'prerequisiteId', nullable: false)]
+    #[IncludeInIdCalculation(['name'])]
     private Collection $prerequisites;
 
     /** @var Collection<int, Recipe> */
@@ -63,6 +70,7 @@ class Technology implements EntityWithId
     #[JoinTable(name: 'TechnologyRecipeUnlock')]
     #[JoinColumn(name: 'technologyId', nullable: false)]
     #[InverseJoinColumn(name: 'recipeId', nullable: false)]
+    #[IncludeInIdCalculation(['type', 'name'])]
     private Collection $recipeUnlocks;
 
     /** @var Collection<int, Combination> */
@@ -89,7 +97,7 @@ class Technology implements EntityWithId
 
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->name = Validator::validateString($name);
         return $this;
     }
 

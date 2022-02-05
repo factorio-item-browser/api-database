@@ -5,32 +5,32 @@ declare(strict_types=1);
 namespace FactorioItemBrowserTest\Api\Database\Entity;
 
 use FactorioItemBrowser\Api\Database\Entity\Item;
-use FactorioItemBrowser\Api\Database\Entity\RecipeData;
-use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
+use FactorioItemBrowser\Api\Database\Entity\TechnologyData;
+use FactorioItemBrowser\Api\Database\Entity\TechnologyIngredient;
 use FactorioItemBrowser\Api\Database\Helper\IdCalculator;
 use PHPUnit\Framework\TestCase;
 
 /**
- * The PHPUnit test of the RecipeIngredient class.
+ * The PHPUnit test of the TechnologyIngredient class.
  *
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
- * @covers \FactorioItemBrowser\Api\Database\Entity\RecipeIngredient
+ * @covers \FactorioItemBrowser\Api\Database\Entity\TechnologyIngredient
  */
-class RecipeIngredientTest extends TestCase
+class TechnologyIngredientTest extends TestCase
 {
-    private function createInstance(): RecipeIngredient
+    private function createInstance(): TechnologyIngredient
     {
-        return new RecipeIngredient();
+        return new TechnologyIngredient();
     }
 
-    public function testRecipeData(): void
+    public function testTechnologyData(): void
     {
-        $value = new RecipeData();
+        $value = new TechnologyData();
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setRecipeData($value));
-        $this->assertSame($value, $instance->getRecipeData());
+        $this->assertSame($instance, $instance->setTechnologyData($value));
+        $this->assertSame($value, $instance->getTechnologyData());
     }
 
     public function testOrder(): void
@@ -75,7 +75,7 @@ class RecipeIngredientTest extends TestCase
                  ->setItem($item)
                  ->setAmount(13.37);
 
-        $expectedId = '3e3db094-bce2-9604-172e-e1ba54e72f78';
+        $expectedId = 'd7517139-8898-7e93-3198-0363e24189ce';
 
         $idCalculator = new IdCalculator();
         $result = $idCalculator->calculateId($instance);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Helper;
 
+use FactorioItemBrowser\Api\Database\Attribute\IncludeCollectionPropertiesInIdCalculation;
 use FactorioItemBrowser\Api\Database\Attribute\IncludeInIdCalculation;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -28,11 +29,17 @@ class IdCalculator
         return Uuid::fromString(hash('md5', (string) json_encode($data)));
     }
 
-    private function extractData(mixed $value): mixed
+    /**
+     * @param array<string>|null $keysToUse
+     */
+    private function extractData(mixed $value, ?array $keysToUse = null): mixed
     {
         if (is_iterable($value)) {
             $result = [];
             foreach ($value as $k => $v) {
+                if (is_array($keysToUse) && !in_array($k, $keysToUse, true)) {
+                    continue;
+                }
                 $result[$k] = $this->extractData($v);
             }
             return $result;
@@ -53,9 +60,11 @@ class IdCalculator
     {
         $result = [];
         foreach ((new ReflectionClass($object))->getProperties() as $property) {
-            $attribute = $property->getAttributes(IncludeInIdCalculation::class)[0] ?? null;
-            if ($attribute !== null) {
-                $result[$property->getName()] = $this->extractData($property->getValue($object));
+            $reflectedAttribute = $property->getAttributes(IncludeInIdCalculation::class)[0] ?? null;
+            if ($reflectedAttribute !== null) {
+                /** @var IncludeInIdCalculation $attribute */
+                $attribute = $reflectedAttribute->newInstance();
+                $result[$property->getName()] = $this->extractData($property->getValue($object), $attribute->keysToUse);
             }
         }
         return $result;

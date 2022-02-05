@@ -19,55 +19,63 @@ use Ramsey\Uuid\Uuid;
  */
 class ModTest extends TestCase
 {
-    public function test(): void
+    private function createInstance(): Mod
     {
-        $id = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
-        $name = 'abc';
-        $version = '1.2.3';
-        $author = 'def';
-
-        $instance = new Mod();
-
-        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
-
-        $this->assertSame($instance, $instance->setId($id));
-        $this->assertSame($id, $instance->getId());
-
-        $this->assertSame($instance, $instance->setName($name));
-        $this->assertSame($name, $instance->getName());
-
-        $this->assertSame($instance, $instance->setVersion($version));
-        $this->assertSame($version, $instance->getVersion());
-
-        $this->assertSame($instance, $instance->setAuthor($author));
-        $this->assertSame($author, $instance->getAuthor());
+        return new Mod();
     }
 
-
-    public function testValidation(): void
+    public function testConstruct(): void
     {
-        $name = str_repeat('abcde', 256);
-        $expectedName = str_repeat('abcde', 51);
-        $version = str_repeat('ab', 32);
-        $expectedVersion = str_repeat('ab', 8);
-        $author = str_repeat('abcde', 256);
-        $expectedAuthor = str_repeat('abcde', 51);
+        $instance = $this->createInstance();
 
-        $instance = new Mod();
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
+    }
 
-        $this->assertSame($instance, $instance->setName($name));
-        $this->assertSame($expectedName, $instance->getName());
+    public function testId(): void
+    {
+        $value = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
+        $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setVersion($version));
-        $this->assertSame($expectedVersion, $instance->getVersion());
+        $this->assertSame($instance, $instance->setId($value));
+        $this->assertSame($value, $instance->getId());
+    }
 
-        $this->assertSame($instance, $instance->setAuthor($author));
-        $this->assertSame($expectedAuthor, $instance->getAuthor());
+    public function testName(): void
+    {
+        $value = 'ab';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setName($value));
+        $this->assertSame($value, $instance->getName());
+
+        $this->assertSame(str_repeat('abcde', 51), $instance->setName(str_repeat('abcde', 256))->getName());
+    }
+
+    public function testVersion(): void
+    {
+        $value = '1.2.3';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setVersion($value));
+        $this->assertSame($value, $instance->getVersion());
+
+        $this->assertSame(str_repeat('ab', 8), $instance->setVersion(str_repeat('ab', 32))->getVersion());
+    }
+
+    public function testAuthor(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setAuthor($value));
+        $this->assertSame($value, $instance->getAuthor());
+
+        $this->assertSame(str_repeat('abcde', 51), $instance->setAuthor(str_repeat('abcde', 256))->getAuthor());
     }
 
     public function testIdCalculation(): void
     {
-        $instance = new Mod();
+        $instance = $this->createInstance();
         $instance->setId(Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450'))
                  ->setName('abc')
                  ->setVersion('1.2.3')

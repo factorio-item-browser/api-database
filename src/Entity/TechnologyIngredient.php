@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
+use FactorioItemBrowser\Api\Database\Helper\Validator;
 
 /**
  * The entity representing a research ingredient of a technology.
@@ -64,7 +65,7 @@ class TechnologyIngredient
 
     public function setOrder(int $order): self
     {
-        $this->order = $order;
+        $this->order = Validator::validateTinyInteger($order);
         return $this;
     }
 
@@ -86,7 +87,7 @@ class TechnologyIngredient
 
     public function setAmount(float $amount): self
     {
-        $this->amount = (int) ($amount * self::FACTOR_AMOUNT);
+        $this->amount = Validator::validateInteger((int) ($amount * self::FACTOR_AMOUNT));
         return $this;
     }
 

@@ -18,7 +18,7 @@ use ReflectionException;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  * @covers \FactorioItemBrowser\Api\Database\Entity\IconData
  */
-class IconImageTest extends TestCase
+class IconDataTest extends TestCase
 {
     use ReflectionTrait;
 
@@ -34,22 +34,22 @@ class IconImageTest extends TestCase
         $this->assertInstanceOf(ArrayCollection::class, $instance->getIcons());
     }
 
-    public function testSetAndGetId(): void
+    public function testId(): void
     {
-        $id = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
+        $value = Uuid::fromString('01234567-89ab-cdef-0123-456789abcdef');
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setId($id));
-        $this->assertSame($id, $instance->getId());
+        $this->assertSame($instance, $instance->setId($value));
+        $this->assertSame($value, $instance->getId());
     }
 
-    public function testSetAndGetContents(): void
+    public function testContents(): void
     {
-        $contents = 'abc';
+        $value = 'abc';
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setContents($contents));
-        $this->assertSame($contents, $instance->getContents());
+        $this->assertSame($instance, $instance->setContents($value));
+        $this->assertSame($value, $instance->getContents());
     }
 
     /**
@@ -72,12 +72,12 @@ class IconImageTest extends TestCase
         $this->assertSame($contents, $instance->getContents());
     }
 
-    public function testSetAndGetSize(): void
+    public function testSize(): void
     {
-        $size = 42;
+        $value = 42;
         $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setSize($size));
-        $this->assertSame($size, $instance->getSize());
+        $this->assertSame($instance, $instance->setSize($value));
+        $this->assertSame($value, $instance->getSize());
     }
 }

@@ -19,67 +19,86 @@ use Ramsey\Uuid\Uuid;
  */
 class TranslationTest extends TestCase
 {
-    public function test(): void
+    private function createInstance(): Translation
     {
-        $id = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
-        $locale = 'abc';
-        $type = 'def';
-        $name = 'ghi';
-        $label = 'jkl';
-        $description = 'mno';
-
-        $instance = new Translation();
-
-        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
-
-        $this->assertSame($instance, $instance->setId($id));
-        $this->assertSame($id, $instance->getId());
-
-        $this->assertSame($instance, $instance->setLocale($locale));
-        $this->assertSame($locale, $instance->getLocale());
-
-        $this->assertSame($instance, $instance->setType($type));
-        $this->assertSame($type, $instance->getType());
-
-        $this->assertSame($instance, $instance->setName($name));
-        $this->assertSame($name, $instance->getName());
-
-        $this->assertSame($instance, $instance->setLabel($label));
-        $this->assertSame($label, $instance->getLabel());
-
-        $this->assertSame($instance, $instance->setDescription($description));
-        $this->assertSame($description, $instance->getDescription());
+        return new Translation();
     }
 
-    public function testValidation(): void
+    public function testConstruct(): void
     {
-        $locale = str_repeat('ab', 16);
-        $expectedLocale = 'ababa';
-        $name = str_repeat('abcde', 256);
-        $expectedName = str_repeat('abcde', 51);
-        $label = str_repeat('abcde', 65535);
-        $expectedLabel = str_repeat('abcde', 13107);
-        $description = str_repeat('abcde', 65535);
-        $expectedDescription = str_repeat('abcde', 13107);
+        $instance = $this->createInstance();
 
-        $instance = new Translation();
+        $this->assertInstanceOf(ArrayCollection::class, $instance->getCombinations());
+    }
 
-        $this->assertSame($instance, $instance->setLocale($locale));
-        $this->assertSame($expectedLocale, $instance->getLocale());
+    public function testId(): void
+    {
+        $value = Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450');
+        $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setName($name));
-        $this->assertSame($expectedName, $instance->getName());
+        $this->assertSame($instance, $instance->setId($value));
+        $this->assertSame($value, $instance->getId());
+    }
 
-        $this->assertSame($instance, $instance->setLabel($label));
-        $this->assertSame($expectedLabel, $instance->getLabel());
+    public function testLocale(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
 
-        $this->assertSame($instance, $instance->setDescription($description));
-        $this->assertSame($expectedDescription, $instance->getDescription());
+        $this->assertSame($instance, $instance->setLocale($value));
+        $this->assertSame($value, $instance->getLocale());
+
+        $this->assertSame('ababa', $instance->setLocale(str_repeat('ab', 16))->getLocale());
+    }
+
+    public function testType(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setType($value));
+        $this->assertSame($value, $instance->getType());
+    }
+
+    public function testName(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setName($value));
+        $this->assertSame($value, $instance->getName());
+
+        $this->assertSame(str_repeat('abcde', 51), $instance->setName(str_repeat('abcde', 256))->getName());
+    }
+
+    public function testLabel(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setLabel($value));
+        $this->assertSame($value, $instance->getLabel());
+
+        $this->assertSame(str_repeat('abcde', 13107), $instance->setLabel(str_repeat('abcde', 65535))->getLabel());
+    }
+
+    public function testDescription(): void
+    {
+        $value = 'abc';
+        $instance = $this->createInstance();
+
+        $this->assertSame($instance, $instance->setDescription($value));
+        $this->assertSame($value, $instance->getDescription());
+
+        $this->assertSame(
+            str_repeat('abcde', 13107),
+            $instance->setDescription(str_repeat('abcde', 65535))->getDescription(),
+        );
     }
 
     public function testIdCalculation(): void
     {
-        $instance = new Translation();
+        $instance = $this->createInstance();
         $instance->setId(Uuid::fromString('01e704f7-e602-4f24-87b0-1b6c4928e450'))
                  ->setLocale('abc')
                  ->setType('def')
