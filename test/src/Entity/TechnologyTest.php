@@ -78,10 +78,12 @@ class TechnologyTest extends TestCase
     {
         $recipe1 = new Recipe();
         $recipe1->setType('abc')
-                ->setName('def');
+                ->setName('def')
+                ->setCategory((new Category())->setName('foo'));
         $recipe2 = new Recipe();
         $recipe2->setType('ghi')
-                ->setName('jkl');
+                ->setName('jkl')
+                ->setCategory((new Category())->setName('bar'));
 
         $prerequisite1 = new Technology();
         $prerequisite1->setName('mno');
@@ -102,7 +104,7 @@ class TechnologyTest extends TestCase
         $instance->getPrerequisites()->add($prerequisite1);
         $instance->getPrerequisites()->add($prerequisite2);
 
-        $expectedId = 'bb6088db-9f66-b1b1-9fa7-ef26ab5684a8';
+        $expectedId = 'b5387f5f-a030-2874-b221-3e7c6719d3a8';
 
         $idCalculator = new IdCalculator();
         $result = $idCalculator->calculateId($instance);

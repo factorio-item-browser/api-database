@@ -37,16 +37,13 @@ class IdCalculator
         if (is_iterable($value)) {
             $result = [];
             foreach ($value as $k => $v) {
-                if (is_array($keysToUse) && !in_array($k, $keysToUse, true)) {
-                    continue;
-                }
-                $result[$k] = $this->extractData($v);
+                $result[$k] = $this->extractData($v, $keysToUse);
             }
             return $result;
         }
 
         if (is_object($value)) {
-            return $this->extractDataFromObject($value);
+            return $this->extractDataFromObject($value, $keysToUse);
         }
 
         return $value;
@@ -54,12 +51,17 @@ class IdCalculator
 
     /**
      * @param object $object
+     * @param array<string> $keysToUse
      * @return array<string, mixed>
      */
-    private function extractDataFromObject(object $object): array
+    private function extractDataFromObject(object $object, ?array $keysToUse = null): array
     {
         $result = [];
         foreach ((new ReflectionClass($object))->getProperties() as $property) {
+            if (is_array($keysToUse) && !in_array($property->name, $keysToUse, true)) {
+                continue;
+            }
+
             $reflectedAttribute = $property->getAttributes(IncludeInIdCalculation::class)[0] ?? null;
             if ($reflectedAttribute !== null) {
                 /** @var IncludeInIdCalculation $attribute */
