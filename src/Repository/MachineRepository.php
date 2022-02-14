@@ -9,6 +9,8 @@ use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByNamesInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByNamesTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
@@ -21,13 +23,17 @@ use Ramsey\Uuid\UuidInterface;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
  * @implements FindByIdsInterface<Machine>
+ * @implements FindByNamesInterface<Machine>
  */
 class MachineRepository implements
     FindByIdsInterface,
+    FindByNamesInterface,
     RemoveOrphansInterface
 {
     /** @use FindByIdsTrait<Machine> */
     use FindByIdsTrait;
+    /** @use FindByNamesTrait<Machine> */
+    use FindByNamesTrait;
     /** @use RemoveOrphansTrait<Machine> */
     use RemoveOrphansTrait;
 
@@ -64,30 +70,6 @@ class MachineRepository implements
             $this->entityManager->remove($machine);
         }
         $this->entityManager->flush();
-    }
-
-    /**
-     * Finds the data of the machines with the specified names.
-     * @param array<string> $names
-     * @return array<Machine>
-     */
-    public function findByNames(UuidInterface $combinationId, array $names): array
-    {
-        if (count($names) === 0) {
-            return [];
-        }
-
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('m')
-                     ->from(Machine::class, 'm')
-                     ->innerJoin('m.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->andWhere('m.name IN (:names)')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-                     ->setParameter('names', array_values($names));
-
-        /** @var array<Machine> $queryResult */
-        $queryResult = $queryBuilder->getQuery()->getResult();
-        return $queryResult;
     }
 
     /**

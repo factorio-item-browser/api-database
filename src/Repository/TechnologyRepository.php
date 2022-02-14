@@ -9,6 +9,8 @@ use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Entity\Technology;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByNamesInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByNamesTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 
@@ -19,13 +21,17 @@ use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
  * @implements FindByIdsInterface<Technology>
+ * @implements FindByNamesInterface<Technology>
  */
 class TechnologyRepository implements
     FindByIdsInterface,
+    FindByNamesInterface,
     RemoveOrphansInterface
 {
     /** @use FindByIdsTrait<Technology> */
     use FindByIdsTrait;
+    /** @use FindByNamesTrait<Technology> */
+    use FindByNamesTrait;
     /** @use RemoveOrphansTrait<Technology> */
     use RemoveOrphansTrait;
 

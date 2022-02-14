@@ -10,6 +10,8 @@ use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByNamesInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByNamesTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
@@ -24,11 +26,13 @@ use stdClass;
  *
  * @implements FindAllInterface<stdClass>
  * @implements FindByIdsInterface<stdClass>
+ * @implements FindByNamesInterface<stdClass>
  * @implements FindByTypesAndNamesInterface<stdClass>
  */
 class TestRepository implements
     FindAllInterface,
     FindByIdsInterface,
+    FindByNamesInterface,
     FindByTypesAndNamesInterface,
     RemoveOrphansInterface
 {
@@ -36,6 +40,8 @@ class TestRepository implements
     use FindAllTrait;
     /** @use FindByIdsTrait<stdClass> */
     use FindByIdsTrait;
+    /** @use FindByNamesTrait<stdClass> */
+    use FindByNamesTrait;
     /** @use FindByTypesAndNamesTrait<stdClass> */
     use FindByTypesAndNamesTrait;
     /** @use RemoveOrphansTrait<stdClass> */
