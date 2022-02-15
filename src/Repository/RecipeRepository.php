@@ -12,6 +12,8 @@ use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
 use Ramsey\Uuid\Doctrine\UuidBinaryType;
@@ -25,13 +27,17 @@ use Ramsey\Uuid\UuidInterface;
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
  * @implements FindByIdsInterface<Recipe>
+ * @implements FindByTypesAndNamesInterface<Recipe>
  */
 class RecipeRepository implements
     FindByIdsInterface,
+    FindByTypesAndNamesInterface,
     RemoveOrphansInterface
 {
     /** @use FindByIdsTrait<Recipe> */
     use FindByIdsTrait;
+    /** @use FindByTypesAndNamesTrait<Recipe> */
+    use FindByTypesAndNamesTrait;
     /** @use RemoveOrphansTrait<Recipe> */
     use RemoveOrphansTrait;
 
