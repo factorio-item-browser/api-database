@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -30,18 +31,17 @@ use Ramsey\Uuid\UuidInterface;
     'collation' => 'utf8mb4_bin',
     'comment' => 'The table holding the icons of the entities.',
 ])]
+#[Index(columns: ['type', 'name'])]
 class Icon implements EntityWithId
 {
     #[Id]
     #[Column(type: CustomTypes::UUID, options: ['comment' => 'The internal id of the icon.'])]
     private UuidInterface $id;
 
-    #[Id]
     #[Column(type: CustomTypes::ENUM_ENTITY_TYPE, options: ['comment' => "The type of the icon."])]
     #[IncludeInIdCalculation]
     private string $type = '';
 
-    #[Id]
     #[Column(length: 255, options: [
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_bin',
