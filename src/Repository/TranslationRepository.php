@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace FactorioItemBrowser\Api\Database\Repository;
 
-use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FactorioItemBrowser\Api\Database\Collection\NamesByTypes;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Constant\SearchResultPriority;
 use FactorioItemBrowser\Api\Database\Data\TranslationPriorityData;
 use FactorioItemBrowser\Api\Database\Entity\Translation;
@@ -56,8 +56,11 @@ class TranslationRepository implements
      * Finds translations with the specified types and names.
      * @return array<Translation>
      */
-    public function findByTypesAndNames(UuidInterface $combinationId, string $locale, NamesByTypes $namesByTypes): array
-    {
+    public function findByTypesAndNames(
+        string $locale,
+        NamesByTypes $namesByTypes,
+        ?UuidInterface $combinationId
+    ): array {
         if ($namesByTypes->isEmpty()) {
             return [];
         }
@@ -65,26 +68,21 @@ class TranslationRepository implements
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('t')
                      ->from(Translation::class, 't')
-                     ->innerJoin('t.combinations', 'c', 'WITH', 'c.id = :combinationId')
                      ->andWhere('t.locale IN (:locales)')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
                      ->setParameter('locales', [$locale, 'en']);
 
-        $conditions = [];
-        foreach ($namesByTypes->toArray() as $type => $names) {
-            $i = count($conditions);
-            $conditions[] = "(t.type IN (:types{$i}) AND t.name IN (:names{$i}))";
-
-            $types = match ($type) {
-                EntityType::RECIPE => [EntityType::RECIPE, EntityType::FLUID, EntityType::ITEM],
-                EntityType::MACHINE => [EntityType::MACHINE, EntityType::FLUID, EntityType::ITEM],
-                default => [$type],
-            };
-
-            $queryBuilder->setParameter("types{$i}", $types)
-                         ->setParameter("names{$i}", array_values($names));
+        if ($combinationId !== null) {
+            $queryBuilder->innerJoin('t.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                         ->setParameter('combinationId', $combinationId, CustomTypes::UUID);
         }
-        $queryBuilder->andWhere('(' . implode(' OR ', $conditions) . ')');
+
+        $index = 0;
+        foreach ($namesByTypes->toArray() as $type => $names) {
+            $queryBuilder->orWhere("t.type = :type{$index} AND t.name IN (:names{$index})")
+                         ->setParameter("type{$index}", $type)
+                         ->setParameter("names{$index}", array_values($names));
+            ++$index;
+        }
 
         /** @var array<Translation> $queryResult */
         $queryResult = $queryBuilder->getQuery()->getResult();

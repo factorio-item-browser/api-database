@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Entity\Icon;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
@@ -13,7 +14,6 @@ use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesInter
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -54,27 +54,29 @@ class IconRepository implements
     }
 
     /**
-     * Finds the icons using one of the image ids.
-     * @param array<UuidInterface> $imageIds
+     * Finds the icons using one of the provided data ids.
+     * @param array<UuidInterface> $dataIds
      * @return array<Icon>
      */
-    public function findByImageIds(UuidInterface $combinationId, array $imageIds): array
+    public function findByDataIds(array $dataIds, ?UuidInterface $combinationId = null): array
     {
-        if (count($imageIds) === 0) {
+        if (count($dataIds) === 0) {
             return [];
         }
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('i')
                      ->from(Icon::class, 'i')
-                     ->innerJoin('i.combination', 'c', 'WITH', 'c.id = :combinationId')
-                     ->andWhere('i.image IN (:imageIds)')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-                     ->setParameter('imageIds', $this->mapIdsToParameterValues($imageIds));
+                     ->andWhere('i.data IN (:dataIds)')
+                     ->setParameter('dataIds', array_map(fn(UuidInterface $id): string => $id->getBytes(), $dataIds));
+
+        if ($combinationId !== null) {
+            $queryBuilder->innerJoin('i.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                         ->setParameter('combinationId', $combinationId, CustomTypes::UUID);
+        }
 
         /** @var array<Icon> $queryResult */
         $queryResult = $queryBuilder->getQuery()->getResult();
         return $queryResult;
     }
-
 }
