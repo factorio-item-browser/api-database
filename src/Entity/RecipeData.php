@@ -46,13 +46,13 @@ class RecipeData implements EntityWithId
     private int $time = 0;
 
     /** @var Collection<int, RecipeIngredient> */
-    #[OneToMany(mappedBy: 'recipeData', targetEntity: RecipeIngredient::class, cascade: ['all'], fetch: 'EAGER')]
+    #[OneToMany(mappedBy: 'recipeData', targetEntity: RecipeIngredient::class, cascade: ['all'])]
     #[OrderBy(['order' => 'ASC'])]
     #[IncludeInIdCalculation]
     private Collection $ingredients;
 
     /** @var Collection<int, RecipeProduct> */
-    #[OneToMany(mappedBy: 'recipeData', targetEntity: RecipeProduct::class, cascade: ['all'], fetch: 'EAGER')]
+    #[OneToMany(mappedBy: 'recipeData', targetEntity: RecipeProduct::class, cascade: ['all'])]
     #[OrderBy(['order' => 'ASC'])]
     #[IncludeInIdCalculation]
     private Collection $products;
