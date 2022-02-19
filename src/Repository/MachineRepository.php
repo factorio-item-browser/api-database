@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Entity\Machine;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
@@ -13,7 +14,6 @@ use FactorioItemBrowser\Api\Database\Repository\Feature\FindByNamesInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByNamesTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\RemoveOrphansTrait;
-use Ramsey\Uuid\Doctrine\UuidBinaryType;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -73,18 +73,23 @@ class MachineRepository implements
     }
 
     /**
-     * Finds the machines supporting the specified crafting categories.
+     * Finds the machines supporting the provided category.
+     * @param UuidInterface $categoryId
+     * @param UuidInterface|null $combinationId
      * @return array<Machine>
      */
-    public function findByCraftingCategoryName(UuidInterface $combinationId, string $craftingCategoryName): array
+    public function findByCategory(UuidInterface $categoryId, ?UuidInterface $combinationId = null): array
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('m')
                      ->from(Machine::class, 'm')
-                     ->innerJoin('m.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->innerJoin('m.craftingCategories', 'cc', 'WITH', 'cc.name = :craftingCategoryName')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-                     ->setParameter('craftingCategoryName', $craftingCategoryName);
+                     ->innerJoin('m.categories', 'c', 'WITH', 'c = :categoryId')
+                     ->setParameter('categoryId', $categoryId, CustomTypes::UUID);
+
+        if ($combinationId !== null) {
+            $queryBuilder->innerJoin('m.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                         ->setParameter('combinationId', $combinationId, CustomTypes::UUID);
+        }
 
         /** @var array<Machine> $queryResult */
         $queryResult = $queryBuilder->getQuery()->getResult();
