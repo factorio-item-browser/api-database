@@ -36,10 +36,10 @@ class RecipeDataRepository implements
 
     protected function extendQueryForFindByIds(QueryBuilder $queryBuilder, string $alias): void
     {
-        $queryBuilder->addSelect('in', 'ini', 'pr', 'pri')
-                     ->leftJoin("{$alias}.ingredients", 'in')
-                     ->leftJoin('in.item', 'ini')
-                     ->leftJoin("{$alias}.products", 'pr')
-                     ->leftJoin('pr.item', 'pri');
+        $queryBuilder->addSelect("{$alias}i", "{$alias}ii", "{$alias}p", "{$alias}pi")
+                     ->leftJoin("{$alias}.ingredients", "{$alias}i")
+                     ->leftJoin("{$alias}i.item", "{$alias}ii")
+                     ->leftJoin("{$alias}.products", "{$alias}p")
+                     ->leftJoin("{$alias}p.item", "{$alias}pi");
     }
 }
