@@ -10,6 +10,8 @@ use FactorioItemBrowser\Api\Database\Data\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
 use FactorioItemBrowser\Api\Database\Entity\RecipeProduct;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllInterface;
+use FactorioItemBrowser\Api\Database\Repository\Feature\FindAllTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsInterface;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByIdsTrait;
 use FactorioItemBrowser\Api\Database\Repository\Feature\FindByTypesAndNamesInterface;
@@ -26,14 +28,18 @@ use Ramsey\Uuid\UuidInterface;
  * @author BluePsyduck <bluepsyduck@gmx.com>
  * @license http://opensource.org/licenses/GPL-3.0 GPL v3
  *
+ * @implements FindAllInterface<Recipe>
  * @implements FindByIdsInterface<Recipe>
  * @implements FindByTypesAndNamesInterface<Recipe>
  */
 class RecipeRepository implements
+    FindAllInterface,
     FindByIdsInterface,
     FindByTypesAndNamesInterface,
     RemoveOrphansInterface
 {
+    /** @use FindAllTrait<Recipe> */
+    use FindAllTrait;
     /** @use FindByIdsTrait<Recipe> */
     use FindByIdsTrait;
     /** @use FindByTypesAndNamesTrait<Recipe> */
