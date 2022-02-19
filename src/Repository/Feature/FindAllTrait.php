@@ -27,15 +27,19 @@ trait FindAllTrait
      */
     abstract protected function getEntityClass(): string;
 
-    public function findAll(UuidInterface $combinationId, int $numberOfResults, int $indexOfFirstResult): array
+    public function findAll(int $numberOfResults, int $indexOfFirstResult, ?UuidInterface $combinationId = null): array
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('e')
                      ->from($this->getEntityClass(), 'e')
-                     ->innerJoin('e.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->setParameter('combinationId', $combinationId, CustomTypes::UUID)
                      ->setMaxResults($numberOfResults)
                      ->setFirstResult($indexOfFirstResult);
+
+        if ($combinationId !== null) {
+            $queryBuilder->innerJoin('e.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                         ->setParameter('combinationId', $combinationId, CustomTypes::UUID);
+        }
+
         $this->extendQueryForFindAll($queryBuilder, 'e');
 
         /** @var array<TEntity> $queryResult */

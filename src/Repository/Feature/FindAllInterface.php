@@ -20,5 +20,5 @@ interface FindAllInterface
      * Find all entities.
      * @return array<TEntity>
      */
-    public function findAll(UuidInterface $combinationId, int $numberOfResults, int $indexOfFirstResult): array;
+    public function findAll(int $numberOfResults, int $indexOfFirstResult, ?UuidInterface $combinationId = null): array;
 }

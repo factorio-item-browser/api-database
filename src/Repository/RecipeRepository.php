@@ -63,6 +63,12 @@ class RecipeRepository implements
                      ->andWhere('c.id IS NULL');
     }
 
+    protected function extendQueryForFindAll(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->addOrderBy("{$alias}.type", 'ASC')
+                     ->addOrderBy("{$alias}.name", 'ASC');
+    }
+
     /**
      * Finds the data of the recipes with the specified names.
      * @param array<string> $names
