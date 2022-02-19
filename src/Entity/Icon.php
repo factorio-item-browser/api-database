@@ -56,7 +56,7 @@ class Icon implements EntityWithId
     private IconData $data;
 
     /** @var Collection<int, Combination> */
-    #[ManyToMany(targetEntity: Combination::class, mappedBy: 'items')]
+    #[ManyToMany(targetEntity: Combination::class, mappedBy: 'icons')]
     private Collection $combinations;
 
     public function __construct()
