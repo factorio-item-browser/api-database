@@ -83,7 +83,7 @@ class MachineRepository implements
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder->select('m')
                      ->from(Machine::class, 'm')
-                     ->innerJoin('m.categories', 'c', 'WITH', 'c = :categoryId')
+                     ->innerJoin('m.categories', 'cat', 'WITH', 'cat.id = :categoryId')
                      ->setParameter('categoryId', $categoryId, CustomTypes::UUID);
 
         if ($combinationId !== null) {
