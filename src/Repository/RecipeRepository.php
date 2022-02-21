@@ -65,8 +65,22 @@ class RecipeRepository implements
 
     protected function extendQueryForFindAll(QueryBuilder $queryBuilder, string $alias): void
     {
-        $queryBuilder->addOrderBy("{$alias}.type", 'ASC')
+        $queryBuilder->addSelect("{$alias}c")
+                     ->leftJoin("{$alias}.category", "{$alias}c")
+                     ->addOrderBy("{$alias}.type", 'ASC')
                      ->addOrderBy("{$alias}.name", 'ASC');
+    }
+
+    protected function extendQueryForFindByTypesAndNames(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->addSelect("{$alias}c")
+                     ->leftJoin("{$alias}.category", "{$alias}c");
+    }
+
+    protected function extendQueryForFindByIds(QueryBuilder $queryBuilder, string $alias): void
+    {
+        $queryBuilder->addSelect("{$alias}c")
+                     ->leftJoin("{$alias}.category", "{$alias}c");
     }
 
     /**
