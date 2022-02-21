@@ -49,8 +49,8 @@ class MachineRepository implements
 
     protected function extendQueryForFindByIds(QueryBuilder $queryBuilder, string $alias): void
     {
-        $queryBuilder->addSelect('c')
-                     ->leftJoin("{$alias}.categories", 'c');
+        $queryBuilder->addSelect('cat')
+                     ->leftJoin("{$alias}.categories", 'cat');
     }
 
     protected function addRemoveOrphansConditions(QueryBuilder $queryBuilder, string $alias): void
@@ -81,7 +81,7 @@ class MachineRepository implements
     public function findByCategory(UuidInterface $categoryId, ?UuidInterface $combinationId = null): array
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('m')
+        $queryBuilder->select('m', 'cat')
                      ->from(Machine::class, 'm')
                      ->innerJoin('m.categories', 'cat', 'WITH', 'cat.id = :categoryId')
                      ->setParameter('categoryId', $categoryId, CustomTypes::UUID);
