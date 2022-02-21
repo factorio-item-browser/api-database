@@ -81,9 +81,10 @@ class MachineRepository implements
     public function findByCategory(UuidInterface $categoryId, ?UuidInterface $combinationId = null): array
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('m', 'cat')
+        $queryBuilder->select('m', 'cat2')
                      ->from(Machine::class, 'm')
                      ->innerJoin('m.categories', 'cat', 'WITH', 'cat.id = :categoryId')
+                     ->leftJoin('m.categories', 'cat2')
                      ->setParameter('categoryId', $categoryId, CustomTypes::UUID);
 
         if ($combinationId !== null) {
