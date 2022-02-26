@@ -6,6 +6,7 @@ namespace FactorioItemBrowser\Api\Database\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use FactorioItemBrowser\Api\Database\Constant\CustomTypes;
 use FactorioItemBrowser\Api\Database\Data\RecipeData;
 use FactorioItemBrowser\Api\Database\Entity\Recipe;
 use FactorioItemBrowser\Api\Database\Entity\RecipeIngredient;
@@ -84,87 +85,55 @@ class RecipeRepository implements
     }
 
     /**
-     * Finds the data of the recipes with the specified names.
-     * @param array<string> $names
-     * @return array<RecipeData>
+     * Finds the recipes using one of the provided items as an ingredient.
+     * @param array<UuidInterface> $itemIds
+     * @return array<Recipe>
      */
-    public function findDataByNames(UuidInterface $combinationId, array $names): array
+    public function findWithIngredients(array $itemIds, ?UuidInterface $combinationId = null): array
     {
-        if (count($names) === 0) {
-            return [];
-        }
-
-        $columns = [
-            'r.id AS id',
-            'r.name AS name',
-            'r.mode AS mode',
-        ];
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select($columns)
-                     ->from(Recipe::class, 'r')
-                     ->innerJoin('r.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->andWhere('r.name IN (:names)')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-                     ->setParameter('names', array_values($names));
-
-        /** @var array<array{id: UuidInterface, name: string, mode: string}> $queryResult */
-        $queryResult = $queryBuilder->getQuery()->getResult();
-        return $this->mapRecipeDataResult($queryResult);
+        return $this->findByItemIds('ingredients', $itemIds, $combinationId);
     }
 
     /**
-     * Finds the data of the recipes having the specified items as ingredients.
+     * Finds the recipes using one of the provided items as a product.
      * @param array<UuidInterface> $itemIds
-     * @return array<RecipeData>
+     * @return array<Recipe>
      */
-    public function findDataByIngredientItemIds(UuidInterface $combinationId, array $itemIds): array
+    public function findWithProducts(array $itemIds, ?UuidInterface $combinationId = null): array
     {
-        $data = $this->findDataByItemIds($combinationId, 'ingredients', $itemIds);
-        return $this->orderByNumberOfItems(RecipeIngredient::class, $data);
+        return $this->findByItemIds('products', $itemIds, $combinationId);
     }
 
     /**
-     * Finds the data of the recipes having the specified items as products.
+     * Finds the recipes using one of the provided items.
+     * @param string $property
      * @param array<UuidInterface> $itemIds
-     * @return array<RecipeData>
+     * @param UuidInterface|null $combinationId
+     * @return array<Recipe>
      */
-    public function findDataByProductItemIds(UuidInterface $combinationId, array $itemIds): array
-    {
-        $data = $this->findDataByItemIds($combinationId, 'products', $itemIds);
-        return $this->orderByNumberOfItems(RecipeProduct::class, $data);
-    }
-
-    /**
-     * Finds the data of recipes having a specific item involved.
-     * @param array<UuidInterface> $itemIds
-     * @return array<RecipeData>
-     */
-    protected function findDataByItemIds(UuidInterface $combinationId, string $recipeProperty, array $itemIds): array
+    protected function findByItemIds(string $property, array $itemIds, ?UuidInterface $combinationId): array
     {
         if (count($itemIds) === 0) {
             return [];
         }
 
-        $columns = [
-            'r.id AS id',
-            'r.name AS name',
-            'r.mode AS mode',
-            'IDENTITY(i.item) AS itemId',
-        ];
-
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select($columns)
+        $queryBuilder->select('r')
                      ->from(Recipe::class, 'r')
-                     ->innerJoin('r.combinations', 'c', 'WITH', 'c.id = :combinationId')
-                     ->innerJoin("r.{$recipeProperty}", 'i', 'WITH', 'i.item IN (:itemIds)')
-                     ->setParameter('combinationId', $combinationId, UuidBinaryType::NAME)
-                     ->setParameter('itemIds', $this->mapIdsToParameterValues($itemIds))
-                     ->addOrderBy('r.name', 'ASC')
-                     ->addOrderBy('r.mode', 'ASC');
+                     ->innerJoin('r.normalData', 'rn')
+                     ->innerJoin("rn.{$property}", 'rni', 'WITH', 'rni.item IN (:itemIds)')
+                     ->innerJoin('r.expensiveData', 're')
+                     ->innerJoin("re.{$property}", 'rei', 'WITH', 'rei.item IN (:itemIds)')
+                     ->setParameter('itemIds', array_map(fn(UuidInterface $id): string => $id->getBytes(), $itemIds));
 
-        /** @var array<array{id: UuidInterface, name: string, mode: string, itemId: string}> $queryResult */
+        if ($combinationId !== null) {
+            $queryBuilder->innerJoin('r.combinations', 'c', 'WITH', 'c.id = :combinationId')
+                ->setParameter('combinationId', $combinationId, CustomTypes::UUID);
+        }
+
+        /** @var array<Recipe> $queryResult */
         $queryResult = $queryBuilder->getQuery()->getResult();
-        return $this->mapRecipeDataResult($queryResult);
+        return $queryResult;
     }
 
     /**
